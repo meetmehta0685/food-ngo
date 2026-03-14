@@ -20,22 +20,40 @@ export default async function NgoDeliveriesPage() {
     redirect("/donor/requests")
   }
 
-  const deliveries = await db.donation.findMany({
-    where: {
-      assignedNgoId: session.user.id,
-      status: {
-        in: ["ACCEPTED", "PICKUP_IN_PROGRESS", "PICKED_UP"],
-      },
-    },
-    include: {
-      donor: {
-        select: {
-          name: true,
+  const listDeliveries = () =>
+    db.donation.findMany({
+      where: {
+        assignedNgoId: session.user.id,
+        status: {
+          in: ["ACCEPTED", "PICKUP_IN_PROGRESS", "PICKED_UP"],
         },
       },
-    },
-    orderBy: { updatedAt: "desc" },
-  })
+      include: {
+        donor: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      orderBy: { updatedAt: "desc" },
+    })
+
+  let deliveries: Awaited<ReturnType<typeof listDeliveries>> = []
+  let loadError: string | null = null
+
+  try {
+    const data = await Promise.race([
+      listDeliveries(),
+      new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error("DELIVERIES_QUERY_TIMEOUT")), 10_000)
+      }),
+    ])
+
+    deliveries = data
+  } catch (error) {
+    console.error("ngo deliveries load error", error)
+    loadError = "Active delivery data is temporarily unavailable. Please refresh in a few seconds."
+  }
 
   return (
     <div className="space-y-6">
@@ -44,6 +62,12 @@ export default async function NgoDeliveriesPage() {
         <h1 className="font-serif text-2xl tracking-tight sm:text-3xl">Active deliveries</h1>
         <p className="text-muted-foreground text-sm mt-1">Operational board for accepted and in-progress pickups.</p>
       </div>
+
+      {loadError ? (
+        <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {loadError}
+        </div>
+      ) : null}
 
       {deliveries.length === 0 ? (
         <div className="rounded-xl border border-border/60 bg-card/90 p-8 sm:p-12 text-center">

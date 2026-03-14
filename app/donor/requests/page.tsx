@@ -19,22 +19,40 @@ export default async function DonorRequestsPage() {
     redirect("/ngo/inbox")
   }
 
-  const donations = await db.donation.findMany({
-    where: { donorId: session.user.id },
-    include: {
-      assignedNgo: {
-        select: {
-          name: true,
-          ngoProfile: {
-            select: {
-              orgName: true,
+  const listDonations = () =>
+    db.donation.findMany({
+      where: { donorId: session.user.id },
+      include: {
+        assignedNgo: {
+          select: {
+            name: true,
+            ngoProfile: {
+              select: {
+                orgName: true,
+              },
             },
           },
         },
       },
-    },
-    orderBy: { createdAt: "desc" },
-  })
+      orderBy: { createdAt: "desc" },
+    })
+
+  let donations: Awaited<ReturnType<typeof listDonations>> = []
+  let loadError: string | null = null
+
+  try {
+    const data = await Promise.race([
+      listDonations(),
+      new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error("DONOR_REQUESTS_QUERY_TIMEOUT")), 10_000)
+      }),
+    ])
+
+    donations = data
+  } catch (error) {
+    console.error("donor requests load error", error)
+    loadError = "Could not load your donation history right now. You can still create a new request."
+  }
 
   return (
     <div className="space-y-6">
@@ -51,6 +69,12 @@ export default async function DonorRequestsPage() {
           </Button>
         </Link>
       </div>
+
+      {loadError ? (
+        <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {loadError}
+        </div>
+      ) : null}
 
       <DonorDonationsTable donations={donations} />
     </div>
