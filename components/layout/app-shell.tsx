@@ -1,7 +1,8 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { usePathname } from "next/navigation"
+import { useEffect } from "react"
+import { usePathname, useRouter } from "next/navigation"
 
 import { TopNav } from "@/components/layout/top-nav"
 import { LiveEventListener } from "@/components/realtime/live-event-listener"
@@ -16,8 +17,19 @@ type AppShellProps = {
 }
 
 export function AppShell({ children, user }: AppShellProps) {
+  const router = useRouter()
   const pathname = usePathname()
   const isIntroRoute = pathname === "/"
+  const isAuthRoute = pathname === "/sign-in" || pathname === "/sign-up"
+
+  useEffect(() => {
+    if (!user || !isAuthRoute) {
+      return
+    }
+
+    const destination = user.role === "NGO" ? "/ngo/inbox" : "/donor/requests"
+    router.replace(destination)
+  }, [isAuthRoute, router, user])
 
   if (isIntroRoute) {
     return <div className="min-h-screen bg-background">{children}</div>
