@@ -34,7 +34,7 @@ type DeliveryDonation = {
     id: string
     status: DonationStatus
     note: string | null
-    createdAt: Date
+    createdAt: string
     actor: {
       name: string
       role: "DONOR" | "NGO"

@@ -54,6 +54,14 @@ export default async function NgoInboxPage() {
       "Live inbox data could not be loaded right now. Please refresh in a few seconds.";
   }
 
+  const serializedCandidates = candidates.map((candidate) => ({
+    ...candidate,
+    donation: {
+      ...candidate.donation,
+      pickupBy: candidate.donation.pickupBy.toISOString(),
+    },
+  }))
+
   return (
     <div className="space-y-6">
       <div>
@@ -74,7 +82,7 @@ export default async function NgoInboxPage() {
         </div>
       ) : null}
 
-      <NgoInboxList candidates={candidates} />
+      <NgoInboxList candidates={serializedCandidates} />
     </div>
   );
 }

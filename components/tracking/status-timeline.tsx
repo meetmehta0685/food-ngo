@@ -8,7 +8,7 @@ type TimelineEvent = {
   id: string
   status: DonationStatus
   note: string | null
-  createdAt: Date
+  createdAt: string | Date
   actor: {
     name: string
     role: Role

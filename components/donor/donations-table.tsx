@@ -20,7 +20,7 @@ type DonorDonation = {
   quantity: string
   servesCount: number
   status: DonationStatus
-  pickupBy: Date
+  pickupBy: string
   assignedNgo: {
     name: string
     ngoProfile: {

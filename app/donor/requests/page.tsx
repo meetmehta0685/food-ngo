@@ -58,6 +58,11 @@ export default async function DonorRequestsPage() {
       "Could not load your donation history right now. You can still create a new request.";
   }
 
+  const serializedDonations = donations.map((donation) => ({
+    ...donation,
+    pickupBy: donation.pickupBy.toISOString(),
+  }))
+
   return (
     <div className="space-y-6">
       <div className="flex items-end justify-between gap-3">
@@ -86,7 +91,7 @@ export default async function DonorRequestsPage() {
         </div>
       ) : null}
 
-      <DonorDonationsTable donations={donations} />
+      <DonorDonationsTable donations={serializedDonations} />
     </div>
   );
 }

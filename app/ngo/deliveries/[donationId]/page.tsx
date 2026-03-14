@@ -62,6 +62,14 @@ export default async function NgoDeliveryConsolePage({ params }: PageProps) {
     notFound()
   }
 
+  const serializedDonation = {
+    ...donation,
+    statusEvents: donation.statusEvents.map((event) => ({
+      ...event,
+      createdAt: event.createdAt.toISOString(),
+    })),
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -71,7 +79,7 @@ export default async function NgoDeliveryConsolePage({ params }: PageProps) {
           Update pickup progress and keep donor tracking synchronized.
         </p>
       </div>
-      <DeliveryConsole donation={donation} />
+      <DeliveryConsole donation={serializedDonation} />
     </div>
   )
 }

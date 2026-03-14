@@ -17,7 +17,7 @@ type InboxCandidate = {
     quantity: string
     servesCount: number
     address: string
-    pickupBy: Date
+    pickupBy: string
     donor: {
       name: string
     }
