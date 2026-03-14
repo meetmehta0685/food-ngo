@@ -1,0 +1,191 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  DONOR
+  NGO
+}
+
+enum DonationStatus {
+  REPORTED
+  MATCHING
+  NOTIFIED
+  ACCEPTED
+  PICKUP_IN_PROGRESS
+  PICKED_UP
+  DELIVERED
+  CANCELLED
+}
+
+enum MatchState {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+}
+
+enum NotificationType {
+  DONATION_CREATED
+  NGO_MATCHED
+  STATUS_CONFIRMED
+  SYSTEM
+}
+
+enum LiveEventType {
+  STATUS_CHANGED
+  NOTIFICATION_CREATED
+  MATCH_UPDATED
+  LOCATION_UPDATED
+}
+
+model User {
+  id                String                @id @default(cuid())
+  name              String
+  email             String                @unique
+  passwordHash      String
+  role              Role
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  ngoProfile        NgoProfile?
+  donorDonations    Donation[]            @relation("DonorDonations")
+  assignedDonations Donation[]            @relation("AssignedDonations")
+  statusEvents      DonationStatusEvent[]
+  notifications     Notification[]
+  liveEvents        LiveEvent[]
+  ngoCandidates     NgoMatchCandidate[]   @relation("NgoCandidates")
+}
+
+model NgoProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  orgName         String
+  phone           String
+  address         String
+  lat             Float
+  lng             Float
+  serviceRadiusKm Float    @default(15)
+  isAvailable     Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([isAvailable])
+}
+
+model Donation {
+  id            String         @id @default(cuid())
+  donorId       String
+  assignedNgoId String?
+  foodType      String
+  quantity      String
+  servesCount   Int
+  address       String
+  lat           Float
+  lng           Float
+  pickupBy      DateTime
+  notes         String?
+  status        DonationStatus @default(REPORTED)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  donor         User                  @relation("DonorDonations", fields: [donorId], references: [id], onDelete: Cascade)
+  assignedNgo   User?                 @relation("AssignedDonations", fields: [assignedNgoId], references: [id])
+  statusEvents  DonationStatusEvent[]
+  candidates    NgoMatchCandidate[]
+  notifications Notification[]
+
+  @@index([donorId])
+  @@index([assignedNgoId])
+  @@index([status])
+}
+
+model DonationStatusEvent {
+  id          String         @id @default(cuid())
+  donationId  String
+  status      DonationStatus
+  actorUserId String
+  note        String?
+  lat         Float?
+  lng         Float?
+  createdAt   DateTime       @default(now())
+
+  donation Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  actor    User     @relation(fields: [actorUserId], references: [id], onDelete: Cascade)
+
+  @@index([donationId, createdAt])
+}
+
+model NgoMatchCandidate {
+  id         String     @id @default(cuid())
+  donationId String
+  ngoUserId  String
+  distanceKm Float
+  rank       Int
+  state      MatchState @default(PENDING)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  donation Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  ngoUser  User     @relation("NgoCandidates", fields: [ngoUserId], references: [id], onDelete: Cascade)
+
+  @@unique([donationId, ngoUserId])
+  @@index([ngoUserId, state])
+  @@index([donationId, state])
+}
+
+model Notification {
+  id         String              @id @default(cuid())
+  userId     String
+  donationId String?
+  type       NotificationType
+  channel    NotificationChannel
+  title      String
+  body       String
+  metadata   Json?
+  readAt     DateTime?
+  sentAt     DateTime?
+  createdAt  DateTime            @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  donation Donation? @relation(fields: [donationId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([donationId])
+}
+
+model LiveEvent {
+  id          BigInt        @id @default(autoincrement())
+  userId      String
+  eventType   LiveEventType
+  payloadJson Json
+  createdAt   DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, id])
+}
+
+model ContactInquiry {
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  organization String?
+  topic        String
+  message      String
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([email, createdAt])
+}
