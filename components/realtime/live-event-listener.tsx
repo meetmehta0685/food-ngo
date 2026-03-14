@@ -4,92 +4,62 @@ import { useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
-type IncomingEvent = {
-  id?: string
-  type?: string
-  payload?: {
-    title?: string
-    body?: string
-    [key: string]: unknown
-  }
-}
-
-function parseEvent(data: string): IncomingEvent | null {
-  try {
-    return JSON.parse(data) as IncomingEvent
-  } catch {
-    return null
-  }
-}
-
 export function LiveEventListener() {
   const router = useRouter()
-  const reconnectRef = useRef<ReturnType<typeof window.setTimeout> | null>(null)
+  const previousUnreadRef = useRef<number | null>(null)
 
   useEffect(() => {
-    let eventSource: EventSource | null = null
+    let active = true
 
-    const setup = () => {
-      const cursor = window.localStorage.getItem("live_cursor") ?? "0"
-      eventSource = new EventSource(`/api/stream?cursor=${cursor}`)
+    const syncUpdates = async () => {
+      try {
+        const response = await fetch("/api/notifications", { cache: "no-store" })
 
-      const handleEvent = (raw: MessageEvent<string>) => {
-        const data = parseEvent(raw.data)
-
-        if (!data) {
+        if (!response.ok) {
           return
         }
 
-        if (data.id) {
-          window.localStorage.setItem("live_cursor", data.id)
-        }
+        const payload = (await response.json()) as { unread?: number }
+        const unread = Number(payload.unread ?? 0)
 
-        if (data.type === "NOTIFICATION_CREATED" && data.payload) {
-          window.dispatchEvent(new CustomEvent("notifications:refresh"))
-          toast.info(data.payload.title ?? "New update", {
-            description: data.payload.body,
+        // Keep badge in sync with polling mode.
+        window.dispatchEvent(new CustomEvent("notifications:refresh"))
+
+        if (previousUnreadRef.current !== null && unread > previousUnreadRef.current) {
+          toast.info("New update", {
+            description: "You have new notifications.",
           })
-        }
-
-        if (
-          data.type === "STATUS_CHANGED" ||
-          data.type === "MATCH_UPDATED" ||
-          data.type === "LOCATION_UPDATED"
-        ) {
           router.refresh()
         }
-      }
 
-      const types = [
-        "NOTIFICATION_CREATED",
-        "STATUS_CHANGED",
-        "MATCH_UPDATED",
-        "LOCATION_UPDATED",
-      ]
-
-      types.forEach((type) => {
-        eventSource?.addEventListener(type, handleEvent as EventListener)
-      })
-
-      eventSource.onmessage = handleEvent
-
-      eventSource.onerror = () => {
-        eventSource?.close()
-
-        reconnectRef.current = setTimeout(() => {
-          setup()
-        }, 3000)
+        previousUnreadRef.current = unread
+      } catch (error) {
+        console.error("live polling error", error)
       }
     }
 
-    setup()
+    void syncUpdates()
 
-    return () => {
-      if (reconnectRef.current) {
-        clearTimeout(reconnectRef.current)
+    const notificationsInterval = window.setInterval(() => {
+      if (!active) {
+        return
       }
 
-      eventSource?.close()
+      void syncUpdates()
+    }, 10000)
+
+    const refreshInterval = window.setInterval(() => {
+      if (!active) {
+        return
+      }
+
+      router.refresh()
+    }, 30000)
+
+    return () => {
+      active = false
+      window.clearInterval(notificationsInterval)
+      window.clearInterval(refreshInterval)
     }
   }, [router])
 
