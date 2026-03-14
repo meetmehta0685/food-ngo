@@ -59,9 +59,23 @@ export default async function DonorRequestsPage() {
   }
 
   const serializedDonations = donations.map((donation) => ({
-    ...donation,
+    id: donation.id,
+    foodType: donation.foodType,
+    quantity: donation.quantity,
+    servesCount: donation.servesCount,
+    status: donation.status,
     pickupBy: donation.pickupBy.toISOString(),
-  }));
+    assignedNgo: donation.assignedNgo
+      ? {
+          name: donation.assignedNgo.name,
+          ngoProfile: donation.assignedNgo.ngoProfile
+            ? {
+                orgName: donation.assignedNgo.ngoProfile.orgName,
+              }
+            : null,
+        }
+      : null,
+  }))
 
   return (
     <div className="space-y-6">

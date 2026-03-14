@@ -63,12 +63,41 @@ export default async function NgoDeliveryConsolePage({ params }: PageProps) {
   }
 
   const serializedDonation = {
-    ...donation,
+    id: donation.id,
+    status: donation.status,
+    address: donation.address,
+    lat: donation.lat,
+    lng: donation.lng,
+    donor: {
+      id: donation.donor.id,
+      name: donation.donor.name,
+    },
+    assignedNgo: donation.assignedNgo
+      ? {
+          id: donation.assignedNgo.id,
+          name: donation.assignedNgo.name,
+          ngoProfile: donation.assignedNgo.ngoProfile
+            ? {
+                lat: donation.assignedNgo.ngoProfile.lat,
+                lng: donation.assignedNgo.ngoProfile.lng,
+                orgName: donation.assignedNgo.ngoProfile.orgName,
+              }
+            : null,
+        }
+      : null,
     statusEvents: donation.statusEvents.map((event) => ({
-      ...event,
+      id: event.id,
+      status: event.status,
+      note: event.note,
       createdAt: event.createdAt.toISOString(),
+      actor: {
+        name: event.actor.name,
+        role: event.actor.role,
+      },
+      lat: event.lat,
+      lng: event.lng,
     })),
-  };
+  }
 
   return (
     <div className="space-y-6">

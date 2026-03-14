@@ -55,12 +55,21 @@ export default async function NgoInboxPage() {
   }
 
   const serializedCandidates = candidates.map((candidate) => ({
-    ...candidate,
+    id: candidate.id,
+    distanceKm: candidate.distanceKm,
+    rank: candidate.rank,
     donation: {
-      ...candidate.donation,
+      id: candidate.donation.id,
+      foodType: candidate.donation.foodType,
+      quantity: candidate.donation.quantity,
+      servesCount: candidate.donation.servesCount,
+      address: candidate.donation.address,
       pickupBy: candidate.donation.pickupBy.toISOString(),
+      donor: {
+        name: candidate.donation.donor.name,
+      },
     },
-  }));
+  }))
 
   return (
     <div className="space-y-6">
