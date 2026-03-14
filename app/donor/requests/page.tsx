@@ -61,7 +61,7 @@ export default async function DonorRequestsPage() {
   const serializedDonations = donations.map((donation) => ({
     ...donation,
     pickupBy: donation.pickupBy.toISOString(),
-  }))
+  }));
 
   return (
     <div className="space-y-6">

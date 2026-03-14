@@ -1,79 +1,84 @@
-"use client"
+"use client";
 
-import type { DonationStatus } from "@prisma/client"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { ArrowRight, MapPin, Warning } from "@phosphor-icons/react"
+import type { DonationStatus } from "@prisma/client";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ArrowRight, MapPin, Warning } from "@phosphor-icons/react";
 
-import { MapView } from "@/components/maps/map-view"
-import { StatusTimeline } from "@/components/tracking/status-timeline"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { nextNgoStatus, statusLabel } from "@/lib/donations/labels"
+import { MapView } from "@/components/maps/map-view";
+import { StatusTimeline } from "@/components/tracking/status-timeline";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { nextNgoStatus, statusLabel } from "@/lib/donations/labels";
 
 type DeliveryDonation = {
-  id: string
-  status: DonationStatus
-  address: string
-  lat: number
-  lng: number
+  id: string;
+  status: DonationStatus;
+  address: string;
+  lat: number;
+  lng: number;
   donor: {
-    id: string
-    name: string
-  }
+    id: string;
+    name: string;
+  };
   assignedNgo: {
-    id: string
-    name: string
+    id: string;
+    name: string;
     ngoProfile: {
-      lat: number
-      lng: number
-      orgName: string
-    } | null
-  } | null
+      lat: number;
+      lng: number;
+      orgName: string;
+    } | null;
+  } | null;
   statusEvents: {
-    id: string
-    status: DonationStatus
-    note: string | null
-    createdAt: string
+    id: string;
+    status: DonationStatus;
+    note: string | null;
+    createdAt: string;
     actor: {
-      name: string
-      role: "DONOR" | "NGO"
-    }
-    lat: number | null
-    lng: number | null
-  }[]
-}
+      name: string;
+      role: "DONOR" | "NGO";
+    };
+    lat: number | null;
+    lng: number | null;
+  }[];
+};
 
 export function DeliveryConsole({ donation }: { donation: DeliveryDonation }) {
-  const router = useRouter()
-  const [pending, setPending] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const router = useRouter();
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const nextStatus = nextNgoStatus(donation.status)
+  const nextStatus = nextNgoStatus(donation.status);
 
   const updateStatus = async () => {
     if (!nextStatus) {
-      return
+      return;
     }
 
-    setPending(true)
-    setError(null)
+    setPending(true);
+    setError(null);
 
-    let coords: { lat?: number; lng?: number } = {}
+    let coords: { lat?: number; lng?: number } = {};
 
     if (navigator.geolocation) {
       try {
-        coords = await new Promise<{ lat?: number; lng?: number }>((resolve) => {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              resolve({ lat: position.coords.latitude, lng: position.coords.longitude })
-            },
-            () => resolve({}),
-            { timeout: 5000 },
-          )
-        })
+        coords = await new Promise<{ lat?: number; lng?: number }>(
+          (resolve) => {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                resolve({
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude,
+                });
+              },
+              () => resolve({}),
+              { timeout: 5000 },
+            );
+          },
+        );
       } catch {
-        coords = {}
+        coords = {};
       }
     }
 
@@ -87,29 +92,35 @@ export function DeliveryConsole({ donation }: { donation: DeliveryDonation }) {
         note: `Updated by NGO: ${statusLabel(nextStatus)}`,
         ...coords,
       }),
-    })
+    });
 
-    setPending(false)
+    setPending(false);
 
     if (!response.ok) {
-      setError("Status update failed")
-      return
+      setError("Status update failed");
+      return;
     }
 
-    router.refresh()
-  }
+    router.refresh();
+  };
 
   const lastLocationEvent = [...donation.statusEvents]
     .reverse()
-    .find((event) => event.lat !== null && event.lng !== null)
+    .find((event) => event.lat !== null && event.lng !== null);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.2fr_0.9fr]">
       <div className="rounded-xl border border-border/60 bg-card/90 p-5 sm:p-6">
         <h2 className="font-serif text-xl mb-1">Delivery map</h2>
-        <p className="text-muted-foreground text-sm mb-4">Track donor pickup and delivery movement.</p>
+        <p className="text-muted-foreground text-sm mb-4">
+          Track donor pickup and delivery movement.
+        </p>
         <MapView
-          donor={{ lat: donation.lat, lng: donation.lng, label: "Donor pickup location" }}
+          donor={{
+            lat: donation.lat,
+            lng: donation.lng,
+            label: "Donor pickup location",
+          }}
           ngo={
             donation.assignedNgo?.ngoProfile
               ? {
@@ -137,7 +148,10 @@ export function DeliveryConsole({ donation }: { donation: DeliveryDonation }) {
         <div className="rounded-xl border border-border/60 bg-card/90 p-5 sm:p-6">
           <div className="flex items-center justify-between gap-2 mb-4">
             <h2 className="font-serif text-xl">Next action</h2>
-            <Badge variant="outline" className="border-primary/30 text-primary font-mono text-[10px]">
+            <Badge
+              variant="outline"
+              className="border-primary/30 text-primary font-mono text-[10px]"
+            >
               {statusLabel(donation.status)}
             </Badge>
           </div>
@@ -148,8 +162,14 @@ export function DeliveryConsole({ donation }: { donation: DeliveryDonation }) {
           </div>
 
           {nextStatus ? (
-            <Button onClick={updateStatus} disabled={pending} className="w-full h-11">
-              {pending ? "Updating..." : (
+            <Button
+              onClick={updateStatus}
+              disabled={pending}
+              className="w-full h-11"
+            >
+              {pending ? (
+                "Updating..."
+              ) : (
                 <>
                   Mark {statusLabel(nextStatus)}
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -172,9 +192,12 @@ export function DeliveryConsole({ donation }: { donation: DeliveryDonation }) {
 
         <div className="rounded-xl border border-border/60 bg-card/90 p-5 sm:p-6">
           <h2 className="font-serif text-xl mb-4">Status timeline</h2>
-          <StatusTimeline currentStatus={donation.status} events={donation.statusEvents} />
+          <StatusTimeline
+            currentStatus={donation.status}
+            events={donation.statusEvents}
+          />
         </div>
       </div>
     </div>
-  )
+  );
 }

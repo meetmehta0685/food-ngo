@@ -60,7 +60,7 @@ export default async function NgoInboxPage() {
       ...candidate.donation,
       pickupBy: candidate.donation.pickupBy.toISOString(),
     },
-  }))
+  }));
 
   return (
     <div className="space-y-6">
