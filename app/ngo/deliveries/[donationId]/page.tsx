@@ -97,7 +97,7 @@ export default async function NgoDeliveryConsolePage({ params }: PageProps) {
       lat: event.lat,
       lng: event.lng,
     })),
-  }
+  };
 
   return (
     <div className="space-y-6">

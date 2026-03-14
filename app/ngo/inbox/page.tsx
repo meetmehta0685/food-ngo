@@ -69,7 +69,7 @@ export default async function NgoInboxPage() {
         name: candidate.donation.donor.name,
       },
     },
-  }))
+  }));
 
   return (
     <div className="space-y-6">

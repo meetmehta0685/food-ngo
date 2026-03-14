@@ -75,7 +75,7 @@ export default async function DonorRequestsPage() {
             : null,
         }
       : null,
-  }))
+  }));
 
   return (
     <div className="space-y-6">
