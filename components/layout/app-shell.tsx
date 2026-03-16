@@ -37,7 +37,11 @@ export function AppShell({ children, user }: AppShellProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <TopNav user={user} />
+      <TopNav
+        user={user}
+        hideRoleLinks={pathname === "/home"}
+        forcePublicAuthCtas={pathname === "/home"}
+      />
       {user && !isIntroRoute ? <LiveEventListener /> : null}
       <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         {children}
