@@ -9,10 +9,6 @@ type NgoLayoutProps = {
 };
 
 export default async function NgoLayout({ children }: NgoLayoutProps) {
-  if (process.env.NODE_ENV !== "development") {
-    return <>{children}</>;
-  }
-
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
