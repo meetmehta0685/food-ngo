@@ -1,9 +1,9 @@
-import { compare } from "bcrypt"
-import type { NextAuthOptions } from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
+import { compare } from "bcryptjs";
+import type { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 
-import { db } from "@/lib/db"
-import { signInSchema } from "@/lib/validations/auth"
+import { db } from "@/lib/db";
+import { signInSchema } from "@/lib/validations/auth";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -20,24 +20,27 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const parsed = signInSchema.safeParse(credentials)
+        const parsed = signInSchema.safeParse(credentials);
 
         if (!parsed.success) {
-          return null
+          return null;
         }
 
         const user = await db.user.findUnique({
           where: { email: parsed.data.email.trim().toLowerCase() },
-        })
+        });
 
         if (!user) {
-          return null
+          return null;
         }
 
-        const isPasswordValid = await compare(parsed.data.password, user.passwordHash)
+        const isPasswordValid = await compare(
+          parsed.data.password,
+          user.passwordHash,
+        );
 
         if (!isPasswordValid) {
-          return null
+          return null;
         }
 
         return {
@@ -45,26 +48,26 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
-        }
+        };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.userId = user.id
-        token.role = user.role
+        token.userId = user.id;
+        token.role = user.role;
       }
 
-      return token
+      return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.userId as string
-        session.user.role = token.role as "DONOR" | "NGO"
+        session.user.id = token.userId as string;
+        session.user.role = token.role as "DONOR" | "NGO";
       }
 
-      return session
+      return session;
     },
   },
-}
+};
