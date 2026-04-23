@@ -64,6 +64,28 @@ For production:
 npm run db:deploy
 ```
 
+## Deploy on Vercel
+
+1. Import this repository in Vercel.
+2. Add environment variables from `.env.example` in the Vercel project settings:
+   - `POSTGRES_PRISMA_URL`
+   - `POSTGRES_URL_NON_POOLING`
+   - `DATABASE_URL` (optional fallback)
+   - `NEXTAUTH_URL` (set this to your production domain)
+   - `NEXTAUTH_SECRET`
+3. Keep the Vercel build command as default (`npm run build`).
+4. Run migrations before first production traffic:
+
+```bash
+npm run db:deploy
+```
+
+If you want a single command that includes migrations + build in non-Vercel environments, run:
+
+```bash
+npm run build:prod
+```
+
 ## Build checks
 
 ```bash
