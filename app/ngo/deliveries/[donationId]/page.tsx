@@ -4,6 +4,8 @@ import { notFound, redirect } from "next/navigation";
 import { DeliveryConsole } from "@/components/ngo/delivery-console";
 import { db } from "@/lib/db";
 import { authOptions } from "@/lib/auth/options";
+import { getRoleHomePath } from "@/lib/auth/roles";
+import { expireRescueOffers } from "@/lib/rescue/service";
 
 type PageProps = {
   params: Promise<{ donationId: string }>;
@@ -17,10 +19,12 @@ export default async function NgoDeliveryConsolePage({ params }: PageProps) {
   }
 
   if (session.user.role !== "NGO") {
-    redirect("/donor/requests");
+    redirect(getRoleHomePath(session.user.role) ?? "/home");
   }
 
   const { donationId } = await params;
+
+  await expireRescueOffers({ donationId });
 
   const donation = await db.donation.findUnique({
     where: { id: donationId },
@@ -55,6 +59,36 @@ export default async function NgoDeliveryConsolePage({ params }: PageProps) {
         },
         orderBy: { createdAt: "asc" },
       },
+      rescueAssignments: {
+        where: {
+          status: {
+            in: [
+              "OFFERED",
+              "ACCEPTED",
+              "EN_ROUTE_TO_PICKUP",
+              "ARRIVED_AT_PICKUP",
+              "PICKED_UP",
+              "EN_ROUTE_TO_NGO",
+              "ARRIVED_AT_NGO",
+            ],
+          },
+        },
+        include: {
+          volunteer: {
+            select: {
+              name: true,
+              volunteerProfile: {
+                select: {
+                  phone: true,
+                  vehicleType: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+      },
     },
   });
 
@@ -65,6 +99,7 @@ export default async function NgoDeliveryConsolePage({ params }: PageProps) {
   const serializedDonation = {
     id: donation.id,
     status: donation.status,
+    deliveryMode: donation.deliveryMode,
     address: donation.address,
     lat: donation.lat,
     lng: donation.lng,
@@ -97,18 +132,33 @@ export default async function NgoDeliveryConsolePage({ params }: PageProps) {
       lat: event.lat,
       lng: event.lng,
     })),
+    rescueAssignment: donation.rescueAssignments[0]
+      ? {
+          id: donation.rescueAssignments[0].id,
+          status: donation.rescueAssignments[0].status,
+          volunteerName: donation.rescueAssignments[0].volunteer.name,
+          volunteerPhone:
+            donation.rescueAssignments[0].volunteer.volunteerProfile?.phone ??
+            null,
+          vehicleType:
+            donation.rescueAssignments[0].volunteer.volunteerProfile
+              ?.vehicleType ?? null,
+          distanceKm: donation.rescueAssignments[0].distanceKm,
+          offerExpiresAt:
+            donation.rescueAssignments[0].offerExpiresAt.toISOString(),
+          lastLat: donation.rescueAssignments[0].lastLat,
+          lastLng: donation.rescueAssignments[0].lastLng,
+          lastLocationAt:
+            donation.rescueAssignments[0].lastLocationAt?.toISOString() ?? null,
+        }
+      : null,
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-primary font-mono text-[10px] font-medium uppercase tracking-widest mb-1">
-          NGO operations
-        </p>
-        <h1 className="font-serif text-2xl tracking-tight sm:text-3xl">
-          Delivery console
-        </h1>
-        <p className="text-muted-foreground text-sm mt-1">
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">Delivery console</h1>
+        <p className="text-muted-foreground max-w-2xl text-sm leading-6">
           Update pickup progress and keep donor tracking synchronized.
         </p>
       </div>

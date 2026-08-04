@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth"
 
 import { authOptions } from "@/lib/auth/options"
+import type { AppRole } from "@/lib/auth/roles"
 
 export async function getAuthSession() {
   return getServerSession(authOptions)
@@ -16,7 +17,7 @@ export async function requireAuthSession() {
   return session
 }
 
-export async function requireRole(role: "DONOR" | "NGO") {
+export async function requireRole(role: AppRole) {
   const session = await requireAuthSession()
 
   if (session.user.role !== role) {

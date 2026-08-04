@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-04T00:00:00.000Z",
+  "title": "Design System: Food Rescue Network",
+  "extensions": {
+    "colorMeta": {
+      "work-surface": {
+        "role": "neutral",
+        "displayName": "Work Surface",
+        "canonical": "oklch(0.975 0.015 94)",
+        "tonalRamp": ["oklch(0.18 0.015 94)", "oklch(0.3 0.015 94)", "oklch(0.42 0.015 94)", "oklch(0.54 0.015 94)", "oklch(0.66 0.015 94)", "oklch(0.78 0.015 94)", "oklch(0.88 0.015 94)", "oklch(0.975 0.015 94)"]
+      },
+      "signal-green": {
+        "role": "primary",
+        "displayName": "Signal Green",
+        "canonical": "oklch(0.39 0.115 164)",
+        "tonalRamp": ["oklch(0.15 0.115 164)", "oklch(0.25 0.115 164)", "oklch(0.35 0.115 164)", "oklch(0.45 0.115 164)", "oklch(0.55 0.115 164)", "oklch(0.65 0.115 164)", "oklch(0.75 0.115 164)", "oklch(0.85 0.115 164)"]
+      },
+      "attention-amber": {
+        "role": "tertiary",
+        "displayName": "Attention Amber",
+        "canonical": "oklch(0.83 0.14 83)",
+        "tonalRamp": ["oklch(0.15 0.14 83)", "oklch(0.25 0.14 83)", "oklch(0.35 0.14 83)", "oklch(0.45 0.14 83)", "oklch(0.55 0.14 83)", "oklch(0.65 0.14 83)", "oklch(0.75 0.14 83)", "oklch(0.83 0.14 83)"]
+      },
+      "urgent-red": {
+        "role": "error",
+        "displayName": "Urgent Red",
+        "canonical": "oklch(0.58 0.19 28)",
+        "tonalRamp": ["oklch(0.15 0.19 28)", "oklch(0.25 0.19 28)", "oklch(0.35 0.19 28)", "oklch(0.45 0.19 28)", "oklch(0.55 0.19 28)", "oklch(0.65 0.19 28)", "oklch(0.75 0.19 28)", "oklch(0.85 0.19 28)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Jakarta Display", "purpose": "Hero statements and major page headings." },
+      "label": { "displayName": "JetBrains Telemetry", "purpose": "Statuses, IDs, timestamps, and compact operational labels." }
+    },
+    "shadows": [
+      { "name": "shell-ambient", "value": "0 1px 3px color-mix(in oklch, var(--foreground) 12%, transparent)", "purpose": "Separate the floating navigation shell from the work surface." },
+      { "name": "focus-ring", "value": "0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent)", "purpose": "Keyboard focus feedback shared by shadcn controls." }
+    ],
+    "motion": [
+      { "name": "meter-sweep", "value": "4.8s cubic-bezier(0.22, 1, 0.36, 1) infinite", "purpose": "Subtle VU-meter needle sweep; disabled under prefers-reduced-motion." },
+      { "name": "state-transition", "value": "transition-colors", "purpose": "Small semantic state changes on buttons, badges, and status surfaces." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The clear next step for broadcasting surplus or progressing a rescue.",
+      "html": "<button class=\"ds-btn-primary\">Broadcast surplus</button>",
+      "css": ".ds-btn-primary{background:var(--primary);color:var(--primary-foreground);border:1px solid transparent;border-radius:var(--radius-sm);padding:.5rem .75rem;font:500 .75rem/1.6 var(--font-sans-family);transition:background-color .2s,color .2s,box-shadow .2s}.ds-btn-primary:hover{background:color-mix(in oklch,var(--primary) 88%,var(--foreground))}.ds-btn-primary:focus-visible{outline:2px solid var(--ring);outline-offset:2px}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "A secondary action that keeps the paper surface visible.",
+      "html": "<button class=\"ds-btn-outline\">See the signal path</button>",
+      "css": ".ds-btn-outline{background:transparent;color:var(--foreground);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .75rem;font:500 .75rem/1.6 var(--font-sans-family);transition:background-color .2s,color .2s,border-color .2s}.ds-btn-outline:hover{background:var(--muted);border-color:var(--ring)}.ds-btn-outline:focus-visible{outline:2px solid var(--ring);outline-offset:2px}"
+    },
+    {
+      "name": "Paper Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "A quiet container for one decision, workflow, or readout.",
+      "html": "<article class=\"ds-card\"><h3>Rescue signal bridge</h3><p>One view from surplus to verified handover.</p></article>",
+      "css": ".ds-card{background:var(--card);color:var(--card-foreground);border:1px solid var(--border);border-radius:var(--radius-md);padding:1rem}.ds-card h3{margin:0;font:600 1.125rem/1.3 var(--font-display-family);letter-spacing:-.025em}.ds-card p{margin:.25rem 0 0;color:var(--muted-foreground);font:400 .75rem/1.6 var(--font-sans-family)}"
+    },
+    {
+      "name": "Field Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "A labeled shadcn field control with a calm paper surface and shared focus ring.",
+      "html": "<label class=\"ds-field\"><span>Pickup area</span><input placeholder=\"e.g. Connaught Place\" /></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:.375rem;color:var(--foreground);font:500 .75rem/1.4 var(--font-sans-family)}.ds-field input{background:var(--input);color:var(--foreground);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .75rem;font:400 .75rem/1.6 var(--font-sans-family);outline:none}.ds-field input::placeholder{color:var(--muted-foreground)}.ds-field input:focus-visible{border-color:var(--ring);box-shadow:0 0 0 3px color-mix(in oklch,var(--ring) 30%,transparent)}"
+    },
+    {
+      "name": "Status Chip",
+      "kind": "chip",
+      "refersTo": "status-chip",
+      "description": "A compact operational state for live, verified, attention, or role context.",
+      "html": "<span class=\"ds-chip\">Live</span>",
+      "css": ".ds-chip{display:inline-flex;align-items:center;gap:.375rem;width:max-content;background:color-mix(in oklch,var(--success) 12%,transparent);color:var(--success);border:1px solid color-mix(in oklch,var(--success) 30%,transparent);border-radius:999px;padding:.125rem .5rem;font:500 .625rem/1.4 var(--font-mono-family);letter-spacing:.12em;text-transform:uppercase}"
+    },
+    {
+      "name": "Floating Navigation",
+      "kind": "nav",
+      "refersTo": "navigation-shell",
+      "description": "The compact shell that keeps public routes and the broadcast action in reach.",
+      "html": "<nav class=\"ds-nav\"><strong>Food Rescue Network</strong><a href=\"#\">How it works</a><button>Report surplus</button></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:1rem;background:color-mix(in oklch,var(--card) 95%,transparent);color:var(--foreground);border:1px solid var(--border);border-radius:var(--radius-md);padding:.625rem 1rem;box-shadow:0 1px 3px color-mix(in oklch,var(--foreground) 12%,transparent);font:500 .75rem/1.6 var(--font-sans-family)}.ds-nav strong{margin-right:auto;font:600 .875rem/1.3 var(--font-display-family)}.ds-nav a{color:var(--muted-foreground);text-decoration:none}.ds-nav a:hover{color:var(--foreground)}.ds-nav button{background:var(--primary);color:var(--primary-foreground);border:0;border-radius:var(--radius-sm);padding:.375rem .625rem;font:500 .75rem/1.6 var(--font-sans-family)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The VU-Meter Bridge",
+    "overview": "Food Rescue Network treats surplus coordination as a live signal: food is reported, matched, dispatched, and verified across one readable chain. The interface uses a warm work-surface neutral as its desk, ink typography as the control-room readout, and a green signal that becomes amber or red only when attention is needed.\n\nThe system is operational rather than ornamental. Cards are quiet containers for decisions, mono labels provide telemetry, and the recurring meter motif gives realtime status a memorable visual language.",
+    "keyCharacteristics": ["Warm paper surfaces with grounded ink text.", "Green active signal, amber attention, red urgent state.", "Compact shadcn controls with Phosphor iconography.", "VU-meter telemetry as the signature visual, not decoration."],
+    "rules": [
+      { "name": "The Signal Rarity Rule", "body": "Green is a live operational signal, not a blanket decoration; reserve amber and red for their meaning.", "section": "colors" },
+      { "name": "The Token-Only Rule", "body": "Product UI never introduces page-level hex, RGB, or ad-hoc color utilities. Extend the global semantic vocabulary instead.", "section": "colors" },
+      { "name": "The Two-Register Rule", "body": "Use Jakarta for human decisions and explanations; use JetBrains Mono for operational state, never for long-form reading.", "section": "typography" },
+      { "name": "The Desk-Depth Rule", "body": "Use tonal layering first, a quiet border second, and a small shadow only when a surface needs separation from the workbench.", "section": "elevation" }
+    ],
+    "dos": ["Do use global semantic tokens for every product surface and state.", "Do compose forms from shadcn Field, FieldGroup, FieldError, and the appropriate control primitive.", "Do use Empty for zero states, Alert for errors and important callouts, Progress for measurable progress, and Badge for compact status.", "Do preserve keyboard focus, readable labels, reduced motion, and mobile stacking."],
+    "donts": ["Don't introduce gradients, glow-heavy effects, page-local palettes, or generic dark dashboard chrome.", "Don't use raw HTML controls where a shadcn primitive exists.", "Don't use Lucide, emoji, or mixed icon libraries; use Phosphor with the configured shadcn icon contract.", "Don't present illustrative impact numbers as verified operational facts.", "Don't use animation to communicate information that is not also available as text."]
+  }
+}

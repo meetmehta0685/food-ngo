@@ -4,35 +4,48 @@ import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowRight, Leaf, MapPin, Path, Timer } from "@phosphor-icons/react"
+import {
+  ArrowRight,
+  CheckCircle,
+  Clock,
+  ForkKnife,
+  Handshake,
+  MapPin,
+  Path,
+  ShieldCheck,
+} from "@phosphor-icons/react"
 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import { getRoleHomePath, type AppRole } from "@/lib/auth/roles"
 
 type IntroGatewayProps = {
-  signedInRole?: "DONOR" | "NGO" | null
+  signedInRole?: AppRole | null
   redirectDelayMs?: number
 }
 
 const introHighlights = [
   {
-    title: "Report",
-    description: "Donors share food details, pickup time, and pin-drop location in under a minute.",
+    title: "01. Report surplus",
+    description: "Donors enter food quantity, pickup time, and location coordinates in under 60 seconds.",
     imagePath: "/intro/food-donation.jpg",
-    imageAlt: "Volunteers stacking boxes for a food donation drive",
-    icon: Timer,
+    imageAlt: "Volunteers stacking food donation boxes",
+    icon: Clock,
   },
   {
-    title: "Match",
-    description: "The 3 nearest NGOs are notified instantly. First to accept gets assigned.",
+    title: "02. Match quickly",
+    description: "Nearby verified NGOs are alerted immediately so the first available team can accept the rescue.",
     imagePath: "/intro/ngo-match.jpg",
-    imageAlt: "Volunteers preparing food together in a community kitchen",
+    imageAlt: "Volunteers preparing food in a community kitchen",
     icon: MapPin,
   },
   {
-    title: "Deliver",
-    description: "Live tracking from pickup to handover. Both parties see every milestone.",
+    title: "03. Verify handoff",
+    description: "Live tracking and a 6-digit PIN keep every pickup and delivery accountable.",
     imagePath: "/intro/delivery-tracking.jpg",
-    imageAlt: "Delivery rider cycling with a food box for drop-off",
+    imageAlt: "Delivery driver transporting a food box for dropoff",
     icon: Path,
   },
 ]
@@ -40,11 +53,7 @@ const introHighlights = [
 export function IntroGateway({ signedInRole = null, redirectDelayMs = 1500 }: IntroGatewayProps) {
   const router = useRouter()
 
-  const signedInTarget = useMemo(() => {
-    if (signedInRole === "DONOR") return "/donor/requests"
-    if (signedInRole === "NGO") return "/ngo/inbox"
-    return null
-  }, [signedInRole])
+  const signedInTarget = useMemo(() => getRoleHomePath(signedInRole), [signedInRole])
 
   useEffect(() => {
     if (!signedInTarget) return
@@ -54,138 +63,130 @@ export function IntroGateway({ signedInRole = null, redirectDelayMs = 1500 }: In
       router.refresh()
     }, redirectDelayMs)
 
-    return () => {
-      window.clearTimeout(redirectTimer)
-    }
+    return () => window.clearTimeout(redirectTimer)
   }, [redirectDelayMs, router, signedInTarget])
 
   return (
-    <div className="relative isolate min-h-screen overflow-hidden">
-      {/* Grain texture overlay */}
-      <div className="grain-overlay pointer-events-none absolute inset-0 -z-10 opacity-60" />
-
-      {/* Warm gradient blobs */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-32 -left-32 h-[500px] w-[500px] rounded-full bg-primary/8 blur-[100px]" />
-        <div className="absolute top-1/3 -right-40 h-[400px] w-[400px] rounded-full bg-accent/10 blur-[100px]" />
-        <div className="absolute -bottom-40 left-1/4 h-[350px] w-[350px] rounded-full bg-warm/8 blur-[100px]" />
-      </div>
-
-      {/* Header */}
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 pt-6 sm:px-6 sm:pt-8 animate-fade-in">
-        <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Leaf weight="fill" className="h-4 w-4" />
-          </span>
-          <span className="font-serif text-lg tracking-tight">Food Rescue</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link href="/sign-in">
-            <Button variant="ghost" className="text-sm">
+    <div className="bg-background text-foreground min-h-screen">
+      <header className="border-border/70 bg-background/95 sticky top-0 z-20 border-b backdrop-blur">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+          <Link href="/home" className="flex min-w-0 items-center gap-3">
+            <span className="bg-primary text-primary-foreground flex size-10 shrink-0 items-center justify-center rounded-md">
+              <Handshake weight="fill" />
+            </span>
+            <span className="font-display truncate text-sm font-semibold tracking-tight sm:text-base">
+              Food Rescue Network
+            </span>
+          </Link>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" render={<Link href="/sign-in" />} nativeButton={false}>
               Sign in
             </Button>
-          </Link>
-          <Link href="/sign-up">
-            <Button className="text-sm">
-              Get started
-              <ArrowRight className="ml-1 h-3.5 w-3.5" />
+            <Button size="sm" render={<Link href="/donor/new" />} nativeButton={false}>
+              Report surplus
+              <ArrowRight data-icon="inline-end" />
             </Button>
-          </Link>
+          </div>
         </div>
       </header>
 
-      {/* Hero */}
-      <main className="mx-auto w-full max-w-6xl px-4 pb-16 pt-16 sm:px-6 sm:pt-24 lg:pt-28">
-        <div className="max-w-3xl animate-fade-up">
-          <p className="text-primary mb-4 font-mono text-xs font-medium uppercase tracking-[0.2em]">
-            Rescue / Route / Deliver
-          </p>
-          <h1 className="font-serif text-5xl leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl">
-            Surplus food,{" "}
-            <span className="text-primary">
-              rescued tonight.
-            </span>
-          </h1>
-          <p className="text-muted-foreground mt-6 max-w-xl text-base leading-relaxed sm:text-lg">
-            Connect leftover food from events, parties, and homes to verified NGOs
-            with live, transparent delivery tracking.
-          </p>
-
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link href="/home">
-              <Button size="lg" className="text-sm h-12 px-6">
-                Explore the platform
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/sign-up">
-              <Button size="lg" variant="outline" className="text-sm h-12 px-6">
-                Register as Donor or NGO
-              </Button>
-            </Link>
-          </div>
-
-          {signedInTarget ? (
-            <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 animate-fade-in">
-              <span className="h-2 w-2 rounded-full bg-primary animate-pulse-dot" />
-              <p className="text-sm">
-                Signed in as <span className="font-semibold">{signedInRole}</span> &mdash; redirecting to your dashboard
+      <main className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-4 py-12 sm:px-6 sm:py-16">
+        <section className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="flex flex-col items-start gap-6">
+            <Badge variant="outline" className="gap-2 font-mono text-[10px] uppercase tracking-widest">
+              <ShieldCheck data-icon="inline-start" weight="fill" />
+              Verified rescue network
+            </Badge>
+            <div className="flex flex-col gap-4">
+              <h1 className="font-display max-w-3xl text-4xl font-semibold leading-tight tracking-tight sm:text-6xl">
+                Turn surplus meals into a verified rescue signal.
+              </h1>
+              <p className="text-muted-foreground max-w-xl text-base leading-relaxed sm:text-lg">
+                Real-time matching between food donors, community kitchens, and volunteer dispatch couriers—so good food moves while it is still useful.
               </p>
             </div>
-          ) : null}
-        </div>
-
-        {/* Feature cards */}
-        <div className="mt-20 grid gap-4 sm:grid-cols-3">
-          {introHighlights.map((item, index) => (
-            <div
-              key={item.title}
-              className="animate-fade-up group relative overflow-hidden rounded-xl border border-border/60 bg-card/80 backdrop-blur-sm transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
-              style={{ animationDelay: `${(index + 1) * 150}ms` }}
-            >
-              <div className="p-5">
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <item.icon weight="duotone" className="h-5 w-5" />
-                  </span>
-                  <span className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-                    Step {String(index + 1).padStart(2, "0")}
-                  </span>
-                </div>
-                <h3 className="font-serif text-xl mb-1">{item.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{item.description}</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button size="lg" render={<Link href="/home" />} nativeButton={false}>
+                Explore the network
+                <ArrowRight data-icon="inline-end" />
+              </Button>
+              <Button size="lg" variant="outline" render={<Link href="/sign-up" />} nativeButton={false}>
+                Join as NGO or volunteer
+              </Button>
+            </div>
+            {signedInTarget ? (
+              <div className="border-success/30 bg-success/10 text-success flex items-center gap-2 rounded-md border px-3 py-2 text-xs font-medium">
+                <span className="bg-success size-2 animate-pulse rounded-full" />
+                <p>
+                  Signed in as <span className="font-mono font-semibold uppercase">{signedInRole}</span> — launching dashboard…
+                </p>
               </div>
-              <div className="border-t border-border/40 bg-muted/30">
+            ) : null}
+          </div>
+
+          <Card className="border-primary/20 bg-primary/5">
+            <CardHeader className="flex flex-row items-start justify-between gap-4">
+              <div className="flex flex-col gap-1">
+                <CardTitle className="font-display text-lg">Rescue bridge status</CardTitle>
+                <p className="text-muted-foreground text-xs">A single chain from report to handoff.</p>
+              </div>
+              <Badge variant="secondary" className="gap-1.5">
+                <CheckCircle data-icon="inline-start" weight="fill" />
+                Live
+              </Badge>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-5">
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  ["Donor", "Reported"],
+                  ["NGO", "Matched"],
+                  ["Courier", "Verified"],
+                ].map(([label, state]) => (
+                  <div key={label} className="bg-background flex flex-col gap-1 rounded-md border p-3">
+                    <span className="text-muted-foreground font-mono text-[10px] uppercase tracking-widest">{label}</span>
+                    <span className="text-sm font-medium">{state}</span>
+                  </div>
+                ))}
+              </div>
+              <Separator />
+              <div className="flex items-center gap-3">
+                <span className="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-md">
+                  <ForkKnife weight="fill" />
+                </span>
+                <div className="flex flex-1 flex-col gap-1">
+                  <span className="text-sm font-medium">Every meal gets a traceable next step</span>
+                  <span className="text-muted-foreground text-xs">Pickup windows, location, and handoff status stay visible to the right people.</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        <section className="grid gap-5 sm:grid-cols-3">
+          {introHighlights.map((item) => (
+            <Card key={item.title} className="overflow-hidden">
+              <div className="relative h-44">
                 <Image
                   src={item.imagePath}
                   alt={item.imageAlt}
-                  width={960}
-                  height={640}
-                  className="h-auto w-full opacity-90 transition-opacity group-hover:opacity-100"
-                  priority={index === 0}
+                  fill
+                  className="object-cover"
+                  priority={item.title.startsWith("01")}
                 />
               </div>
-            </div>
+              <CardContent className="flex flex-col gap-3 pt-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="bg-primary/10 text-primary flex size-9 items-center justify-center rounded-md">
+                    <item.icon weight="duotone" />
+                  </span>
+                  <span className="text-warning font-mono text-[10px] font-semibold uppercase tracking-widest">Signal path</span>
+                </div>
+                <h2 className="font-display text-lg font-semibold">{item.title}</h2>
+                <p className="text-muted-foreground text-xs leading-relaxed">{item.description}</p>
+              </CardContent>
+            </Card>
           ))}
-        </div>
-
-        {/* Stats strip */}
-        <div className="mt-16 flex flex-wrap items-center justify-center gap-8 sm:gap-16 animate-fade-up" style={{ animationDelay: "600ms" }}>
-          <div className="text-center">
-            <p className="font-serif text-3xl text-primary">Top 3</p>
-            <p className="text-muted-foreground text-xs mt-1">Nearest NGOs notified</p>
-          </div>
-          <div className="h-8 w-px bg-border hidden sm:block" />
-          <div className="text-center">
-            <p className="font-serif text-3xl text-primary">Live</p>
-            <p className="text-muted-foreground text-xs mt-1">Shared tracking updates</p>
-          </div>
-          <div className="h-8 w-px bg-border hidden sm:block" />
-          <div className="text-center">
-            <p className="font-serif text-3xl text-primary">Clear</p>
-            <p className="text-muted-foreground text-xs mt-1">Audit-ready timeline</p>
-          </div>
-        </div>
+        </section>
       </main>
     </div>
   )

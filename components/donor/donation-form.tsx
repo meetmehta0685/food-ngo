@@ -5,21 +5,44 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { MapPin } from "@phosphor-icons/react"
+import {
+  ArrowRight,
+  Clock,
+  Crosshair,
+  MapPin,
+  Package,
+  ShieldCheck,
+  Sparkle,
+  SpinnerGap,
+  ForkKnife,
+} from "@phosphor-icons/react"
 
 import { MapPicker } from "@/components/maps/map-picker"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { FieldError } from "@/components/ui/field"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 
 const schema = z.object({
-  foodType: z.string().trim().min(2),
-  quantity: z.string().trim().min(1),
+  foodType: z.string().trim().min(2, "Specify food type"),
+  quantity: z.string().trim().min(1, "Quantity details required"),
   servesCount: z.number().int().positive(),
-  address: z.string().trim().min(6),
-  pickupBy: z.string().min(1),
+  estimatedWeightKg: z.number().positive().max(1000),
+  address: z.string().trim().min(6, "Valid pickup address required"),
+  pickupBy: z.string().min(1, "Select pickup deadline"),
   notes: z.string().max(600).optional(),
 })
 
@@ -33,27 +56,35 @@ type GeocodeCandidate = {
 }
 
 type GeocodeResponse = {
-  result?: {
-    lat: number
-    lng: number
-    displayName: string
-  }
+  result?: { lat: number; lng: number; displayName: string }
   candidates?: GeocodeCandidate[]
-  error?: {
-    message?: string
-  }
+  error?: { message?: string }
 }
+
+const foodPresets = [
+  { label: "Prepared meals", type: "Cooked Meals (Hot/Cold)" },
+  { label: "Packaged goods", type: "Packaged & Canned Goods" },
+  { label: "Bakery and grains", type: "Bakery & Breads" },
+  { label: "Produce and dairy", type: "Fresh Produce & Dairy" },
+]
+
+const deadlinePresets = [
+  { label: "+2 hours · urgent", hours: 2 },
+  { label: "+4 hours · standard", hours: 4 },
+  { label: "+8 hours · evening", hours: 8 },
+]
 
 export function DonationForm() {
   const router = useRouter()
-  const [lat, setLat] = useState(40.7128)
-  const [lng, setLng] = useState(-74.006)
+  const [lat, setLat] = useState(19.076)
+  const [lng, setLng] = useState(72.8777)
   const [formError, setFormError] = useState<string | null>(null)
   const [geoLoading, setGeoLoading] = useState(false)
-  const [geoCandidates, setGeoCandidates] = useState<GeocodeCandidate[]>([])
+  const [currentLocationLoading, setCurrentLocationLoading] = useState(false)
   const [addressSuggestions, setAddressSuggestions] = useState<GeocodeCandidate[]>([])
   const [addressSuggestLoading, setAddressSuggestLoading] = useState(false)
   const [selectedLocationName, setSelectedLocationName] = useState<string | null>(null)
+  const [deadlinePreset, setDeadlinePreset] = useState<string | null>(null)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -61,6 +92,7 @@ export function DonationForm() {
       foodType: "",
       quantity: "",
       servesCount: 20,
+      estimatedWeightKg: 5,
       address: "",
       pickupBy: "",
       notes: "",
@@ -71,14 +103,7 @@ export function DonationForm() {
 
   useEffect(() => {
     const query = addressValue.trim()
-
-    if (query.length < 4) {
-      setAddressSuggestLoading(false)
-      setAddressSuggestions([])
-      return
-    }
-
-    if (selectedLocationName && query.toLowerCase() === selectedLocationName.toLowerCase()) {
+    if (query.length < 4 || (selectedLocationName && query.toLowerCase() === selectedLocationName.toLowerCase())) {
       setAddressSuggestLoading(false)
       setAddressSuggestions([])
       return
@@ -87,33 +112,26 @@ export function DonationForm() {
     const controller = new AbortController()
     const timer = window.setTimeout(async () => {
       setAddressSuggestLoading(true)
-
       try {
-        const response = await fetch(`/api/geocode?q=${encodeURIComponent(query)}`, {
+        const response = await fetch(`/api/geocode?mode=suggest&q=${encodeURIComponent(query)}`, {
           cache: "no-store",
           signal: controller.signal,
         })
-
         if (!response.ok) {
           setAddressSuggestions([])
           return
         }
-
         const payload = (await response.json()) as GeocodeResponse
         setAddressSuggestions((payload.candidates ?? []).slice(0, 5))
       } catch (error) {
-        if (controller.signal.aborted) {
-          return
-        }
-
-        console.error("address suggestion lookup error", error)
-        setAddressSuggestions([])
-      } finally {
         if (!controller.signal.aborted) {
-          setAddressSuggestLoading(false)
+          console.error("address suggestion lookup error", error)
+          setAddressSuggestions([])
         }
+      } finally {
+        if (!controller.signal.aborted) setAddressSuggestLoading(false)
       }
-    }, 350)
+    }, 450)
 
     return () => {
       controller.abort()
@@ -123,48 +141,75 @@ export function DonationForm() {
 
   const geocodeAddress = async () => {
     const address = form.getValues("address")
-
     if (!address.trim()) {
-      setFormError("Enter pickup address before geocoding")
+      setFormError("Enter a pickup address before looking up coordinates.")
       return
     }
 
     setFormError(null)
     setGeoLoading(true)
-    setGeoCandidates([])
     setSelectedLocationName(null)
 
     try {
-      const response = await fetch(`/api/geocode?q=${encodeURIComponent(address)}`, {
-        cache: "no-store",
-      })
-
+      const response = await fetch(`/api/geocode?q=${encodeURIComponent(address)}`, { cache: "no-store" })
       if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as
-          | { error?: { message?: string } }
-          | null
-
-        setFormError(payload?.error?.message ?? "Address lookup failed")
+        const payload = (await response.json().catch(() => null)) as { error?: { message?: string } } | null
+        setFormError(payload?.error?.message ?? "Address lookup failed.")
         return
       }
 
       const payload = (await response.json()) as GeocodeResponse
-
       if (!payload.result) {
-        setFormError("Address lookup failed")
+        setFormError("No coordinates were found for that address.")
         return
       }
 
       setLat(payload.result.lat)
       setLng(payload.result.lng)
       setSelectedLocationName(payload.result.displayName)
-      setGeoCandidates(payload.candidates ?? [])
       setAddressSuggestions(payload.candidates?.slice(0, 5) ?? [])
     } catch (error) {
       console.error("geocode donation address error", error)
-      setFormError("Address lookup failed")
+      setFormError("Address lookup failed. Try again or move the pin manually.")
     } finally {
       setGeoLoading(false)
+    }
+  }
+
+  const useCurrentLocation = async () => {
+    if (!navigator.geolocation) {
+      setFormError("Current location is not supported by this browser.")
+      return
+    }
+
+    setFormError(null)
+    setCurrentLocationLoading(true)
+    setAddressSuggestions([])
+
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 12000,
+          maximumAge: 30000,
+        })
+      })
+
+      const nextLat = position.coords.latitude
+      const nextLng = position.coords.longitude
+      setLat(nextLat)
+      setLng(nextLng)
+
+      const response = await fetch(`/api/geocode?mode=reverse&lat=${encodeURIComponent(nextLat)}&lng=${encodeURIComponent(nextLng)}`, { cache: "no-store" })
+      const payload = (await response.json().catch(() => null)) as GeocodeResponse | null
+      const displayName = payload?.result?.displayName ?? `Current location (${nextLat.toFixed(5)}, ${nextLng.toFixed(5)})`
+      form.setValue("address", displayName, { shouldDirty: true, shouldValidate: true })
+      setSelectedLocationName(displayName)
+    } catch (error) {
+      const code = typeof error === "object" && error !== null && "code" in error ? Number(error.code) : null
+      setFormError(code === 1 ? "Location access was denied. Allow access and try again." : code === 3 ? "Location lookup timed out. Try again or choose a pin manually." : "Could not get your current location. Try searching or moving the pin manually.")
+    } finally {
+      setCurrentLocationLoading(false)
     }
   }
 
@@ -175,36 +220,27 @@ export function DonationForm() {
   }
 
   const selectAddressSuggestion = (candidate: GeocodeCandidate) => {
-    form.setValue("address", candidate.displayName, {
-      shouldDirty: true,
-      shouldValidate: true,
-    })
+    form.setValue("address", candidate.displayName, { shouldDirty: true, shouldValidate: true })
     selectCandidateLocation(candidate)
     setAddressSuggestions([])
   }
 
+  const setHoursFromNow = (hours: number) => {
+    const date = new Date(Date.now() + hours * 60 * 60 * 1000)
+    form.setValue("pickupBy", date.toISOString().slice(0, 16), { shouldValidate: true, shouldDirty: true })
+  }
+
   const onSubmit = form.handleSubmit(async (values) => {
     setFormError(null)
-
     const response = await fetch("/api/donations", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...values,
-        servesCount: Number(values.servesCount),
-        lat,
-        lng,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...values, servesCount: Number(values.servesCount), estimatedWeightKg: Number(values.estimatedWeightKg), lat, lng }),
     })
 
     if (!response.ok) {
-      const payload = (await response.json().catch(() => null)) as
-        | { error?: { message?: string } }
-        | null
-
-      setFormError(payload?.error?.message ?? "Failed to create donation")
+      const payload = (await response.json().catch(() => null)) as { error?: { message?: string } } | null
+      setFormError(payload?.error?.message ?? "Failed to create donation.")
       return
     }
 
@@ -213,144 +249,189 @@ export function DonationForm() {
     router.refresh()
   })
 
+  const currentFoodType = form.watch("foodType")
+  const errors = form.formState.errors
+
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-      <div className="rounded-xl border border-border/60 bg-card/90 p-6 sm:p-8">
-        <h2 className="font-serif text-xl mb-1">Food details</h2>
-        <p className="text-muted-foreground text-sm mb-6">Share pickup details. Nearby NGOs will be notified instantly.</p>
-
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="foodType">Food type</Label>
-              <Input id="foodType" placeholder="Cooked meals, packed food..." {...form.register("foodType")} />
-              <FieldError errors={[form.formState.errors.foodType]} />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="quantity">Quantity</Label>
-              <Input id="quantity" placeholder="8 trays" {...form.register("quantity")} />
-              <FieldError errors={[form.formState.errors.quantity]} />
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="servesCount">Serves count</Label>
-              <Input
-                id="servesCount"
-                type="number"
-                min={1}
-                {...form.register("servesCount", { valueAsNumber: true })}
-              />
-              <FieldError errors={[form.formState.errors.servesCount]} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="pickupBy">Pickup by</Label>
-              <Input id="pickupBy" type="datetime-local" {...form.register("pickupBy")} />
-              <FieldError errors={[form.formState.errors.pickupBy]} />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="address">Pickup address</Label>
-            <Textarea id="address" rows={3} {...form.register("address")} />
-            <FieldError errors={[form.formState.errors.address]} />
-          </div>
-
-          {addressSuggestLoading ? (
-            <p className="text-muted-foreground text-xs">Searching address suggestions...</p>
-          ) : null}
-
-          {addressSuggestions.length > 0 ? (
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground">Address suggestions</p>
-              <div className="space-y-1.5">
-                {addressSuggestions.map((candidate) => (
-                  <button
-                    key={`${candidate.lat}:${candidate.lng}:${candidate.displayName}`}
-                    type="button"
-                    className="w-full rounded-lg border border-border/50 bg-background/60 px-3 py-2 text-left transition-all hover:border-primary/30 hover:bg-primary/5"
-                    onClick={() => selectAddressSuggestion(candidate)}
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]">
+      <Card className="border-primary/15">
+        <CardHeader className="gap-3 border-b pb-6">
+          <Badge variant="outline" className="w-fit gap-2 font-mono text-[10px] uppercase tracking-[0.12em]">
+            <Sparkle data-icon="inline-start" />
+            New rescue request
+          </Badge>
+          <CardTitle className="text-2xl tracking-[-0.03em]">Report available food.</CardTitle>
+          <CardDescription className="max-w-xl leading-6">Provide the portions, safe window, and pickup pin. Nearby verified NGOs are alerted automatically.</CardDescription>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <form onSubmit={onSubmit} className="flex flex-col gap-6" noValidate>
+            <FieldSet>
+              <FieldLegend variant="label">Start with the food</FieldLegend>
+              <FieldGroup>
+                <Field data-invalid={Boolean(errors.foodType) || undefined}>
+                  <FieldLabel>Food category</FieldLabel>
+                  <ToggleGroup
+                    value={currentFoodType ? [currentFoodType] : []}
+                    onValueChange={(value) => {
+                      if (value[0]) form.setValue("foodType", value[0], { shouldValidate: true, shouldDirty: true })
+                    }}
+                    aria-label="Food category"
+                    className="grid w-full grid-cols-2"
+                    variant="outline"
+                    spacing={0}
                   >
-                    <p className="line-clamp-2 text-xs">{candidate.displayName}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : null}
+                    {foodPresets.map((item) => (
+                      <ToggleGroupItem key={item.type} value={item.type} className="h-auto justify-start gap-2 px-3 py-3 text-left text-xs">
+                        <ForkKnife data-icon="inline-start" />
+                        <span>{item.label}</span>
+                      </ToggleGroupItem>
+                    ))}
+                  </ToggleGroup>
+                  <FieldError errors={[errors.foodType]} />
+                </Field>
+                <FieldGroup className="grid gap-4 sm:grid-cols-2">
+                  <Field data-invalid={Boolean(errors.foodType) || undefined}>
+                    <FieldLabel htmlFor="foodType">Food description</FieldLabel>
+                    <Input id="foodType" placeholder="e.g. paneer, rice, dal, salads" aria-invalid={Boolean(errors.foodType)} {...form.register("foodType")} />
+                    <FieldError errors={[errors.foodType]} />
+                  </Field>
+                  <Field data-invalid={Boolean(errors.quantity) || undefined}>
+                    <FieldLabel htmlFor="quantity">Quantity and packaging</FieldLabel>
+                    <Input id="quantity" placeholder="e.g. 5 thermal containers" aria-invalid={Boolean(errors.quantity)} {...form.register("quantity")} />
+                    <FieldError errors={[errors.quantity]} />
+                  </Field>
+                </FieldGroup>
+              </FieldGroup>
+            </FieldSet>
 
-          <div className="flex items-center gap-3">
-            <Button type="button" variant="outline" onClick={geocodeAddress} disabled={geoLoading}>
-              <MapPin className="mr-1.5 h-3.5 w-3.5" />
-              {geoLoading ? "Locating..." : "Locate on map"}
-            </Button>
-            <p className="text-muted-foreground font-mono text-[11px]">
-              {lat.toFixed(5)}, {lng.toFixed(5)}
-            </p>
-          </div>
-
-          {selectedLocationName ? (
-            <div className="rounded-lg border border-primary/15 bg-primary/5 px-4 py-3">
-              <p className="text-xs font-semibold text-primary">Selected location</p>
-              <p className="text-muted-foreground mt-1 text-xs">{selectedLocationName}</p>
-            </div>
-          ) : null}
-
-          {geoCandidates.length > 1 ? (
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground">Closest address matches</p>
-              <div className="space-y-1.5">
-                {geoCandidates.slice(0, 4).map((candidate) => (
-                  <div
-                    key={`${candidate.lat}:${candidate.lng}:${candidate.displayName}`}
-                    className="flex items-start justify-between gap-3 rounded-lg border border-border/50 bg-background/60 px-3 py-2"
-                  >
-                    <div className="min-w-0">
-                      <p className="line-clamp-2 text-xs">{candidate.displayName}</p>
-                      <p className="text-muted-foreground mt-1 font-mono text-[10px]">
-                        {(candidate.relevance * 100).toFixed(0)}% match
-                      </p>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => selectCandidateLocation(candidate)}
-                    >
-                      Use
-                    </Button>
+            <FieldSet>
+              <FieldLegend variant="label">Set the safe window</FieldLegend>
+              <FieldGroup>
+                <FieldGroup className="grid gap-4 sm:grid-cols-3">
+                  <Field data-invalid={Boolean(errors.servesCount) || undefined}>
+                    <FieldLabel htmlFor="servesCount">Portions</FieldLabel>
+                    <Input id="servesCount" type="number" min={1} aria-invalid={Boolean(errors.servesCount)} {...form.register("servesCount", { valueAsNumber: true })} />
+                    <FieldError errors={[errors.servesCount]} />
+                  </Field>
+                  <Field data-invalid={Boolean(errors.estimatedWeightKg) || undefined}>
+                    <FieldLabel htmlFor="estimatedWeightKg">Weight (kg)</FieldLabel>
+                    <Input id="estimatedWeightKg" type="number" min={0.1} max={1000} step={0.1} aria-invalid={Boolean(errors.estimatedWeightKg)} {...form.register("estimatedWeightKg", { valueAsNumber: true })} />
+                    <FieldError errors={[errors.estimatedWeightKg]} />
+                  </Field>
+                  <Field data-invalid={Boolean(errors.pickupBy) || undefined}>
+                    <FieldLabel htmlFor="pickupBy">Latest pickup</FieldLabel>
+                    <Input id="pickupBy" type="datetime-local" aria-invalid={Boolean(errors.pickupBy)} {...form.register("pickupBy")} />
+                    <FieldError errors={[errors.pickupBy]} />
+                  </Field>
+                </FieldGroup>
+                <Field>
+                  <div className="flex items-center justify-between gap-4">
+                    <FieldLabel>Deadline shortcut</FieldLabel>
+                    <span className="text-muted-foreground font-mono text-[10px]">Set from now</span>
                   </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
+                  <ToggleGroup
+                    value={deadlinePreset ? [deadlinePreset] : []}
+                    onValueChange={(value) => {
+                      const selected = deadlinePresets.find((preset) => String(preset.hours) === value[0])
+                      if (!selected) return
+                      setDeadlinePreset(String(selected.hours))
+                      setHoursFromNow(selected.hours)
+                    }}
+                    aria-label="Pickup deadline shortcut"
+                    className="flex flex-wrap"
+                    variant="outline"
+                  >
+                    {deadlinePresets.map((preset) => (
+                      <ToggleGroupItem key={preset.hours} value={String(preset.hours)} className="h-8 text-[10px]">
+                        <Clock data-icon="inline-start" />
+                        {preset.label}
+                      </ToggleGroupItem>
+                    ))}
+                  </ToggleGroup>
+                </Field>
+              </FieldGroup>
+            </FieldSet>
 
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea id="notes" rows={3} placeholder="Packaging, allergies, timing details" {...form.register("notes")} />
+            <FieldSet>
+              <FieldLegend variant="label">Place the pickup</FieldLegend>
+              <FieldGroup>
+                <Field data-invalid={Boolean(errors.address) || undefined}>
+                  <FieldLabel htmlFor="address"><MapPin data-icon="inline-start" />Street address and instructions</FieldLabel>
+                  <Textarea id="address" rows={3} placeholder="Building name, kitchen entrance, floor…" aria-invalid={Boolean(errors.address)} {...form.register("address")} />
+                  <FieldError errors={[errors.address]} />
+                </Field>
+                {addressSuggestLoading ? <FieldDescription>Searching nearby address matches…</FieldDescription> : null}
+                {addressSuggestions.length > 0 ? (
+                  <div className="flex flex-col gap-1" aria-label="Address suggestions">
+                    {addressSuggestions.map((candidate) => (
+                      <Button key={`${candidate.lat}:${candidate.lng}:${candidate.displayName}`} type="button" variant="ghost" className="h-auto justify-start whitespace-normal px-3 py-2 text-left text-xs" onClick={() => selectAddressSuggestion(candidate)}>
+                        <MapPin data-icon="inline-start" />
+                        <span>{candidate.displayName}</span>
+                      </Button>
+                    ))}
+                  </div>
+                ) : null}
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={geocodeAddress} disabled={geoLoading}>
+                    {geoLoading ? <SpinnerGap data-icon="inline-start" className="animate-spin" /> : <MapPin data-icon="inline-start" />}
+                    {geoLoading ? "Looking up…" : "Look up coordinates"}
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" onClick={useCurrentLocation} disabled={currentLocationLoading}>
+                    {currentLocationLoading ? <SpinnerGap data-icon="inline-start" className="animate-spin" /> : <Crosshair data-icon="inline-start" />}
+                    {currentLocationLoading ? "Detecting…" : "Use current GPS"}
+                  </Button>
+                  <Badge variant="outline" className="ml-auto font-mono text-[10px]">{lat.toFixed(4)}, {lng.toFixed(4)}</Badge>
+                </div>
+                {selectedLocationName ? (
+                  <Alert>
+                    <ShieldCheck />
+                    <AlertTitle>Pickup pin ready</AlertTitle>
+                    <AlertDescription>{selectedLocationName}</AlertDescription>
+                  </Alert>
+                ) : null}
+              </FieldGroup>
+            </FieldSet>
+
+            <Field>
+              <FieldLabel htmlFor="notes">Storage and handling notes <span className="text-muted-foreground font-normal">(optional)</span></FieldLabel>
+              <Textarea id="notes" rows={3} placeholder="Dietary information, refrigeration, loading access…" {...form.register("notes")} />
+            </Field>
+
+            {formError ? (
+              <Alert variant="destructive">
+                <Package />
+                <AlertTitle>Request could not be created</AlertTitle>
+                <AlertDescription>{formError}</AlertDescription>
+              </Alert>
+            ) : null}
+
+            <Button type="submit" disabled={form.formState.isSubmitting} className="w-full">
+              {form.formState.isSubmitting ? <SpinnerGap data-icon="inline-start" className="animate-spin" /> : <ArrowRight data-icon="inline-start" />}
+              {form.formState.isSubmitting ? "Broadcasting rescue offer…" : "Broadcast rescue offer"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card className="h-fit lg:sticky lg:top-24">
+        <CardHeader className="gap-2">
+          <CardTitle className="text-base">Verify the pickup pin</CardTitle>
+          <CardDescription>Drag the map pin to the exact location a volunteer should use.</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <div className="overflow-hidden rounded-lg border">
+            <MapPicker lat={lat} lng={lng} onChange={(nextLat, nextLng) => { setLat(nextLat); setLng(nextLng) }} />
           </div>
-
-          {formError ? <FieldError>{formError}</FieldError> : null}
-
-          <Button type="submit" disabled={form.formState.isSubmitting} className="w-full sm:w-auto h-11">
-            {form.formState.isSubmitting ? "Submitting..." : "Notify NGOs"}
-          </Button>
-        </form>
-      </div>
-
-      <div className="rounded-xl border border-border/60 bg-card/90 p-6 sm:p-8">
-        <h2 className="font-serif text-xl mb-1">Pickup pin</h2>
-        <p className="text-muted-foreground text-sm mb-4">Drag the marker to match the exact pickup point.</p>
-        <MapPicker
-          lat={lat}
-          lng={lng}
-          onChange={(nextLat, nextLng) => {
-            setLat(nextLat)
-            setLng(nextLng)
-          }}
-        />
-      </div>
+          <Separator />
+          <div className="flex flex-col gap-1 text-xs">
+            <p className="font-semibold">Location context</p>
+            <p className="text-muted-foreground leading-6">The assigned NGO and volunteer use this coordinate to navigate the final handoff.</p>
+          </div>
+        </CardContent>
+        <CardFooter className="border-t pt-4">
+          <span className="text-muted-foreground inline-flex items-center gap-2 font-mono text-[10px]"><ShieldCheck className="text-success" />Pin visible to assigned partners</span>
+        </CardFooter>
+      </Card>
     </div>
   )
 }

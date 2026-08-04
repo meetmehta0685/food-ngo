@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 type NotificationResponse = {
   unread: number
@@ -48,15 +49,22 @@ export function NotificationBell() {
   }, [])
 
   return (
-    <Link href="/notifications" className="relative">
-      <Button variant="ghost" size="icon" aria-label="Open notifications" className="rounded-lg hover:bg-primary/5">
-        <BellIcon weight={unread > 0 ? "fill" : "regular"} className="h-[18px] w-[18px]" />
+    <span className="relative inline-flex">
+      <Button
+        render={<Link href="/notifications" />}
+        nativeButton={false}
+        variant="ghost"
+        size="icon"
+        aria-label="Open notifications"
+        className="rounded-lg"
+      >
+        <BellIcon weight={unread > 0 ? "fill" : "regular"} />
       </Button>
       {unread > 0 ? (
-        <span className="absolute -top-0.5 -right-0.5 min-w-[18px] rounded-full bg-primary text-primary-foreground px-1 text-center font-mono text-[9px] font-bold leading-[18px] animate-[pulse-dot_2s_ease-in-out_infinite]">
+        <Badge className="motion-safe:animate-pulse absolute -right-1 -top-1 min-w-4 justify-center px-1 font-mono text-[0.625rem]">
           {unread > 9 ? "9+" : unread}
-        </span>
+        </Badge>
       ) : null}
-    </Link>
+    </span>
   )
 }

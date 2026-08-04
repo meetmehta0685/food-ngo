@@ -1,51 +1,83 @@
 "use client"
 
-import { useState } from "react"
-import { getSession, signIn } from "next-auth/react"
+import { useEffect, useState } from "react"
+import { getSession, signIn, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { Leaf } from "@phosphor-icons/react"
+import {
+  ArrowRight,
+  Buildings,
+  Envelope,
+  HandHeart,
+  Handshake,
+  LockKey,
+  ShieldCheck,
+  Sparkle,
+  SpinnerGap,
+  Truck,
+  WarningCircle,
+} from "@phosphor-icons/react"
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { FieldError } from "@/components/ui/field"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { getRoleHomePath } from "@/lib/auth/roles"
 
 const schema = z.object({
-  email: z.string().trim().email("Enter a valid email"),
+  email: z.string().trim().email("Enter a valid email address"),
   password: z.string().min(1, "Password is required"),
 })
 
 type FormValues = z.infer<typeof schema>
 
-export function SignInForm() {
+type SignInFormProps = {
+  resetExistingSession?: boolean
+}
+
+const roleSignals = [
+  { label: "Donor", icon: HandHeart },
+  { label: "NGO partner", icon: Buildings },
+  { label: "Volunteer", icon: Truck },
+]
+
+export function SignInForm({ resetExistingSession = false }: SignInFormProps) {
   const router = useRouter()
   const [formError, setFormError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [resettingSession, setResettingSession] = useState(resetExistingSession)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   })
 
-  const resolvePostLoginPath = async () => {
-    const session = await getSession()
+  useEffect(() => {
+    if (!resetExistingSession) return
 
-    if (session?.user?.role === "NGO") {
-      return "/ngo/inbox"
+    let active = true
+    const resetSession = async () => {
+      try {
+        await signOut({ redirect: false })
+      } catch {
+        if (active) setFormError("Your previous session could not be cleared. Try again.")
+      } finally {
+        if (active) {
+          setResettingSession(false)
+          router.refresh()
+        }
+      }
     }
 
-    if (session?.user?.role === "DONOR") {
-      return "/donor/requests"
+    void resetSession()
+    return () => {
+      active = false
     }
-
-    return null
-  }
+  }, [resetExistingSession, router])
 
   const onSubmit = form.handleSubmit(async (values) => {
     setFormError(null)
@@ -59,19 +91,16 @@ export function SignInForm() {
 
     if (!result || result.error) {
       setLoading(false)
-      setFormError(
-        result?.error === "CredentialsSignin"
-          ? "Invalid credentials"
-          : "Sign in is unavailable right now. Check database connectivity and try again.",
-      )
+      setFormError(result?.error === "CredentialsSignin" ? "Invalid email or password." : "Sign in is unavailable right now. Try again in a moment.")
       return
     }
 
-    const destination = await resolvePostLoginPath()
+    const session = await getSession()
+    const destination = getRoleHomePath(session?.user?.role)
     setLoading(false)
 
     if (!destination) {
-      setFormError("Signed in, but no user role was found in the session. Please try again.")
+      setFormError("Signed in, but no user role was found. Please try again.")
       return
     }
 
@@ -80,38 +109,76 @@ export function SignInForm() {
   })
 
   return (
-    <div className="mx-auto w-full max-w-md">
-      <div className="rounded-xl border border-border/60 bg-card/90 shadow-xl shadow-primary/3 p-6 sm:p-8">
-        <div className="flex items-center gap-2 mb-6">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Leaf weight="fill" className="h-4 w-4" />
-          </span>
-          <span className="font-serif text-lg">Food Rescue</span>
+    <Card className="w-full max-w-lg border-primary/15">
+      <CardHeader className="gap-4 border-b pb-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <span className="bg-primary text-primary-foreground flex size-10 shrink-0 items-center justify-center rounded-lg">
+              <Handshake weight="duotone" />
+            </span>
+            <div className="flex flex-col gap-1">
+              <CardTitle className="text-xl">Welcome back</CardTitle>
+              <CardDescription>Access your role workspace and continue the rescue chain.</CardDescription>
+            </div>
+          </div>
+          <Badge variant="outline" className="shrink-0 gap-1.5 font-mono text-[10px] uppercase">
+            <Sparkle data-icon="inline-start" />
+            Secure
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-6 pt-6">
+        <div className="grid grid-cols-3 gap-2 rounded-lg border bg-surface p-2" aria-label="Available workspaces">
+          {roleSignals.map((signal) => {
+            const Icon = signal.icon
+            return (
+              <div key={signal.label} className="text-muted-foreground flex flex-col items-center gap-1 rounded-md px-2 py-2 text-center text-[10px] font-medium">
+                <Icon className="text-primary" weight="duotone" />
+                <span>{signal.label}</span>
+              </div>
+            )
+          })}
         </div>
 
-        <h1 className="font-serif text-2xl mb-1">Welcome back</h1>
-        <p className="text-muted-foreground text-sm mb-6">Sign in to your donor or NGO dashboard.</p>
+        <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
+          <FieldGroup>
+            <Field data-invalid={Boolean(form.formState.errors.email) || undefined}>
+              <FieldLabel htmlFor="email">
+                <Envelope data-icon="inline-start" />
+                Email address
+              </FieldLabel>
+              <Input id="email" type="email" placeholder="you@organization.org" aria-invalid={Boolean(form.formState.errors.email)} {...form.register("email")} />
+              <FieldError errors={[form.formState.errors.email]} />
+            </Field>
+            <Field data-invalid={Boolean(form.formState.errors.password) || undefined}>
+              <FieldLabel htmlFor="password">
+                <LockKey data-icon="inline-start" />
+                Password
+              </FieldLabel>
+              <Input id="password" type="password" placeholder="Enter your password" aria-invalid={Boolean(form.formState.errors.password)} {...form.register("password")} />
+              <FieldError errors={[form.formState.errors.password]} />
+            </Field>
+          </FieldGroup>
 
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="you@example.com" {...form.register("email")} />
-            <FieldError errors={[form.formState.errors.email]} />
-          </div>
+          {formError ? (
+            <Alert variant="destructive">
+              <WarningCircle />
+              <AlertTitle>Sign in needs attention</AlertTitle>
+              <AlertDescription>{formError}</AlertDescription>
+            </Alert>
+          ) : null}
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" placeholder="Enter your password" {...form.register("password")} />
-            <FieldError errors={[form.formState.errors.password]} />
-          </div>
-
-          {formError ? <FieldError>{formError}</FieldError> : null}
-
-          <Button type="submit" disabled={loading} className="w-full h-11">
-            {loading ? "Signing in..." : "Sign in"}
+          <Button type="submit" disabled={loading || resettingSession} className="w-full">
+            {loading || resettingSession ? <SpinnerGap data-icon="inline-start" className="animate-spin" /> : <ArrowRight data-icon="inline-start" />}
+            {resettingSession ? "Preparing workspace…" : loading ? "Checking credentials…" : "Sign in"}
           </Button>
         </form>
-      </div>
-    </div>
+      </CardContent>
+      <CardFooter className="border-t pt-4">
+        <div className="text-muted-foreground flex w-full items-center gap-1.5 text-[0.625rem]">
+          <span className="inline-flex items-center gap-1.5"><ShieldCheck className="text-success" />Encrypted partner access</span>
+        </div>
+      </CardFooter>
+    </Card>
   )
 }

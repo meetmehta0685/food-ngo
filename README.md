@@ -4,14 +4,16 @@ Next.js App Router platform for routing leftover food from donors to nearby NGOs
 
 ## Implemented flows
 
-- Role-based auth (`DONOR`, `NGO`) with `next-auth` credentials provider
+- Role-based auth (`DONOR`, `NGO`, `VOLUNTEER`) with `next-auth` credentials provider
 - Donor donation reporting with map pin selection
 - Top-3 nearest NGO matching using distance-based ranking
 - NGO inbox accept/decline workflow (first acceptance wins)
 - End-to-end delivery lifecycle tracking
 - Shared donor/NGO tracking page with map + immutable timeline
-- In-app notifications + toast confirmations at `ACCEPTED` and `DELIVERED`
-- Server-Sent Events (SSE) for live updates
+- Volunteer dispatch with expiring offers and automatic reassignment
+- Donor pickup OTP, volunteer GPS ingestion, and geofence arrival automation
+- In-app notifications with per-user deletion
+- Ably realtime updates with database-backed retry delivery
 
 ## Tech stack
 
@@ -20,7 +22,8 @@ Next.js App Router platform for routing leftover food from donors to nearby NGOs
 - Prisma + Vercel Postgres (Neon)
 - Auth.js (`next-auth`)
 - shadcn/ui components (installed via `npx`)
-- React-Leaflet + OpenStreetMap
+- MapLibre GL + OpenStreetMap
+- Ably Pub/Sub
 - Toast-based confirmation UX (no external email provider)
 
 ## Environment
@@ -37,6 +40,8 @@ Required:
 - `POSTGRES_URL_NON_POOLING`
 - `NEXTAUTH_URL`
 - `NEXTAUTH_SECRET`
+- `PICKUP_OTP_SECRET`
+- `ABLY_API_KEY` (server-only; never use a `NEXT_PUBLIC_` prefix)
 
 Optional fallback:
 
@@ -50,6 +55,13 @@ Install dependencies and run:
 npm install
 npm run db:generate
 npm run dev
+```
+
+Run the background worker in a second terminal. It processes offer expiry,
+automatic reassignment, and committed Ably events:
+
+```bash
+npm run worker:rescue:dev
 ```
 
 ## Database migrations
@@ -73,6 +85,8 @@ npm run db:deploy
    - `DATABASE_URL` (optional fallback)
    - `NEXTAUTH_URL` (set this to your production domain)
    - `NEXTAUTH_SECRET`
+   - `PICKUP_OTP_SECRET`
+   - `ABLY_API_KEY`
 3. Keep the Vercel build command as default (`npm run build`).
 4. Run migrations before first production traffic:
 

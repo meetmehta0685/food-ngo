@@ -8,6 +8,10 @@ export const donationCreateSchema = z.object({
     .int()
     .positive()
     .max(10000),
+  estimatedWeightKg: z
+    .number({ message: "Estimated weight must be a number" })
+    .positive()
+    .max(1000),
   address: z.string().trim().min(6).max(255),
   lat: z.number().min(-90).max(90).optional(),
   lng: z.number().min(-180).max(180).optional(),

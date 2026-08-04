@@ -4,22 +4,21 @@ import { redirect } from "next/navigation"
 
 import { SignUpForm } from "@/components/auth/sign-up-form"
 import { authOptions } from "@/lib/auth/options"
+import { getRoleHomePath } from "@/lib/auth/roles"
 
 export default async function SignUpPage() {
   const session = await getServerSession(authOptions)
 
-  if (session?.user?.role === "DONOR") {
-    redirect("/donor/requests")
-  }
+  const destination = getRoleHomePath(session?.user?.role)
 
-  if (session?.user?.role === "NGO") {
-    redirect("/ngo/inbox")
+  if (destination) {
+    redirect(destination)
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] py-8">
+    <div className="flex min-h-[70vh] flex-col items-center justify-center gap-6 py-8">
       <SignUpForm />
-      <p className="text-muted-foreground text-center text-sm mt-6">
+      <p className="text-muted-foreground text-center text-sm">
         Already have an account?{" "}
         <Link href="/sign-in" className="text-primary hover:underline underline-offset-4 font-medium">
           Sign in

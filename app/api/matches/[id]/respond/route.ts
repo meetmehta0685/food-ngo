@@ -1,6 +1,7 @@
 import { ok, fail } from "@/lib/api/response"
 import { getApiUser } from "@/lib/auth/api"
 import { respondToMatchCandidate } from "@/lib/donations/service"
+import { dispatchNextVolunteerForDonation } from "@/lib/rescue/service"
 import { matchResponseSchema } from "@/lib/validations/match"
 
 type Context = {
@@ -33,7 +34,15 @@ export async function POST(request: Request, context: Context) {
       decision: parsed.data.decision,
     })
 
-    return ok({ result })
+    const dispatch =
+      parsed.data.decision === "ACCEPT"
+        ? await dispatchNextVolunteerForDonation({
+            donationId: result.donationId,
+            ngoUserId: user.id,
+          })
+        : null
+
+    return ok({ result, dispatch })
   } catch (error) {
     console.error("respond match error", error)
 

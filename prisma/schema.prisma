@@ -10,6 +10,48 @@ datasource db {
 enum Role {
   DONOR
   NGO
+  VOLUNTEER
+}
+
+enum VehicleType {
+  BICYCLE
+  MOTORCYCLE
+  CAR
+  VAN
+  OTHER
+}
+
+enum DeliveryMode {
+  NGO_SELF_PICKUP
+  VOLUNTEER_DELIVERY
+}
+
+enum RescueAssignmentStatus {
+  OFFERED
+  ACCEPTED
+  EN_ROUTE_TO_PICKUP
+  ARRIVED_AT_PICKUP
+  PICKED_UP
+  EN_ROUTE_TO_NGO
+  ARRIVED_AT_NGO
+  DELIVERED
+  REJECTED
+  EXPIRED
+  CANCELLED
+  FAILED
+}
+
+enum RescueEventType {
+  OFFER_CREATED
+  OFFER_ACCEPTED
+  OFFER_REJECTED
+  OFFER_EXPIRED
+  STATUS_CHANGED
+  LOCATION_RECEIVED
+  GEOFENCE_ENTERED
+  OTP_VERIFIED
+  DELIVERY_CONFIRMED
+  SYSTEM_NOTE
 }
 
 enum DonationStatus {
@@ -50,20 +92,24 @@ enum LiveEventType {
 }
 
 model User {
-  id                String                @id @default(cuid())
+  id                String                    @id @default(cuid())
   name              String
-  email             String                @unique
+  email             String                    @unique
   passwordHash      String
   role              Role
-  createdAt         DateTime              @default(now())
-  updatedAt         DateTime              @updatedAt
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
   ngoProfile        NgoProfile?
-  donorDonations    Donation[]            @relation("DonorDonations")
-  assignedDonations Donation[]            @relation("AssignedDonations")
+  volunteerProfile  VolunteerProfile?
+  donorDonations    Donation[]                @relation("DonorDonations")
+  assignedDonations Donation[]                @relation("AssignedDonations")
   statusEvents      DonationStatusEvent[]
   notifications     Notification[]
   liveEvents        LiveEvent[]
-  ngoCandidates     NgoMatchCandidate[]   @relation("NgoCandidates")
+  ngoCandidates     NgoMatchCandidate[]       @relation("NgoCandidates")
+  rescueAssignments RescueAssignment[]        @relation("VolunteerAssignments")
+  rescueEvents      RescueEvent[]             @relation("RescueEventActor")
+  locationSamples   VolunteerLocationSample[] @relation("VolunteerLocationSamples")
 }
 
 model NgoProfile {
@@ -84,31 +130,134 @@ model NgoProfile {
   @@index([isAvailable])
 }
 
-model Donation {
-  id            String         @id @default(cuid())
-  donorId       String
-  assignedNgoId String?
-  foodType      String
-  quantity      String
-  servesCount   Int
-  address       String
-  lat           Float
-  lng           Float
-  pickupBy      DateTime
-  notes         String?
-  status        DonationStatus @default(REPORTED)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+model VolunteerProfile {
+  id              String      @id @default(cuid())
+  userId          String      @unique
+  phone           String
+  vehicleType     VehicleType
+  capacityKg      Float
+  serviceRadiusKm Float       @default(10)
+  isAvailable     Boolean     @default(false)
+  currentLat      Float?
+  currentLng      Float?
+  lastLocationAt  DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 
-  donor         User                  @relation("DonorDonations", fields: [donorId], references: [id], onDelete: Cascade)
-  assignedNgo   User?                 @relation("AssignedDonations", fields: [assignedNgoId], references: [id])
-  statusEvents  DonationStatusEvent[]
-  candidates    NgoMatchCandidate[]
-  notifications Notification[]
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([isAvailable])
+  @@index([lastLocationAt])
+}
+
+model Donation {
+  id                String         @id @default(cuid())
+  donorId           String
+  assignedNgoId     String?
+  foodType          String
+  quantity          String
+  servesCount       Int
+  estimatedWeightKg Float?
+  address           String
+  lat               Float
+  lng               Float
+  pickupBy          DateTime
+  notes             String?
+  status            DonationStatus @default(REPORTED)
+  deliveryMode      DeliveryMode   @default(NGO_SELF_PICKUP)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  donor             User                  @relation("DonorDonations", fields: [donorId], references: [id], onDelete: Cascade)
+  assignedNgo       User?                 @relation("AssignedDonations", fields: [assignedNgoId], references: [id])
+  statusEvents      DonationStatusEvent[]
+  candidates        NgoMatchCandidate[]
+  notifications     Notification[]
+  rescueAssignments RescueAssignment[]
 
   @@index([donorId])
   @@index([assignedNgoId])
   @@index([status])
+}
+
+model RescueAssignment {
+  id                      String                 @id @default(cuid())
+  donationId              String
+  volunteerId             String
+  attemptNumber           Int
+  status                  RescueAssignmentStatus @default(OFFERED)
+  distanceKm              Float
+  offerExpiresAt          DateTime
+  pickupLat               Float
+  pickupLng               Float
+  ngoLat                  Float
+  ngoLng                  Float
+  respondedAt             DateTime?
+  acceptedAt              DateTime?
+  completedAt             DateTime?
+  pickupOtpHash           String?
+  pickupOtpExpiresAt      DateTime?
+  pickupOtpAttempts       Int                    @default(0)
+  pickupOtpGeneratedAt    DateTime?
+  pickupOtpVerifiedAt     DateTime?
+  lastLat                 Float?
+  lastLng                 Float?
+  lastAccuracy            Float?
+  lastLocationAt          DateTime?
+  lastLocationClientAt    DateTime?
+  pickupGeofenceEnteredAt DateTime?
+  ngoGeofenceEnteredAt    DateTime?
+  createdAt               DateTime               @default(now())
+  updatedAt               DateTime               @updatedAt
+
+  donation        Donation                  @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  volunteer       User                      @relation("VolunteerAssignments", fields: [volunteerId], references: [id], onDelete: Cascade)
+  events          RescueEvent[]
+  locationSamples VolunteerLocationSample[]
+
+  @@unique([donationId, attemptNumber])
+  @@index([volunteerId, status])
+  @@index([donationId, status])
+  @@index([status, offerExpiresAt])
+}
+
+model VolunteerLocationSample {
+  id              BigInt   @id @default(autoincrement())
+  assignmentId    String
+  volunteerId     String
+  lat             Float
+  lng             Float
+  accuracy        Float
+  speed           Float?
+  heading         Float?
+  clientTimestamp DateTime
+  createdAt       DateTime @default(now())
+
+  assignment RescueAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  volunteer  User             @relation("VolunteerLocationSamples", fields: [volunteerId], references: [id], onDelete: Cascade)
+
+  @@index([assignmentId, createdAt])
+  @@index([volunteerId, createdAt])
+}
+
+model RescueEvent {
+  id           String                  @id @default(cuid())
+  assignmentId String
+  actorUserId  String?
+  sequence     Int
+  type         RescueEventType
+  fromStatus   RescueAssignmentStatus?
+  toStatus     RescueAssignmentStatus?
+  note         String?
+  metadata     Json?
+  createdAt    DateTime                @default(now())
+
+  assignment RescueAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  actor      User?            @relation("RescueEventActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@unique([assignmentId, sequence])
+  @@index([assignmentId, createdAt])
+  @@index([actorUserId])
 }
 
 model DonationStatusEvent {
@@ -166,15 +315,20 @@ model Notification {
 }
 
 model LiveEvent {
-  id          BigInt        @id @default(autoincrement())
-  userId      String
-  eventType   LiveEventType
-  payloadJson Json
-  createdAt   DateTime      @default(now())
+  id                  BigInt        @id @default(autoincrement())
+  userId              String
+  eventType           LiveEventType
+  payloadJson         Json
+  ablyPublishedAt     DateTime?
+  ablyPublishAttempts Int           @default(0)
+  ablyNextAttemptAt   DateTime      @default(now())
+  ablyLastError       String?
+  createdAt           DateTime      @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, id])
+  @@index([ablyPublishedAt, ablyNextAttemptAt, id])
 }
 
 model ContactInquiry {

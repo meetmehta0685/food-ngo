@@ -5,7 +5,7 @@ export const registerSchema = z
     name: z.string().trim().min(2, "Name must be at least 2 characters"),
     email: z.string().trim().email("Enter a valid email"),
     password: z.string().min(8, "Password must be at least 8 characters"),
-    role: z.enum(["DONOR", "NGO"]),
+    role: z.enum(["DONOR", "NGO", "VOLUNTEER"]),
     ngoProfile: z
       .object({
         orgName: z.string().trim().min(2),
@@ -16,6 +16,14 @@ export const registerSchema = z
         serviceRadiusKm: z.number().min(1).max(100).default(15),
       })
       .optional(),
+    volunteerProfile: z
+      .object({
+        phone: z.string().trim().min(8, "Enter a valid phone number"),
+        vehicleType: z.enum(["BICYCLE", "MOTORCYCLE", "CAR", "VAN", "OTHER"]),
+        capacityKg: z.number().positive().max(1000),
+        serviceRadiusKm: z.number().min(1).max(100).default(10),
+      })
+      .optional(),
   })
   .superRefine((data, ctx) => {
     if (data.role === "NGO" && !data.ngoProfile) {
@@ -23,6 +31,14 @@ export const registerSchema = z
         code: z.ZodIssueCode.custom,
         path: ["ngoProfile"],
         message: "NGO details are required for NGO accounts",
+      })
+    }
+
+    if (data.role === "VOLUNTEER" && !data.volunteerProfile) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["volunteerProfile"],
+        message: "Volunteer details are required for volunteer accounts",
       })
     }
   })

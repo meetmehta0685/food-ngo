@@ -67,6 +67,18 @@ export async function POST(request: Request) {
         });
       }
 
+      if (parsed.data.role === "VOLUNTEER" && parsed.data.volunteerProfile) {
+        await tx.volunteerProfile.create({
+          data: {
+            userId: user.id,
+            phone: parsed.data.volunteerProfile.phone,
+            vehicleType: parsed.data.volunteerProfile.vehicleType,
+            capacityKg: parsed.data.volunteerProfile.capacityKg,
+            serviceRadiusKm: parsed.data.volunteerProfile.serviceRadiusKm,
+          },
+        });
+      }
+
       return user;
     });
 

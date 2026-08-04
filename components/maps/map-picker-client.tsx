@@ -1,18 +1,16 @@
 "use client";
 
-import "leaflet/dist/leaflet.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 
-import { useEffect } from "react";
-import type { DragEndEvent } from "leaflet";
+import { useEffect, useRef } from "react";
 import {
-  MapContainer,
+  Map as MapLibreMap,
   Marker,
-  TileLayer,
-  useMap,
-  useMapEvents,
-} from "react-leaflet";
+  NavigationControl,
+  type MapMouseEvent,
+} from "maplibre-gl";
 
-import { ensureLeafletIcons } from "@/components/maps/leaflet-config";
+import { createOpenStreetMapStyle } from "@/components/maps/maplibre-config";
 
 type MapPickerClientProps = {
   lat: number;
@@ -20,58 +18,70 @@ type MapPickerClientProps = {
   onChange: (lat: number, lng: number) => void;
 };
 
-function ClickHandler({
-  onChange,
-}: {
-  onChange: (lat: number, lng: number) => void;
-}) {
-  useMapEvents({
-    click: (event) => {
-      onChange(event.latlng.lat, event.latlng.lng);
-    },
-  });
-
-  return null;
-}
-
-function ViewportSync({ lat, lng }: { lat: number; lng: number }) {
-  const map = useMap();
+export function MapPickerClient({ lat, lng, onChange }: MapPickerClientProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<MapLibreMap | null>(null);
+  const markerRef = useRef<Marker | null>(null);
+  const onChangeRef = useRef(onChange);
+  const initialPositionRef = useRef({ lat, lng });
 
   useEffect(() => {
-    map.setView([lat, lng], map.getZoom(), { animate: true });
-  }, [lat, lng, map]);
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
-  return null;
-}
+  useEffect(() => {
+    if (!containerRef.current) {
+      return;
+    }
 
-export function MapPickerClient({ lat, lng, onChange }: MapPickerClientProps) {
-  ensureLeafletIcons();
+    const initialPosition = initialPositionRef.current;
+    const map = new MapLibreMap({
+      container: containerRef.current,
+      center: [initialPosition.lng, initialPosition.lat],
+      zoom: 13,
+      style: createOpenStreetMapStyle(),
+    });
+    const marker = new Marker({ color: "var(--primary)", draggable: true })
+      .setLngLat([initialPosition.lng, initialPosition.lat])
+      .addTo(map);
 
-  const position: [number, number] = [lat, lng];
+    map.addControl(new NavigationControl({ showCompass: false }), "top-right");
+
+    const handleClick = (event: MapMouseEvent) => {
+      onChangeRef.current(event.lngLat.lat, event.lngLat.lng);
+    };
+    const handleDragEnd = () => {
+      const next = marker.getLngLat();
+      onChangeRef.current(next.lat, next.lng);
+    };
+
+    map.on("click", handleClick);
+    marker.on("dragend", handleDragEnd);
+    mapRef.current = map;
+    markerRef.current = marker;
+
+    return () => {
+      marker.off("dragend", handleDragEnd);
+      map.off("click", handleClick);
+      marker.remove();
+      map.remove();
+      markerRef.current = null;
+      mapRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    markerRef.current?.setLngLat([lng, lat]);
+    mapRef.current?.easeTo({
+      center: [lng, lat],
+      duration: 500,
+    });
+  }, [lat, lng]);
 
   return (
-    <MapContainer
-      center={position}
-      zoom={13}
+    <div
+      ref={containerRef}
       className="h-80 w-full rounded-lg border"
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <ViewportSync lat={lat} lng={lng} />
-      <ClickHandler onChange={onChange} />
-      <Marker
-        position={position}
-        draggable
-        eventHandlers={{
-          dragend: (event: DragEndEvent) => {
-            const marker = event.target;
-            const next = marker.getLatLng();
-            onChange(next.lat, next.lng);
-          },
-        }}
-      />
-    </MapContainer>
+    />
   );
 }

@@ -19,7 +19,7 @@ import type { DonationCreateInput, DonationStatusInput } from "@/lib/validations
 
 type Tx = Prisma.TransactionClient
 
-async function createStatusEvent(
+export async function createStatusEvent(
   tx: Tx,
   input: {
     donationId: string
@@ -84,6 +84,7 @@ export async function createDonationForDonor(
         foodType: payload.foodType,
         quantity: payload.quantity,
         servesCount: payload.servesCount,
+        estimatedWeightKg: payload.estimatedWeightKg,
         address: payload.address,
         lat,
         lng,
@@ -171,17 +172,6 @@ export async function createDonationForDonor(
       tx,
     )
 
-    await createInAppNotification(
-      {
-        userId: donorId,
-        donationId: donation.id,
-        type: "DONATION_CREATED",
-        title: "Donation request submitted",
-        body: "Top nearby NGOs were notified. Waiting for acceptance.",
-      },
-      tx,
-    )
-
     return {
       donationId: donation.id,
       candidates: candidates.length,
@@ -222,6 +212,10 @@ export async function listDonationsByRole(userId: string, role: Role) {
       },
       orderBy: { createdAt: "desc" },
     })
+  }
+
+  if (role === "VOLUNTEER") {
+    return []
   }
 
   return db.donation.findMany({
@@ -308,6 +302,10 @@ export async function getDonationForUser(
     if (!hasCandidate && !isAssigned) {
       return null
     }
+  }
+
+  if (role === "VOLUNTEER") {
+    return null
   }
 
   return donation
@@ -518,13 +516,6 @@ export async function respondToMatchCandidate(input: {
     if (!acceptedResult.donor) {
       throw new Error("DONATION_ALREADY_ASSIGNED")
     }
-
-    await sendStatusMilestoneNotifications({
-      donationId: acceptedResult.donationId,
-      donor: acceptedResult.donor,
-      ngo: acceptedResult.ngo ?? null,
-      status: "ACCEPTED",
-    })
 
     return {
       donationId: acceptedResult.donationId,

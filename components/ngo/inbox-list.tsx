@@ -1,160 +1,127 @@
-"use client";
+"use client"
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { MapPin, Package, User } from "@phosphor-icons/react";
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { Check, Clock, MapPin, Package, SpinnerGap, User, WarningCircle, X } from "@phosphor-icons/react"
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { formatAppTime } from "@/lib/format-date"
 
-type InboxCandidate = {
-  id: string;
-  distanceKm: number;
-  rank: number;
+export type InboxCandidate = {
+  id: string
+  distanceKm: number
+  rank: number
   donation: {
-    id: string;
-    foodType: string;
-    quantity: string;
-    servesCount: number;
-    address: string;
-    pickupBy: string;
-    donor: {
-      name: string;
-    };
-  };
-};
+    id: string
+    foodType: string
+    quantity: string
+    servesCount: number
+    address: string
+    pickupBy: string
+    donor: { name: string }
+  }
+}
+
+const foodThumbnails = [
+  "/intro/food-donation.jpg",
+  "/intro/ngo-match.jpg",
+  "/intro/delivery-tracking.jpg",
+]
 
 export function NgoInboxList({ candidates }: { candidates: InboxCandidate[] }) {
-  const router = useRouter();
-  const [pendingId, setPendingId] = useState<string | null>(null);
+  const router = useRouter()
+  const [pendingId, setPendingId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
-  const respond = async (
-    candidateId: string,
-    decision: "ACCEPT" | "DECLINE",
-  ) => {
-    setPendingId(candidateId);
+  const respond = async (candidateId: string, decision: "ACCEPT" | "DECLINE") => {
+    setPendingId(candidateId)
+    setError(null)
 
-    const response = await fetch(`/api/matches/${candidateId}/respond`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ decision }),
-    });
+    try {
+      const response = await fetch(`/api/matches/${candidateId}/respond`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ decision }),
+      })
 
-    setPendingId(null);
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as { error?: { message?: string } } | null
+        throw new Error(payload?.error?.message ?? "Could not update this rescue alert.")
+      }
 
-    if (!response.ok) {
-      router.refresh();
-      return;
+      const payload = (await response.json()) as { result: { donationId: string } }
+      if (decision === "ACCEPT") {
+        router.push(`/ngo/deliveries/${payload.result.donationId}`)
+      } else {
+        router.refresh()
+      }
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : "Could not update this rescue alert.")
+    } finally {
+      setPendingId(null)
     }
-
-    const payload = (await response.json()) as {
-      result: {
-        donationId: string;
-      };
-    };
-
-    if (decision === "ACCEPT") {
-      router.push(`/ngo/deliveries/${payload.result.donationId}`);
-      return;
-    }
-
-    router.refresh();
-  };
+  }
 
   if (candidates.length === 0) {
     return (
-      <div className="rounded-xl border border-border/60 bg-card/90 p-8 sm:p-12 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted mb-4">
-          <Package weight="duotone" className="h-6 w-6 text-muted-foreground" />
+      <div className="flex flex-col gap-4">
+        <div className="bg-surface rounded-lg border border-dashed p-8 text-center">
+          <span className="bg-primary/10 text-primary mx-auto mb-4 flex size-11 items-center justify-center rounded-md"><Package weight="duotone" /></span>
+          <h2 className="text-base font-semibold">No pending rescue alerts</h2>
+          <p className="text-muted-foreground mx-auto mt-1 max-w-md text-xs leading-6">Nearby donor broadcasts will appear here sorted by urgency and distance.</p>
         </div>
-        <h2 className="font-serif text-xl mb-1">No pending pickups</h2>
-        <p className="text-muted-foreground text-sm">
-          New nearby requests will appear here automatically.
-        </p>
       </div>
-    );
+    )
   }
 
   return (
-    <div className="grid gap-4">
-      {candidates.map((candidate) => (
-        <div
-          key={candidate.id}
-          className="rounded-xl border border-border/60 bg-card/90 overflow-hidden transition-all hover:border-primary/20 hover:shadow-md hover:shadow-primary/3"
-        >
-          <div className="p-5 sm:p-6">
-            <div className="flex items-start justify-between gap-3 mb-4">
-              <div>
-                <h3 className="font-serif text-lg">
-                  {candidate.donation.foodType}
-                </h3>
-                <p className="text-muted-foreground text-sm mt-0.5">
-                  {candidate.distanceKm} km away
-                </p>
-              </div>
-              <Badge
-                variant="outline"
-                className="border-primary/30 text-primary font-mono text-[10px] uppercase tracking-widest"
-              >
-                #{candidate.rank} nearby
-              </Badge>
-            </div>
+    <div className="flex flex-col gap-3">
+      {error ? <Alert variant="destructive"><WarningCircle /><AlertTitle>Alert update failed</AlertTitle><AlertDescription>{error}</AlertDescription></Alert> : null}
+      {candidates.map((candidate, index) => {
+        const isUrgent = candidate.rank === 1 || candidate.distanceKm < 2
+        const isHighPriority = candidate.rank === 2 || candidate.distanceKm < 3.5
+        const urgencyLabel = isUrgent ? "Urgent" : isHighPriority ? "High priority" : "Standard"
+        const urgencyVariant = isUrgent ? "destructive" : isHighPriority ? "secondary" : "outline"
+        const isPending = pendingId === candidate.id
 
-            <div className="grid gap-2 text-sm mb-5">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <User weight="duotone" className="h-3.5 w-3.5 flex-shrink-0" />
-                <span>{candidate.donation.donor.name}</span>
+        return (
+          <Card key={candidate.id} className="overflow-hidden transition-colors hover:border-primary/35">
+            <CardHeader className="gap-3 pb-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <Badge variant={urgencyVariant} className="gap-1.5 font-mono text-[10px] uppercase"><Clock data-icon="inline-start" />{urgencyLabel} · {candidate.distanceKm.toFixed(1)} km</Badge>
+                <span className="text-muted-foreground font-mono text-[10px]">Pickup by {formatAppTime(candidate.donation.pickupBy)}</span>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Package
-                  weight="duotone"
-                  className="h-3.5 w-3.5 flex-shrink-0"
-                />
-                <span>
-                  {candidate.donation.quantity} (
-                  {candidate.donation.servesCount} serves)
-                </span>
+              <div className="flex items-start gap-3">
+                <div className="relative size-12 shrink-0 overflow-hidden rounded-md border">
+                  <Image src={foodThumbnails[index % foodThumbnails.length]} alt="Food rescue preview" fill className="object-cover" sizes="48px" />
+                </div>
+                <div className="flex min-w-0 flex-col gap-1">
+                  <CardTitle className="truncate text-base">{candidate.donation.foodType}</CardTitle>
+                  <CardDescription className="truncate">{candidate.donation.quantity} · {candidate.donation.servesCount} meals</CardDescription>
+                </div>
               </div>
-              <div className="flex items-start gap-2 text-muted-foreground">
-                <MapPin
-                  weight="duotone"
-                  className="h-3.5 w-3.5 flex-shrink-0 mt-0.5"
-                />
-                <span className="line-clamp-2">
-                  {candidate.donation.address}
-                </span>
-              </div>
-            </div>
-
-            <p className="text-muted-foreground text-xs font-mono mb-4">
-              Pickup by {new Date(candidate.donation.pickupBy).toLocaleString()}
-            </p>
-
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => {
-                  void respond(candidate.id, "ACCEPT");
-                }}
-                disabled={pendingId === candidate.id}
-                className="h-10"
-              >
-                Accept pickup
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  void respond(candidate.id, "DECLINE");
-                }}
-                disabled={pendingId === candidate.id}
-              >
+            </CardHeader>
+            <CardContent className="flex flex-col gap-2 pt-0 text-xs">
+              <span className="text-muted-foreground inline-flex items-start gap-2"><MapPin className="text-primary mt-0.5 shrink-0" /><span className="line-clamp-2">{candidate.donation.address}</span></span>
+              <span className="text-muted-foreground inline-flex items-center gap-2"><User className="text-primary shrink-0" />Donor: <strong className="text-foreground">{candidate.donation.donor.name}</strong></span>
+            </CardContent>
+            <CardFooter className="flex gap-2 border-t pt-4">
+              <Button variant="outline" size="sm" className="flex-1" onClick={() => { void respond(candidate.id, "DECLINE") }} disabled={isPending}>
+                {isPending ? <SpinnerGap data-icon="inline-start" className="animate-spin" /> : <X data-icon="inline-start" />}
                 Decline
               </Button>
-            </div>
-          </div>
-        </div>
-      ))}
+              <Button size="sm" className="flex-1" onClick={() => { void respond(candidate.id, "ACCEPT") }} disabled={isPending}>
+                {isPending ? <SpinnerGap data-icon="inline-start" className="animate-spin" /> : <Check data-icon="inline-start" />}
+                Accept rescue
+              </Button>
+            </CardFooter>
+          </Card>
+        )
+      })}
     </div>
-  );
+  )
 }

@@ -8,6 +8,31 @@ type GeocodeHit = {
   name?: string
 }
 
+type PhotonFeature = {
+  geometry?: {
+    coordinates?: [number, number]
+  }
+  properties?: {
+    name?: string
+    housenumber?: string
+    street?: string
+    locality?: string
+    district?: string
+    city?: string
+    county?: string
+    state?: string
+    postcode?: string
+    country?: string
+    countrycode?: string
+    osm_key?: string
+    osm_value?: string
+  }
+}
+
+type PhotonResponse = {
+  features?: PhotonFeature[]
+}
+
 export type GeocodeCandidate = {
   lat: number
   lng: number
@@ -20,8 +45,10 @@ export type GeocodeCandidate = {
 }
 
 const NOMINATIM_ENDPOINT = "https://nominatim.openstreetmap.org/search"
+const PHOTON_ENDPOINT = "https://photon.komoot.io"
 const WIKIDATA_ENDPOINT = "https://www.wikidata.org/w/api.php"
 const WIKIDATA_FALLBACK_THRESHOLD = 0.52
+const INDIA_BOUNDS = "68.1766,6.7471,97.4026,35.6745"
 
 type WikidataSearchItem = {
   id: string
@@ -79,6 +106,24 @@ function getTokenOverlapScore(source: string, target: string) {
   }
 
   const overlapCount = sourceTokens.filter((token) => targetTokens.includes(token)).length
+
+  return overlapCount / sourceTokens.length
+}
+
+function getAutocompleteScore(source: string, target: string) {
+  const sourceTokens = tokenize(source)
+  const targetTokens = tokenize(target)
+
+  if (sourceTokens.length === 0 || targetTokens.length === 0) {
+    return 0
+  }
+
+  const overlapCount = sourceTokens.filter((sourceToken) =>
+    targetTokens.some(
+      (targetToken) =>
+        targetToken.startsWith(sourceToken) || sourceToken.startsWith(targetToken),
+    ),
+  ).length
 
   return overlapCount / sourceTokens.length
 }
@@ -192,6 +237,146 @@ function dedupeAndSortCandidates(candidates: GeocodeCandidate[]) {
   deduped.sort((a, b) => b.relevance - a.relevance || b.importance - a.importance)
 
   return deduped
+}
+
+function formatPhotonAddress(properties: NonNullable<PhotonFeature["properties"]>) {
+  const streetAddress = [
+    properties.housenumber,
+    properties.street,
+  ]
+    .filter(Boolean)
+    .join(" ")
+
+  return Array.from(
+    new Set(
+      [
+        properties.name,
+        streetAddress,
+        properties.locality,
+        properties.district,
+        properties.city,
+        properties.county,
+        properties.state,
+        properties.postcode,
+        properties.country,
+      ].filter((part): part is string => Boolean(part?.trim())),
+    ),
+  ).join(", ")
+}
+
+export async function searchAddressSuggestions(address: string) {
+  const query = address.trim()
+
+  if (query.length < 3) {
+    return [] as GeocodeCandidate[]
+  }
+
+  const params = new URLSearchParams({
+    q: query,
+    limit: "6",
+    lang: "en",
+    bbox: INDIA_BOUNDS,
+  })
+
+  const response = await fetch(`${PHOTON_ENDPOINT}/api/?${params.toString()}`, {
+    headers: {
+      "User-Agent": "food-ngo-platform/1.0",
+      Referer: process.env.NEXTAUTH_URL ?? "http://localhost:3000",
+      "Accept-Language": "en",
+    },
+    cache: "no-store",
+  })
+
+  if (!response.ok) {
+    return [] as GeocodeCandidate[]
+  }
+
+  const payload = (await response.json()) as PhotonResponse
+  const candidates: GeocodeCandidate[] = []
+
+  for (const feature of payload.features ?? []) {
+    const coordinates = feature.geometry?.coordinates
+    const properties = feature.properties
+
+    if (!coordinates || !properties) {
+      continue
+    }
+
+    if (properties.countrycode?.toUpperCase() !== "IN") {
+      continue
+    }
+
+    const [lng, lat] = coordinates
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+      continue
+    }
+
+    const displayName = formatPhotonAddress(properties)
+
+    if (!displayName) {
+      continue
+    }
+
+    candidates.push({
+      lat,
+      lng,
+      displayName,
+      sourceQuery: query,
+      relevance: getAutocompleteScore(query, displayName),
+      importance: 0,
+      category: properties.osm_key,
+      kind: properties.osm_value,
+    })
+  }
+
+  return dedupeAndSortCandidates(candidates).slice(0, 6)
+}
+
+export async function reverseGeocodeLocation(lat: number, lng: number) {
+  const params = new URLSearchParams({
+    lat: String(lat),
+    lon: String(lng),
+    lang: "en",
+  })
+
+  const response = await fetch(`${PHOTON_ENDPOINT}/reverse?${params.toString()}`, {
+    headers: {
+      "User-Agent": "food-ngo-platform/1.0",
+      Referer: process.env.NEXTAUTH_URL ?? "http://localhost:3000",
+      "Accept-Language": "en",
+    },
+    cache: "no-store",
+  })
+
+  if (!response.ok) {
+    return null
+  }
+
+  const payload = (await response.json()) as PhotonResponse
+  const feature = payload.features?.[0]
+  const properties = feature?.properties
+
+  if (!properties) {
+    return null
+  }
+
+  const displayName = formatPhotonAddress(properties)
+
+  if (!displayName) {
+    return null
+  }
+
+  return {
+    lat,
+    lng,
+    displayName,
+    sourceQuery: `${lat},${lng}`,
+    relevance: 1,
+    importance: 0,
+    category: properties.osm_key,
+    kind: properties.osm_value,
+  } satisfies GeocodeCandidate
 }
 
 async function fetchCandidatesForQuery(query: string) {

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
 import { authOptions } from "@/lib/auth/options";
+import { getRoleHomePath } from "@/lib/auth/roles";
 
 type NgoLayoutProps = {
   children: ReactNode;
@@ -16,7 +17,7 @@ export default async function NgoLayout({ children }: NgoLayoutProps) {
   }
 
   if (session.user.role !== "NGO") {
-    redirect("/donor/requests");
+    redirect(getRoleHomePath(session.user.role) ?? "/home");
   }
 
   return <>{children}</>;

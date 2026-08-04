@@ -1,18 +1,17 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
+import { getRoleHomePath } from "@/lib/auth/roles";
+
 export default withAuth(
   function middleware(request) {
     const token = request.nextauth.token;
     const { pathname } = request.nextUrl;
 
-    if (token && (pathname === "/sign-in" || pathname === "/sign-up")) {
-      const target =
-        token.role === "NGO"
-          ? "/ngo/inbox"
-          : token.role === "DONOR"
-            ? "/donor/requests"
-            : "/home";
+    if (token && pathname === "/sign-up") {
+      const target = getRoleHomePath(
+        token.role as "DONOR" | "NGO" | "VOLUNTEER" | undefined,
+      ) ?? "/home";
       return NextResponse.redirect(new URL(target, request.url));
     }
 
@@ -26,6 +25,7 @@ export default withAuth(
         if (
           pathname.startsWith("/donor") ||
           pathname.startsWith("/ngo") ||
+          pathname.startsWith("/volunteer") ||
           pathname.startsWith("/track") ||
           pathname.startsWith("/notifications")
         ) {
@@ -42,6 +42,7 @@ export const config = {
   matcher: [
     "/donor/:path*",
     "/ngo/:path*",
+    "/volunteer/:path*",
     "/track/:path*",
     "/notifications",
     "/sign-in",
