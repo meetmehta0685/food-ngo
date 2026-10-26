@@ -37,12 +37,19 @@ export function VolunteerLocationTracker({
     })
     const channel = realtime.channels.get(`rescue:${assignmentId}`)
 
-    void channel.presence
-      .enter({
-        role: "VOLUNTEER",
-        assignmentId,
-        rescueStatus: assignmentStatus,
-      })
+    // presence.enter() on an unattached channel starts an attach that ably-js
+    // never handles, so closing mid-attach throws an uncaught "Connection closed".
+    void channel
+      .attach()
+      .then(() =>
+        active
+          ? channel.presence.enter({
+              role: "VOLUNTEER",
+              assignmentId,
+              rescueStatus: assignmentStatus,
+            })
+          : undefined,
+      )
       .catch((presenceError) => {
         if (active && !isExpectedAblyClosure(presenceError)) {
           console.error("Volunteer presence connection failed", presenceError)
@@ -51,11 +58,6 @@ export function VolunteerLocationTracker({
 
     return () => {
       active = false
-      void channel.presence.leave().catch((presenceError) => {
-        if (!isExpectedAblyClosure(presenceError)) {
-          console.error("Volunteer presence cleanup failed", presenceError)
-        }
-      })
       realtime.close()
     }
   }, [assignmentId, assignmentStatus])
