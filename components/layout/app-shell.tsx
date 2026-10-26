@@ -40,18 +40,27 @@ export function AppShell({ children, user }: AppShellProps) {
     return <div className="min-h-screen bg-background">{children}</div>;
   }
 
+  const isLandingRoute = pathname === "/home";
+
   return (
     <div className="bg-background flex min-h-screen flex-col">
       <div className="flex-1">
         <TopNav
           user={user}
-          hideRoleLinks={pathname === "/home"}
-          forcePublicAuthCtas={pathname === "/home"}
+          hideRoleLinks={isLandingRoute}
+          forcePublicAuthCtas={isLandingRoute}
+          tone={isLandingRoute ? "threshold" : "sheet"}
         />
         {user && !isIntroRoute ? (
           <LiveEventListener userId={user.id} />
         ) : null}
-        <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
+        <main
+          className={
+            isLandingRoute
+              ? "w-full"
+              : "mx-auto w-full max-w-6xl px-4 pb-16 pt-8 sm:px-8 sm:pt-12"
+          }
+        >
           {children}
         </main>
       </div>

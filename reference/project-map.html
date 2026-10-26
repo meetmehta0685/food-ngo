@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Food Rescue Network — project map</title>
+    <link rel="stylesheet" href="../assets/lesson.css" />
+  </head>
+  <body>
+    <main class="lesson-shell">
+      <p class="lesson-kicker">Quick reference · placement prep</p>
+      <div class="hero">
+        <div>
+          <h1>Project map</h1>
+          <p class="lede">The shortest useful map of Food Rescue Network: who acts, where the request enters, where the rules live, and how a rescue becomes trustworthy.</p>
+        </div>
+        <aside class="mission-note">
+          <strong>Use this when</strong>
+          <p>You need to orient yourself before opening a file or explain the project in an interview.</p>
+        </aside>
+      </div>
+
+      <section class="section">
+        <header><h2>One request, five layers</h2><p>Keep this sequence in your head.</p></header>
+        <div class="bridge" aria-label="Request flow">
+          <div class="bridge-step signal"><b>1 · UI</b><span>Form or dashboard starts an action.</span></div>
+          <div class="bridge-step"><b>2 · Route</b><span>Auth, role, rate limit, validation, response.</span></div>
+          <div class="bridge-step"><b>3 · Service</b><span>Business rules and transaction boundary.</span></div>
+          <div class="bridge-step"><b>4 · Database</b><span>Current state, history, notifications, outbox.</span></div>
+          <div class="bridge-step"><b>5 · Live UI</b><span>Polling, SSE, or Ably reflects the change.</span></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <header><h2>Folder responsibilities</h2><p>Find the right place first.</p></header>
+        <table class="state-table">
+          <thead><tr><th>Folder</th><th>Responsibility</th><th>Start here</th></tr></thead>
+          <tbody>
+            <tr><td><code>app/</code></td><td>URL routes, pages, layouts, JSON route handlers.</td><td><code>app/api/donations/route.ts</code></td></tr>
+            <tr><td><code>components/</code></td><td>Reusable UI and client-side interaction.</td><td><code>components/donor/donation-form.tsx</code></td></tr>
+            <tr><td><code>lib/</code></td><td>Domain services, auth, validation, maps, realtime, formatting.</td><td><code>lib/donations/service.ts</code></td></tr>
+            <tr><td><code>prisma/</code></td><td>Relational vocabulary and schema migrations.</td><td><code>prisma/schema.prisma</code></td></tr>
+            <tr><td><code>workers/</code></td><td>Work that must continue after a request returns.</td><td><code>workers/rescue-offers.ts</code></td></tr>
+            <tr><td><code>tests/</code></td><td>Executable examples of domain rules and edge cases.</td><td><code>tests/unit/rescue-dispatch.test.ts</code></td></tr>
+            <tr><td><code>plans/</code></td><td>Design history and intended evolution of the rescue workflow.</td><td><code>plans/README.md</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section">
+        <header><h2>Two state machines</h2><p>Do not collapse these into one.</p></header>
+        <div class="two-col">
+          <div class="callout blue">
+            <h3>Donation status</h3>
+            <p class="small">The overall food request:</p>
+            <p><code>REPORTED → MATCHING → NOTIFIED → ACCEPTED → PICKUP_IN_PROGRESS → PICKED_UP → DELIVERED</code></p>
+            <p class="small">Defined in <code>lib/donations/status.ts</code>.</p>
+          </div>
+          <div class="callout mint">
+            <h3>Rescue assignment status</h3>
+            <p class="small">One volunteer attempt, which may be retried:</p>
+            <p><code>OFFERED → ACCEPTED → EN_ROUTE_TO_PICKUP → ARRIVED_AT_PICKUP → PICKED_UP → EN_ROUTE_TO_NGO → ARRIVED_AT_NGO → DELIVERED</code></p>
+            <p class="small">Defined in <code>lib/rescue/status.ts</code>.</p>
+          </div>
+        </div>
+        <div class="callout" style="margin-top: 18px">
+          <p><strong>Interview insight:</strong> a donation is the business object; an assignment is a delivery attempt. Separating them lets the system expire or reject one volunteer offer and create another without losing the donation's identity or history.</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <header><h2>Placement-ready answer</h2><p>Say this, then go deeper.</p></header>
+        <div class="interview">
+          <p>“Food Rescue Network is a role-based Next.js App Router application. A donor submits surplus food through a route handler; a domain service validates the workflow and uses a Prisma transaction to create the donation, rank nearby NGOs, write status history, notify candidates, and queue live events. NGO acceptance is guarded by a conditional database update, so the first valid claimant wins. A separate rescue-assignment state machine handles volunteer offers, expiry, GPS geofences, OTP pickup, and NGO delivery confirmation. The database is authoritative; Ably and the SSE stream keep screens current.”</p>
+        </div>
+      </section>
+
+      <nav class="footer-links" aria-label="Teaching links">
+        <a href="../lessons/0001-trace-a-rescue.html">Open lesson 1: trace a rescue</a>
+        <a href="../README.md">Read the project README</a>
+        <a href="../MISSION.md">Read the mission</a>
+      </nav>
+    </main>
+  </body>
+</html>

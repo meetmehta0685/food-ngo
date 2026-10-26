@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Food Rescue Network — state machines</title>
+    <link rel="stylesheet" href="../assets/lesson.css" />
+  </head>
+  <body>
+    <main class="lesson-shell">
+      <p class="lesson-kicker">Quick reference · domain model</p>
+      <div class="hero">
+        <div>
+          <h1>Two state machines</h1>
+          <p class="lede">A donation is the overall business object. A rescue assignment is one volunteer attempt to move that donation. They advance at different moments and must remain separate.</p>
+        </div>
+        <aside class="mission-note">
+          <strong>Interview anchor</strong>
+          <p>“The donation tells us what is happening to the food; the assignment tells us what is happening to this delivery attempt.”</p>
+        </aside>
+      </div>
+
+      <section class="section">
+        <header><h2>Donation state</h2><p><code>lib/donations/status.ts</code></p></header>
+        <div class="callout blue">
+          <p><code>REPORTED → MATCHING → NOTIFIED → ACCEPTED → PICKUP_IN_PROGRESS → PICKED_UP → DELIVERED</code></p>
+          <p class="small">The assigned NGO may cancel while the donation is active. <code>DELIVERED</code> and <code>CANCELLED</code> are terminal.</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <header><h2>Assignment state</h2><p><code>lib/rescue/status.ts</code></p></header>
+        <div class="callout mint">
+          <p><code>OFFERED → ACCEPTED → EN_ROUTE_TO_PICKUP → ARRIVED_AT_PICKUP → PICKED_UP → EN_ROUTE_TO_NGO → ARRIVED_AT_NGO → DELIVERED</code></p>
+          <p class="small">An offer can also end as <code>REJECTED</code>, <code>EXPIRED</code>, <code>CANCELLED</code>, or <code>FAILED</code>. These outcomes allow a later attempt.</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <header><h2>Event alignment</h2><p>Different clocks, one rescue.</p></header>
+        <table class="state-table">
+          <thead><tr><th>Trigger</th><th>Donation</th><th>Assignment</th><th>Guard</th></tr></thead>
+          <tbody>
+            <tr><td>NGO accepts match</td><td><code>NOTIFIED → ACCEPTED</code></td><td>None yet</td><td>First conditional claim wins</td></tr>
+            <tr><td>Volunteer accepts</td><td>Stays <code>ACCEPTED</code></td><td><code>OFFERED → EN_ROUTE_TO_PICKUP</code></td><td>Offer is live; volunteer is eligible</td></tr>
+            <tr><td>Pickup geofence dwell</td><td>Stays <code>ACCEPTED</code></td><td><code>EN_ROUTE_TO_PICKUP → ARRIVED_AT_PICKUP</code></td><td>Trusted accuracy and dwell time</td></tr>
+            <tr><td>Donor OTP verified</td><td><code>ACCEPTED → PICKUP_IN_PROGRESS → PICKED_UP</code></td><td><code>ARRIVED_AT_PICKUP → EN_ROUTE_TO_NGO</code></td><td>Short-lived code, attempt limit</td></tr>
+            <tr><td>NGO geofence dwell</td><td>Stays <code>PICKED_UP</code></td><td><code>EN_ROUTE_TO_NGO → ARRIVED_AT_NGO</code></td><td>Trusted accuracy and dwell time</td></tr>
+            <tr><td>NGO confirms receipt</td><td><code>PICKED_UP → DELIVERED</code></td><td><code>ARRIVED_AT_NGO → DELIVERED</code></td><td>Assigned NGO only</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section">
+        <header><h2>Code landmarks</h2><p>Use these as a navigation checklist.</p></header>
+        <div class="two-col">
+          <div class="callout"><p><code>assertTransition()</code></p><p class="small">Rejects invalid donation jumps.</p></div>
+          <div class="callout"><p><code>assertRescueAssignmentTransition()</code></p><p class="small">Rejects invalid assignment jumps.</p></div>
+          <div class="callout"><p><code>activeRescueStatuses</code></p><p class="small">Defines which attempts block another dispatch.</p></div>
+          <div class="callout"><p><code>volunteerBusyStatuses</code></p><p class="small">Defines when a volunteer cannot take another mission.</p></div>
+        </div>
+      </section>
+
+      <nav class="footer-links" aria-label="Teaching links">
+        <a href="../lessons/0002-two-state-machines.html">Open lesson 2</a>
+        <a href="../lessons/0001-trace-a-rescue.html">Review lesson 1</a>
+        <a href="../lib/donations/status.ts">Open donation transitions</a>
+        <a href="../lib/rescue/status.ts">Open assignment transitions</a>
+      </nav>
+    </main>
+  </body>
+</html>

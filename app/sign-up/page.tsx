@@ -16,11 +16,11 @@ export default async function SignUpPage() {
   }
 
   return (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center gap-6 py-8">
+    <div className="kolam-sheet -mx-4 -mt-8 flex min-h-[calc(100vh-4.5rem)] flex-col items-center justify-center gap-6 px-4 py-12 sm:-mx-8 sm:-mt-12 sm:px-8">
       <SignUpForm />
-      <p className="text-muted-foreground text-center text-sm">
+      <p className="text-muted-foreground text-center text-base">
         Already have an account?{" "}
-        <Link href="/sign-in" className="text-primary hover:underline underline-offset-4 font-medium">
+        <Link href="/sign-in" className="text-primary font-semibold underline decoration-primary/40 underline-offset-4 hover:decoration-primary">
           Sign in
         </Link>
       </p>

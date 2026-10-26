@@ -8,7 +8,7 @@ export default withAuth(
     const token = request.nextauth.token;
     const { pathname } = request.nextUrl;
 
-    if (token && pathname === "/sign-up") {
+    if (token && (pathname === "/sign-in" || pathname === "/sign-up")) {
       const target = getRoleHomePath(
         token.role as "DONOR" | "NGO" | "VOLUNTEER" | undefined,
       ) ?? "/home";

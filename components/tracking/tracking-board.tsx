@@ -78,17 +78,17 @@ export function TrackingBoard({
     rescueAssignment.status === "ARRIVED_AT_PICKUP"
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.15fr_0.9fr]">
+    <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
       <Card>
         <CardHeader>
-          <CardTitle className="font-display text-xl">
+          <CardTitle>
             {viewerIsDonor ? "Pickup handoff map" : "Live volunteer tracking map"}
           </CardTitle>
           <CardDescription>
             {viewerIsDonor
               ? "For privacy, live volunteer location is visible only to the assigned NGO for this donation."
               : "Track the volunteer route and handoff progress for this donation."}
-            <span className="ml-1 font-mono text-[11px]">#{donation.id.slice(-6)}</span>
+            <span className="text-foreground ml-1.5 tabular text-sm font-semibold">#{donation.id.slice(-6)}</span>
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
@@ -134,7 +134,7 @@ export function TrackingBoard({
             <Badge
               variant="outline"
               className={cn(
-                "gap-1.5 py-1.5",
+                "gap-1.5",
                 accepted
                   ? "border-success/30 bg-success/10 text-success"
                   : "text-muted-foreground",
@@ -150,7 +150,7 @@ export function TrackingBoard({
             <Badge
               variant="outline"
               className={cn(
-                "gap-1.5 py-1.5",
+                "gap-1.5",
                 delivered
                   ? "border-success/30 bg-success/10 text-success"
                   : "text-muted-foreground",
@@ -164,7 +164,7 @@ export function TrackingBoard({
               {delivered ? "Delivered" : "Delivery pending"}
             </Badge>
             {!viewerIsDonor && rescueAssignment ? (
-              <Badge className="gap-1.5 py-1.5" variant="secondary">
+              <Badge className="gap-1.5" variant="secondary">
                 <Clock data-icon="inline-start" weight="duotone" />
                 {rescueAssignment.volunteer.name}: {rescueAssignment.status.replaceAll("_", " ")}
               </Badge>
@@ -179,7 +179,7 @@ export function TrackingBoard({
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-display text-xl">Audit timeline</CardTitle>
+          <CardTitle>Audit timeline</CardTitle>
           <CardDescription>Immutable status log for delivery transparency.</CardDescription>
         </CardHeader>
         <CardContent>

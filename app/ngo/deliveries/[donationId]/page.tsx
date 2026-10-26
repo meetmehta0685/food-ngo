@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { notFound, redirect } from "next/navigation";
 
+import { PageHeader } from "@/components/layout/page-header";
 import { DeliveryConsole } from "@/components/ngo/delivery-console";
 import { db } from "@/lib/db";
 import { authOptions } from "@/lib/auth/options";
@@ -155,13 +156,11 @@ export default async function NgoDeliveryConsolePage({ params }: PageProps) {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">Delivery console</h1>
-        <p className="text-muted-foreground max-w-2xl text-sm leading-6">
-          Update pickup progress and keep donor tracking synchronized.
-        </p>
-      </div>
+    <div className="flex flex-col gap-10">
+      <PageHeader
+        title="Delivery console"
+        description="Update pickup progress and keep donor tracking synchronized."
+      />
       <DeliveryConsole donation={serializedDonation} />
     </div>
   );

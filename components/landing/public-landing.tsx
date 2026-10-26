@@ -1,37 +1,37 @@
-"use client"
-
-import { motion, useReducedMotion } from "motion/react"
 import Image from "next/image"
 import Link from "next/link"
 import type { ReactNode } from "react"
-import {
-  ArrowRight,
-  Buildings,
-  HandHeart,
-  MapPin,
-  ShieldCheck,
-  Truck,
-} from "@phosphor-icons/react/dist/ssr"
+import { ArrowRight, Buildings, HandHeart, Truck } from "@phosphor-icons/react/dist/ssr"
 
+import { KolamRoute, type KolamStage } from "@/components/kolam/kolam-route"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
-const workflow = [
+const rescueRoute: KolamStage[] = [
+  { key: "report", label: "Surplus reported", detail: "Kitchen, home or event" },
+  { key: "notify", label: "Nearest NGOs alerted", detail: "Up to three in range" },
+  { key: "claim", label: "First NGO claims it", detail: "One owner, no overlap" },
+  { key: "carry", label: "Volunteer carries it", detail: "Live route to the door" },
+  { key: "verify", label: "Handover verified", detail: "Pickup OTP and receipt" },
+]
+
+const workflow: KolamStage[] = [
   {
+    key: "report",
     label: "Report",
-    description: "Share what is available, when it can be collected, and where to find it.",
-    icon: HandHeart,
+    detail: "Share what is available, when it can be collected, and where to find it.",
   },
   {
+    key: "match",
     label: "Match",
-    description: "Nearby NGO partners see the request and take ownership of the rescue.",
-    icon: MapPin,
+    detail: "Nearby NGO partners see the request and take ownership of the rescue.",
   },
   {
+    key: "deliver",
     label: "Deliver",
-    description: "A volunteer completes the handoff and confirms it with a secure OTP.",
-    icon: ShieldCheck,
+    detail: "A volunteer completes the handoff and confirms it with a secure OTP.",
   },
-] as const
+]
 
 const rolePaths = [
   {
@@ -61,166 +61,147 @@ const rolePaths = [
 ] as const
 
 export function PublicLanding() {
-  const shouldReduceMotion = useReducedMotion()
-
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-24 py-8 sm:gap-32 sm:py-12">
-      <section
-        className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(24rem,0.9fr)] lg:gap-20"
-        aria-labelledby="landing-title"
-      >
-        <motion.div
-          className="flex max-w-2xl flex-col gap-7"
-          initial={
-            shouldReduceMotion
-              ? false
-              : { opacity: 0.92, y: 14, filter: "blur(3px)" }
-          }
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <h1
-            id="landing-title"
-            className="max-w-xl text-4xl font-semibold leading-[1.04] tracking-[-0.04em] text-balance sm:text-6xl lg:text-[4.5rem]"
-          >
-            Put good food back in motion.
-          </h1>
-          <p className="text-muted-foreground max-w-xl text-base leading-7 sm:text-lg">
-            Food Rescue Network connects surplus food with nearby NGOs and volunteer drivers while the pickup window is still open.
-          </p>
-          <div className="flex flex-wrap items-center gap-3">
-            <ButtonLink href="/donor/new">
-              Report surplus food
-              <ArrowRight
-                className="transition-transform duration-200 group-hover/button:translate-x-0.5"
-                data-icon="inline-end"
-              />
-            </ButtonLink>
-            <ButtonLink href="/sign-up" variant="outline">
-              Join the network
-            </ButtonLink>
+    <div className="flex w-full flex-col">
+      <section className="kolam-ground -mt-px" aria-labelledby="landing-title">
+        <div className="mx-auto grid w-full max-w-7xl items-center gap-12 px-4 pb-16 pt-10 sm:px-8 sm:pb-24 sm:pt-16 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16 lg:pb-28">
+          <div className="flex max-w-2xl flex-col gap-7">
+            <h1
+              id="landing-title"
+              className="text-[2.9rem] leading-[0.95] font-semibold tracking-[-0.03em] sm:text-7xl lg:text-[5.75rem]"
+            >
+              Put good food back in motion.
+            </h1>
+            <p className="text-threshold-muted max-w-xl text-lg leading-relaxed sm:text-xl">
+              Food Rescue Network connects surplus food with nearby NGOs and volunteer drivers while the pickup window is still open.
+            </p>
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              <ButtonLink href="/donor/new" size="lg">
+                Report surplus food
+                <ArrowRight
+                  className="transition-transform duration-200 group-hover/button:translate-x-0.5"
+                  data-icon="inline-end"
+                />
+              </ButtonLink>
+              <ButtonLink
+                href="/sign-up"
+                variant="outline"
+                size="lg"
+                className="border-threshold-foreground/60 text-threshold-foreground hover:bg-threshold-foreground hover:text-threshold"
+              >
+                Join the network
+              </ButtonLink>
+            </div>
+            <p className="text-threshold-muted max-w-lg text-sm leading-6">
+              Built for households, kitchens, events, NGO teams, and volunteer drivers.
+            </p>
           </div>
-          <p className="text-muted-foreground max-w-lg text-sm leading-6">
-            Built for households, kitchens, events, NGO teams, and volunteer drivers.
-          </p>
-        </motion.div>
 
-        <motion.div
-          className="overflow-hidden rounded-2xl border bg-card shadow-sm"
-          aria-label="How a rescue moves"
-          initial={
-            shouldReduceMotion
-              ? false
-              : { opacity: 0.96, y: 18, scale: 0.985, filter: "blur(2px)" }
-          }
-          animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-          transition={{ duration: 0.82, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-          whileHover={shouldReduceMotion ? undefined : { y: -4 }}
-          whileTap={shouldReduceMotion ? undefined : { scale: 0.995 }}
-        >
-          <div className="relative aspect-[4/3]">
-            <Image
-              src="/intro/food-donation.jpg"
-              alt="Volunteers moving packed meals through a community kitchen"
-              fill
-              priority
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 45vw"
-            />
-          </div>
-          <div className="grid grid-cols-3 divide-x border-t bg-card">
-            {[
-              "Report surplus",
-              "Find a partner",
-              "Confirm delivery",
-            ].map((step) => (
-              <span key={step} className="px-3 py-4 text-center font-mono text-[0.625rem] font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:px-4">
-                {step}
-              </span>
-            ))}
-          </div>
-        </motion.div>
+          <KolamRoute
+            stages={rescueRoute}
+            current={4}
+            complete
+            tone="threshold"
+            size="hero"
+            animate
+            label="How one rescue travels from donor to NGO"
+            className="w-full lg:justify-self-end lg:pl-8"
+          />
+        </div>
       </section>
 
-      <section id="how-it-works" className="scroll-mt-24" aria-labelledby="workflow-title">
-        <div className="max-w-2xl">
-          <h2 id="workflow-title" className="text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">
-            One clear handoff, from surplus to delivery.
-          </h2>
-          <p className="text-muted-foreground mt-4 max-w-xl text-sm leading-6 sm:text-base">
-            Every role sees the next useful step, with the right context carried through the rescue.
-          </p>
+      <section id="how-it-works" className="scroll-mt-24 border-b" aria-labelledby="workflow-title">
+        <div className="mx-auto grid w-full max-w-7xl gap-12 px-4 py-20 sm:px-8 sm:py-28 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-20">
+          <div className="flex flex-col gap-5">
+            <h2 id="workflow-title" className="text-4xl sm:text-5xl">
+              One clear handoff, from surplus to delivery.
+            </h2>
+            <p className="text-muted-foreground max-w-md text-lg leading-relaxed">
+              Every role sees the next useful step, with the right context carried through the rescue.
+            </p>
+          </div>
+          <KolamRoute
+            stages={workflow}
+            current={2}
+            complete
+            orientation="responsive"
+            label="The three stages of every rescue"
+            className="self-center"
+          />
         </div>
-
-        <div className="mt-10 grid divide-y border-y sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-          {workflow.map((step, index) => {
-            const Icon = step.icon
-
-            return (
-              <div key={step.label} className="relative flex flex-col gap-4 py-7 sm:px-7 sm:first:pl-0 sm:last:pr-0">
-                <Icon className="text-primary size-6" weight="duotone" />
-                <div className="flex flex-col gap-2">
-                  <h3 className="text-lg font-semibold tracking-[-0.02em]">{step.label}</h3>
-                  <p className="text-muted-foreground text-sm leading-6">{step.description}</p>
-                </div>
-                {index < workflow.length - 1 ? (
-                  <ArrowRight className="text-border absolute right-[-0.7rem] top-1/2 hidden size-5 -translate-y-1/2 bg-background sm:block" aria-hidden="true" />
-                ) : null}
-              </div>
-            )
-          })}
+        <div className="mx-auto w-full max-w-7xl px-4 pb-20 sm:px-8 sm:pb-28">
+          <figure className="flex flex-col gap-3">
+            <div className="relative aspect-[16/9] overflow-hidden rounded-lg sm:aspect-[21/9]">
+              <Image
+                src="/intro/food-donation.jpg"
+                alt="Volunteers moving packed meals through a community kitchen"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1280px) 100vw, 1216px"
+              />
+            </div>
+            <figcaption className="text-muted-foreground text-sm">
+              Packed meals leaving a community kitchen for the last mile.
+            </figcaption>
+          </figure>
         </div>
       </section>
 
       <section id="persona-donors" className="scroll-mt-24" aria-labelledby="roles-title">
-        <div className="max-w-2xl">
-          <h2 id="roles-title" className="text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">
-            Everyone sees the next useful step.
-          </h2>
-          <p className="text-muted-foreground mt-4 max-w-xl text-sm leading-6 sm:text-base">
-            Choose the path that matches your part in moving food where it is needed.
-          </p>
-        </div>
+        <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-8 sm:py-28">
+          <div className="max-w-2xl">
+            <h2 id="roles-title" className="text-4xl sm:text-5xl">
+              Everyone sees the next useful step.
+            </h2>
+            <p className="text-muted-foreground mt-5 max-w-xl text-lg leading-relaxed">
+              Choose the path that matches your part in moving food where it is needed.
+            </p>
+          </div>
 
-        <div className="mt-8 divide-y border-y">
-          {rolePaths.map((role) => {
-            const Icon = role.icon
+          <div className="mt-12 border-t">
+            {rolePaths.map((role) => {
+              const Icon = role.icon
 
-            return (
-              <article id={role.id} key={role.id} className="flex flex-col gap-5 py-6 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
-                <div className="flex min-w-0 items-start gap-4">
-                  <span className="bg-primary/10 text-primary flex size-11 shrink-0 items-center justify-center rounded-lg">
-                    <Icon weight="duotone" />
-                  </span>
-                  <div className="flex min-w-0 flex-col gap-1">
-                    <h3 className="text-lg font-semibold tracking-[-0.02em]">{role.title}</h3>
-                    <p className="text-muted-foreground max-w-2xl text-sm leading-6">{role.description}</p>
-                  </div>
-                </div>
-                <ButtonLink href={role.href} variant="outline" className="shrink-0 sm:min-w-44">
-                  {role.action}
-                  <ArrowRight
-                    className="transition-transform duration-200 group-hover/button:translate-x-0.5"
-                    data-icon="inline-end"
-                  />
-                </ButtonLink>
-              </article>
-            )
-          })}
+              return (
+                <article
+                  id={role.id}
+                  key={role.id}
+                  className="group grid scroll-mt-24 gap-5 border-b py-8 sm:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_auto] sm:items-center sm:gap-10"
+                >
+                  <h3 className="flex items-center gap-3 text-3xl">
+                    <Icon className="text-primary size-6 shrink-0" weight="bold" aria-hidden="true" />
+                    {role.title}
+                  </h3>
+                  <p className="text-muted-foreground max-w-xl text-base leading-relaxed sm:text-lg">{role.description}</p>
+                  <ButtonLink href={role.href} variant="outline" className="w-fit shrink-0 sm:min-w-48">
+                    {role.action}
+                    <ArrowRight
+                      className="transition-transform duration-200 group-hover/button:translate-x-0.5"
+                      data-icon="inline-end"
+                    />
+                  </ButtonLink>
+                </article>
+              )
+            })}
+          </div>
         </div>
       </section>
 
-      <section aria-labelledby="cta-title">
-        <div className="flex flex-col gap-6 rounded-2xl bg-primary p-6 text-primary-foreground sm:flex-row sm:items-center sm:justify-between sm:p-8">
+      <section className="bg-primary text-primary-foreground" aria-labelledby="cta-title">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-16 sm:flex-row sm:items-end sm:justify-between sm:px-8 sm:py-20">
           <div className="max-w-2xl">
-            <h2 id="cta-title" className="text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">
+            <h2 id="cta-title" className="text-4xl sm:text-6xl">
               Have food to move today?
             </h2>
-            <p className="text-primary-foreground/80 mt-2 text-sm leading-6 sm:text-base">
+            <p className="text-primary-foreground/85 mt-4 text-lg leading-relaxed">
               Start a rescue request and let nearby partners take it from there.
             </p>
           </div>
-          <ButtonLink href="/donor/new" variant="secondary" className="shrink-0">
+          <ButtonLink
+            href="/donor/new"
+            size="lg"
+            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shrink-0"
+          >
             Start a rescue
             <ArrowRight
               className="transition-transform duration-200 group-hover/button:translate-x-0.5"
@@ -237,11 +218,13 @@ function ButtonLink({
   href,
   children,
   variant = "default",
+  size = "default",
   className,
 }: {
   href: string
   children: ReactNode
   variant?: "default" | "secondary" | "outline"
+  size?: "default" | "lg"
   className?: string
 }) {
   return (
@@ -249,7 +232,8 @@ function ButtonLink({
       render={<Link href={href} />}
       nativeButton={false}
       variant={variant}
-      className={className}
+      size={size}
+      className={cn(className)}
     >
       {children}
     </Button>

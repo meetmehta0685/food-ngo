@@ -1,0 +1,68 @@
+{
+  "title": "Choose the visual world for Food Rescue Network",
+  "question": "Fresh hand. The roll assigned The Banana Leaf. Keep it, take an alternate, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "kind": "assigned",
+      "label": "The Banana Leaf",
+      "kicker": "THE ROLL",
+      "lineage": "the South Indian banana-leaf meal, where every dish has its fixed place",
+      "thesis": "A rescue is served like a meal on a leaf: every stage has its place, and the leaf is never empty for long.",
+      "palette": ["#2f6b2a", "#f4f1e6", "#1b1f17", "#e3a21a", "#c23a1e"],
+      "materials": ["leaf green with midrib veins", "steamed-rice white", "turmeric yellow", "chilli red", "steel tumbler grey"],
+      "viewport": "A wide leaf runs across the page along its midrib; the report form sits where the rice goes, with donor, NGO and volunteer stations served around it.",
+      "risk": "Regional to South India; if the leaf reads as a restaurant brand, the product looks like food delivery.",
+      "raised": [
+        {"from": "medium-native-ebru-floated-pigment", "raise": "Every finished step leaves a permanent mark; nothing in a rescue un-happens."},
+        {"from": "operate-a-cutting-bench-select-rail", "raise": "State is a mark, not only a hue: served, folded, set aside each have a shape."},
+        {"from": "design-canon-constructivist-agit-train", "raise": "Every rescue reads along one axis, donor to NGO, the line of the midrib."},
+        {"from": "cinema-cinematography-editing-hand-processed-film-bloom", "raise": "Content is banded in strict serving rows, one row per stage."},
+        {"from": "paper-folds-pleats-deployable-akari-light-sculpture", "raise": "Finished or inactive rescues fold flat to an outline; only live ones are full."}
+      ],
+      "html": ".impeccable/mocks/decision/r1/assigned.html",
+      "comp": ".impeccable/mocks/decision/r1/assigned.webp"
+    },
+    {
+      "id": "model-pick",
+      "kind": "pick",
+      "label": "Kolam",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "the morning threshold kolam, rice flour on a dot grid",
+      "thesis": "Donors, NGOs and volunteers are dots; each rescue is the one continuous line that joins them.",
+      "palette": ["#24211e", "#f3efe6", "#b8322a", "#e0a92c"],
+      "materials": ["rice-flour lines", "swept dark threshold", "dot lattice"],
+      "viewport": "A dark threshold with a white dot grid; the live rescue draws itself as one looping line under a white headline and a red Report action.",
+      "risk": "Kolam is a well-known Indian motif, so it can read as decoration if the line stops carrying real routes.",
+      "html": ".impeccable/mocks/decision/r1/model-pick.html",
+      "comp": ".impeccable/mocks/decision/r1/model-pick.webp"
+    },
+    {
+      "id": "challenger-orienteering",
+      "kind": "challenger",
+      "catalogId": "notation-diagram-systems-orienteering-map",
+      "label": "Orienteering Map",
+      "verdict": "competitive",
+      "lineage": "ISOM orienteering maps",
+      "thesis": "The city as terrain, every rescue a purple course from donor control to NGO finish.",
+      "palette": ["#ffffff", "#9a6b2f", "#f7d046", "#3a8fd1", "#a6197c"],
+      "materials": ["contour linework", "course purple overprint", "legend table"],
+      "viewport": "Contour ground with the live rescue as a numbered purple course and a legend of controls.",
+      "case": "Holds product clarity: proximity, routes and punched handoffs are the product; loses identification, orienteering is foreign to the audience.",
+      "risk": "Reads as a sports map if the legend outgrows the task.",
+      "html": ".impeccable/mocks/decision/r1/challenger-orienteering.html",
+      "comp": ".impeccable/mocks/decision/r1/challenger-orienteering.webp",
+      "hero": "https://impeccable.style/worlds/cards/notation-diagram-systems-orienteering-map-hero.webp"
+    },
+    {"id": "challenger-ebru", "kind": "challenger", "catalogId": "medium-native-ebru-floated-pigment", "label": "Ebru Floated Pigment", "verdict": "declined", "lineage": "Turkish paper marbling", "thesis": "Each drop displaces the last, permanently.", "palette": ["#e9e3d3", "#1f3b6e", "#b8322a", "#d9a441"], "materials": ["floated pigment", "sized paper"], "viewport": "A marbled bath combed into figures.", "case": "Loses both axes: beautiful, but says nothing about rescues.", "kept": "Finished steps leave permanent marks.", "risk": "Pure ornament.", "hero": "https://impeccable.style/worlds/cards/medium-native-ebru-floated-pigment-hero.webp"},
+    {"id": "challenger-cutting-bench", "kind": "challenger", "catalogId": "operate-a-cutting-bench-select-rail", "label": "Cutting Bench Select Rail", "verdict": "declined", "lineage": "film editing benches", "thesis": "A perforated rail of frames with state as marks.", "palette": ["#0b0b0b", "#ff6a13", "#ffffff"], "materials": ["film grain", "grease pencil", "tape flags"], "viewport": "Frames strung on a rail over grain orange.", "case": "Loses both axes: too close to the rejected rail, and editors are not the audience.", "kept": "State is a mark, not a hue.", "risk": "Echoes the declined ticket rail.", "hero": "https://impeccable.style/worlds/cards/operate-a-cutting-bench-select-rail-hero.webp"},
+    {"id": "challenger-agit-train", "kind": "challenger", "catalogId": "design-canon-constructivist-agit-train", "label": "Constructivist Agit-Train", "verdict": "declined", "lineage": "1920s agit-trains", "thesis": "Diagonal red wedges drive the action.", "palette": ["#efe6d2", "#141414", "#c8211b"], "materials": ["stencil type", "photomontage"], "viewport": "Railcars as broadsides along a diagonal.", "case": "Loses both axes: propaganda register is wrong for a care service.", "kept": "One strong axis of travel.", "risk": "Political connotation.", "hero": "https://impeccable.style/worlds/cards/design-canon-constructivist-agit-train-hero.webp"},
+    {"id": "challenger-film-bloom", "kind": "challenger", "catalogId": "cinema-cinematography-editing-hand-processed-film-bloom", "label": "Hand-Processed Film", "verdict": "declined", "lineage": "16mm hand processing", "thesis": "Emulsion joins the event.", "palette": ["#121212", "#9a9a92", "#ff7a1a"], "materials": ["film grain", "light leaks"], "viewport": "A scratched strip with an orange leak on the live frame.", "case": "Loses both axes: moody and illegible for daily operations.", "kept": "Strict frame-by-frame rows.", "risk": "Hurts readability.", "hero": "https://impeccable.style/worlds/cards/cinema-cinematography-editing-hand-processed-film-bloom-hero.webp"},
+    {"id": "challenger-akari", "kind": "challenger", "catalogId": "paper-folds-pleats-deployable-akari-light-sculpture", "label": "Akari Light Sculpture", "verdict": "declined", "lineage": "Noguchi akari lamps", "thesis": "Lit volumes are live; dark ones fold flat.", "palette": ["#f3e9d2", "#b89a6a", "#2b2824", "#d1432b"], "materials": ["washi", "bamboo ribs"], "viewport": "Glowing paper volumes at different heights.", "case": "Loses both axes: serene but foreign, and slow for urgent pickups.", "kept": "Inactive items fold flat to an outline.", "risk": "Too soft for deadlines.", "hero": "https://impeccable.style/worlds/cards/paper-folds-pleats-deployable-akari-light-sculpture-hero.webp"}
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "buildPath": {"value": "code", "toggle": false},
+  "canon": true,
+  "canonCard": {"kind": "canon", "label": "The category standard", "thesis": "A clean nonprofit platform page, executed impeccably.", "palette": ["#ffffff", "#111827", "#15803d"], "materials": ["clean grid", "product photography"], "viewport": "Headline and Report action beside a photo, three feature cards below.", "risk": "Indistinguishable from every other food-donation platform by design.", "html": ".impeccable/mocks/decision/canon.html", "comp": ".impeccable/mocks/decision/canon.webp"},
+  "steer": true
+}

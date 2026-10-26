@@ -1,7 +1,5 @@
 const DEFAULT_OFFER_DURATION_MS = 45_000
 const DEFAULT_MAX_ATTEMPTS = 5
-const DEFAULT_WORKER_POLL_INTERVAL_MS = 2_000
-const DEFAULT_WORKER_BATCH_SIZE = 20
 
 function boundedInteger(
   value: string | undefined,
@@ -25,8 +23,6 @@ function boundedInteger(
 export type RescueDispatchConfig = {
   offerDurationMs: number
   maxAttempts: number
-  workerPollIntervalMs: number
-  workerBatchSize: number
 }
 
 export function getRescueDispatchConfig(
@@ -44,18 +40,6 @@ export function getRescueDispatchConfig(
       DEFAULT_MAX_ATTEMPTS,
       1,
       20,
-    ),
-    workerPollIntervalMs: boundedInteger(
-      env.RESCUE_WORKER_POLL_INTERVAL_MS,
-      DEFAULT_WORKER_POLL_INTERVAL_MS,
-      500,
-      60_000,
-    ),
-    workerBatchSize: boundedInteger(
-      env.RESCUE_WORKER_BATCH_SIZE,
-      DEFAULT_WORKER_BATCH_SIZE,
-      1,
-      100,
     ),
   }
 }

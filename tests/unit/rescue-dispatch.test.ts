@@ -10,8 +10,6 @@ describe("rescue dispatch configuration", () => {
     expect(getRescueDispatchConfig({})).toEqual({
       offerDurationMs: 45_000,
       maxAttempts: 5,
-      workerPollIntervalMs: 2_000,
-      workerBatchSize: 20,
     })
   })
 
@@ -20,14 +18,10 @@ describe("rescue dispatch configuration", () => {
       getRescueDispatchConfig({
         RESCUE_OFFER_DURATION_MS: "1000",
         RESCUE_MAX_OFFER_ATTEMPTS: "50",
-        RESCUE_WORKER_POLL_INTERVAL_MS: "250",
-        RESCUE_WORKER_BATCH_SIZE: "0",
       }),
     ).toEqual({
       offerDurationMs: 10_000,
       maxAttempts: 20,
-      workerPollIntervalMs: 500,
-      workerBatchSize: 1,
     })
   })
 

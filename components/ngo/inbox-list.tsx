@@ -8,7 +8,6 @@ import { Check, Clock, MapPin, Package, SpinnerGap, User, WarningCircle, X } fro
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatAppTime } from "@/lib/format-date"
 
 export type InboxCandidate = {
@@ -68,60 +67,56 @@ export function NgoInboxList({ candidates }: { candidates: InboxCandidate[] }) {
 
   if (candidates.length === 0) {
     return (
-      <div className="flex flex-col gap-4">
-        <div className="bg-surface rounded-lg border border-dashed p-8 text-center">
-          <span className="bg-primary/10 text-primary mx-auto mb-4 flex size-11 items-center justify-center rounded-md"><Package weight="duotone" /></span>
-          <h2 className="text-base font-semibold">No pending rescue alerts</h2>
-          <p className="text-muted-foreground mx-auto mt-1 max-w-md text-xs leading-6">Nearby donor broadcasts will appear here sorted by urgency and distance.</p>
-        </div>
+      <div className="kolam-sheet flex flex-col items-center gap-3 rounded-lg border border-dashed px-6 py-14 text-center">
+        <Package className="text-muted-foreground size-7" weight="bold" />
+        <h2 className="text-2xl">No pending rescue alerts</h2>
+        <p className="text-muted-foreground mx-auto max-w-md text-base leading-relaxed">Nearby donor broadcasts will appear here sorted by urgency and distance.</p>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      {error ? <Alert variant="destructive"><WarningCircle /><AlertTitle>Alert update failed</AlertTitle><AlertDescription>{error}</AlertDescription></Alert> : null}
-      {candidates.map((candidate, index) => {
-        const isUrgent = candidate.rank === 1 || candidate.distanceKm < 2
-        const isHighPriority = candidate.rank === 2 || candidate.distanceKm < 3.5
-        const urgencyLabel = isUrgent ? "Urgent" : isHighPriority ? "High priority" : "Standard"
-        const urgencyVariant = isUrgent ? "destructive" : isHighPriority ? "secondary" : "outline"
-        const isPending = pendingId === candidate.id
+    <div className="flex flex-col">
+      {error ? <Alert variant="destructive" className="mb-4"><WarningCircle /><AlertTitle>Alert update failed</AlertTitle><AlertDescription>{error}</AlertDescription></Alert> : null}
+      <ul className="flex flex-col border-t">
+        {candidates.map((candidate, index) => {
+          const isUrgent = candidate.rank === 1 || candidate.distanceKm < 2
+          const isHighPriority = candidate.rank === 2 || candidate.distanceKm < 3.5
+          const urgencyLabel = isUrgent ? "Urgent" : isHighPriority ? "High priority" : "Standard"
+          const urgencyVariant = isUrgent ? "destructive" : isHighPriority ? "secondary" : "outline"
+          const isPending = pendingId === candidate.id
 
-        return (
-          <Card key={candidate.id} className="overflow-hidden transition-colors hover:border-primary/35">
-            <CardHeader className="gap-3 pb-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <Badge variant={urgencyVariant} className="gap-1.5 font-mono text-[10px] uppercase"><Clock data-icon="inline-start" />{urgencyLabel} · {candidate.distanceKm.toFixed(1)} km</Badge>
-                <span className="text-muted-foreground font-mono text-[10px]">Pickup by {formatAppTime(candidate.donation.pickupBy)}</span>
+          return (
+            <li key={candidate.id} className="grid gap-4 border-b py-5 sm:grid-cols-[3.5rem_minmax(0,1fr)_auto] sm:items-center sm:gap-5">
+              <div className="relative hidden size-14 shrink-0 overflow-hidden rounded-md sm:block">
+                <Image src={foodThumbnails[index % foodThumbnails.length]} alt="Food rescue preview" fill className="object-cover" sizes="56px" />
               </div>
-              <div className="flex items-start gap-3">
-                <div className="relative size-12 shrink-0 overflow-hidden rounded-md border">
-                  <Image src={foodThumbnails[index % foodThumbnails.length]} alt="Food rescue preview" fill className="object-cover" sizes="48px" />
+              <div className="flex min-w-0 flex-col gap-2">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                  <Badge variant={urgencyVariant} className="gap-1.5"><Clock data-icon="inline-start" />{urgencyLabel} · {candidate.distanceKm.toFixed(1)} km</Badge>
+                  <span className={isUrgent ? "tabular text-sm font-semibold" : "text-muted-foreground tabular text-sm"}>Pickup by {formatAppTime(candidate.donation.pickupBy)}</span>
                 </div>
-                <div className="flex min-w-0 flex-col gap-1">
-                  <CardTitle className="truncate text-base">{candidate.donation.foodType}</CardTitle>
-                  <CardDescription className="truncate">{candidate.donation.quantity} · {candidate.donation.servesCount} meals</CardDescription>
+                <h3 className="truncate text-2xl">{candidate.donation.foodType}</h3>
+                <p className="text-muted-foreground text-sm">{candidate.donation.quantity} · {candidate.donation.servesCount} meals</p>
+                <div className="text-muted-foreground flex flex-col gap-1 text-sm">
+                  <span className="inline-flex items-start gap-2"><MapPin className="text-primary mt-0.5 shrink-0" /><span className="line-clamp-2">{candidate.donation.address}</span></span>
+                  <span className="inline-flex items-center gap-2"><User className="text-primary shrink-0" />Donor: <strong className="text-foreground font-semibold">{candidate.donation.donor.name}</strong></span>
                 </div>
               </div>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2 pt-0 text-xs">
-              <span className="text-muted-foreground inline-flex items-start gap-2"><MapPin className="text-primary mt-0.5 shrink-0" /><span className="line-clamp-2">{candidate.donation.address}</span></span>
-              <span className="text-muted-foreground inline-flex items-center gap-2"><User className="text-primary shrink-0" />Donor: <strong className="text-foreground">{candidate.donation.donor.name}</strong></span>
-            </CardContent>
-            <CardFooter className="flex gap-2 border-t pt-4">
-              <Button variant="outline" size="sm" className="flex-1" onClick={() => { void respond(candidate.id, "DECLINE") }} disabled={isPending}>
-                {isPending ? <SpinnerGap data-icon="inline-start" className="animate-spin" /> : <X data-icon="inline-start" />}
-                Decline
-              </Button>
-              <Button size="sm" className="flex-1" onClick={() => { void respond(candidate.id, "ACCEPT") }} disabled={isPending}>
-                {isPending ? <SpinnerGap data-icon="inline-start" className="animate-spin" /> : <Check data-icon="inline-start" />}
-                Accept rescue
-              </Button>
-            </CardFooter>
-          </Card>
-        )
-      })}
+              <div className="flex gap-2 sm:flex-col">
+                <Button className="flex-1 sm:w-40 sm:flex-none" onClick={() => { void respond(candidate.id, "ACCEPT") }} disabled={isPending}>
+                  {isPending ? <SpinnerGap data-icon="inline-start" className="animate-spin" /> : <Check data-icon="inline-start" />}
+                  Accept rescue
+                </Button>
+                <Button variant="ghost" className="flex-1 sm:w-40 sm:flex-none" onClick={() => { void respond(candidate.id, "DECLINE") }} disabled={isPending}>
+                  {isPending ? <SpinnerGap data-icon="inline-start" className="animate-spin" /> : <X data-icon="inline-start" />}
+                  Decline
+                </Button>
+              </div>
+            </li>
+          )
+        })}
+      </ul>
     </div>
   )
 }

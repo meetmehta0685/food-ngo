@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth"
 import { notFound, redirect } from "next/navigation"
 
+import { PageHeader } from "@/components/layout/page-header"
 import { TrackingBoard } from "@/components/tracking/tracking-board"
-import { Badge } from "@/components/ui/badge"
 import { db } from "@/lib/db"
 import { authOptions } from "@/lib/auth/options"
 
@@ -95,16 +95,11 @@ export default async function TrackingPage({ params }: PageProps) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <Badge className="w-fit font-mono text-[10px] uppercase tracking-widest" variant="outline">
-          Tracking
-        </Badge>
-        <h1 className="font-display text-2xl tracking-tight sm:text-3xl">Delivery transparency board</h1>
-        <p className="text-muted-foreground max-w-2xl text-sm">
-          Donors manage pickup verification while assigned NGOs receive live volunteer tracking.
-        </p>
-      </div>
+    <div className="flex flex-col gap-10">
+      <PageHeader
+        title="Delivery transparency board"
+        description="Donors manage pickup verification while assigned NGOs receive live volunteer tracking."
+      />
       <TrackingBoard
         donation={donation}
         viewerIsDonor={donation.donorId === session.user.id}

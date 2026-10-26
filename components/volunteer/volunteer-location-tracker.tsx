@@ -178,9 +178,9 @@ export function VolunteerLocationTracker({
   const stateLabel = trackingState === "starting" ? "Starting" : trackingState === "tracking" ? "Live" : trackingState === "low-accuracy" ? "Low accuracy" : "Needs attention"
 
   return (
-    <div className="mt-5 rounded-lg border bg-muted/20 p-4">
+    <div className="mt-1 border-t pt-5">
       <div className="flex items-start gap-3">
-        <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <span className="text-primary flex h-8 w-8 flex-shrink-0 items-center justify-center">
           {trackingState === "error" ? (
             <Warning className="h-4 w-4" />
           ) : trackingState === "starting" ? (
@@ -191,7 +191,7 @@ export function VolunteerLocationTracker({
         </span>
         <div>
           <div className="flex items-center gap-2"><p className="text-sm font-semibold">{trackingState === "starting" ? "Starting live location…" : trackingState === "tracking" ? "Live location active" : trackingState === "low-accuracy" ? "Waiting for better GPS accuracy" : "Location tracking needs attention"}</p><Badge variant={trackingState === "error" ? "destructive" : trackingState === "tracking" ? "secondary" : "outline"}>{stateLabel}</Badge></div>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground">
             {accuracy === null
               ? "Keep this page open during the rescue."
               : `Current accuracy: ±${Math.round(accuracy)} m · arrival requires 50 m or better.`}

@@ -1,0 +1,32 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Ticket rail</title>
+<style>
+:root{--paper:#f6f6f2;--steel:#b9bdc2;--steel-d:#7d838a;--ink:#15171a;--heat:#d4261c;--tape:#efd36a}
+*{box-sizing:border-box;margin:0}body{width:1440px;height:900px;background:#e4e6e8;font-family:"Helvetica Neue",Arial,sans-serif;color:var(--ink);overflow:hidden}
+nav{display:flex;justify-content:space-between;align-items:center;padding:22px 64px;font:600 14px/1 ui-monospace,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase}
+nav b{font:800 22px/1 "Arial Narrow",Arial;letter-spacing:-.01em;text-transform:none}
+.rail{position:absolute;left:0;right:0;top:300px;height:34px;background:linear-gradient(var(--steel),#e9ebed 45%,var(--steel-d));box-shadow:0 6px 10px rgba(0,0,0,.18)}
+h1{position:absolute;left:64px;top:96px;font:800 112px/0.9 "Arial Narrow",Arial;letter-spacing:-.03em;width:900px}
+h1 em{font-style:normal;color:var(--heat)}
+.lede{position:absolute;left:980px;top:110px;width:380px;font-size:19px;line-height:1.45}
+.cta{position:absolute;left:980px;top:220px;display:flex;gap:12px}
+.cta a{padding:16px 22px;font:700 15px/1 ui-monospace,Menlo,monospace;text-transform:uppercase;letter-spacing:.05em;border:2px solid var(--ink);text-decoration:none;color:var(--ink)}
+.cta a.p{background:var(--heat);border-color:var(--heat);color:#fff}
+.tickets{position:absolute;top:312px;left:64px;display:flex;gap:28px}
+.t{width:300px;background:var(--paper);padding:26px 22px 28px;font:15px/1.5 ui-monospace,Menlo,monospace;box-shadow:0 14px 24px rgba(0,0,0,.14);clip-path:polygon(0 0,100% 0,100% 96%,95% 100%,90% 96%,85% 100%,80% 96%,75% 100%,70% 96%,65% 100%,60% 96%,55% 100%,50% 96%,45% 100%,40% 96%,35% 100%,30% 96%,25% 100%,20% 96%,15% 100%,10% 96%,5% 100%,0 96%)}
+.t .no{font:800 46px/1 "Arial Narrow",Arial;letter-spacing:-.02em}.t hr{border:0;border-top:2px dashed var(--ink);margin:14px 0}
+.t .st{display:inline-block;margin-top:14px;padding:6px 10px;border:3px solid var(--heat);color:var(--heat);font-weight:800;transform:rotate(-4deg);letter-spacing:.08em}
+.tape{position:absolute;top:-14px;left:90px;background:var(--tape);padding:6px 14px;font:700 13px/1 "Marker Felt",cursive;transform:rotate(-2deg)}
+.t{position:relative}
+</style></head><body>
+<nav><b>Food Rescue Network</b><span>Live rail · 3 open tickets</span><span>Sign in</span></nav>
+<h1>Surplus fired.<br>Partner claims.<br><em>Food moves.</em></h1>
+<p class="lede">Report surplus in a minute. The three nearest NGOs see your ticket, the first to claim it wins, and a volunteer runs it to their door.</p>
+<div class="cta"><a class="p" href="#">Fire a ticket</a><a href="#">Join the rail</a></div>
+<div class="rail"></div>
+<div class="tickets">
+<div class="t"><span class="tape">Donor · Asha Kitchens</span><div class="no">#4821</div>VEG BIRYANI ×40<br>PICKUP BY 21:30<hr>3 NGOS NOTIFIED<br>0.8 KM · 1.4 KM · 2.1 KM<div class="st">FIRED 20:04</div></div>
+<div class="t"><span class="tape">NGO · Harbor Kitchen</span><div class="no">#4817</div>CHAPATI + DAL ×25<br>PICKUP BY 21:00<hr>CLAIMED 20:01<br>VOLUNTEER: RAVI · CAR<div class="st">CLAIMED</div></div>
+<div class="t"><span class="tape">Volunteer · Ravi</span><div class="no">#4809</div>FRUIT CRATES ×12<br>DELIVERED 19:52<hr>OTP VERIFIED 19:31<br>NGO CONFIRMED 19:52<div class="st">DELIVERED</div></div>
+</div>
+</body></html>
+

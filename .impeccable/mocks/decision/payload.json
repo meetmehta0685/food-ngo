@@ -1,0 +1,63 @@
+{
+  "title": "Choose the visual world for Food Rescue Network",
+  "question": "The roll assigned The Ticket Rail. Keep it, take an alternate, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "kind": "assigned",
+      "label": "The Ticket Rail",
+      "kicker": "THE ROLL",
+      "lineage": "commercial kitchen order tickets on a steel rail",
+      "thesis": "Every rescue is a numbered kitchen ticket: fired, claimed, run, and stamped delivered.",
+      "palette": ["#f6f6f2", "#15171a", "#d4261c", "#b9bdc2", "#efd36a"],
+      "materials": ["thermal paper chits", "brushed steel rail", "two-colour thermal print", "masking-tape labels"],
+      "viewport": "A steel rail crosses the page with three live tickets clipped to it, under a condensed headline and a red Fire a ticket action.",
+      "risk": "Tickets can tip into costume if the tear edges and stamps act out on every screen instead of only at state changes.",
+      "raised": [
+        {"from": "clouds-storms-auroras-iridescent-cloud-edge", "raise": "Colour lives only on ticket edges and stamps; every reading field stays ink on paper."},
+        {"from": "clay-ceramics-fracture-coiled-earth-tower", "raise": "Each ticket stacks its milestones as stamped courses, so history reads as one accumulated record."},
+        {"from": "variable-font-specimen", "raise": "Hierarchy by scale contrast alone: huge ticket numbers against small mono print, no decorative containers."},
+        {"from": "broadcast-programming-teletext-service", "raise": "Every rescue is addressed by one ticket number, printed identically on every screen."},
+        {"from": "posters-covers-sleeves-soundsystem-dance-poster", "raise": "Urgency gets billing weight: the pickup deadline sets larger as it nears."},
+        {"from": "dubois-data-portraits", "raise": "Impact figures are drawn as flat ruled bars, never stat tiles."}
+      ],
+      "html": ".impeccable/mocks/decision/assigned.html",
+      "comp": ".impeccable/mocks/decision/assigned.webp"
+    },
+    {
+      "id": "model-pick",
+      "kind": "pick",
+      "label": "Dabba Codes",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "Mumbai dabbawala painted lid codes",
+      "thesis": "Every rescue carries a painted route code read at each relay handoff.",
+      "palette": ["#eef0ea", "#1d2024", "#ee8a1d", "#1f8a4c", "#c8282a", "#2b3f9a"],
+      "materials": ["painted steel lids", "whitewash", "relay route codes"],
+      "viewport": "A grid of steel tiffin lids painted with route codes beside a heavy headline and a black Report action.",
+      "risk": "The dabbawala is the most familiar metaphor for Indian food logistics, so it reads as expected.",
+      "html": ".impeccable/mocks/decision/model-pick.html",
+      "comp": ".impeccable/mocks/decision/model-pick.webp"
+    },
+    {"id": "challenger-cloud", "kind": "challenger", "catalogId": "clouds-storms-auroras-iridescent-cloud-edge", "label": "Iridescent Cloud Edge", "verdict": "declined", "lineage": "cloud iridescence", "thesis": "Quiet white fields with colour only at the edge.", "palette": ["#fbfbfa", "#5c6670", "#8fe0c2", "#e8a5c0", "#9b7fe0"], "materials": ["cloud white", "spectral hairlines"], "viewport": "White field, spectral band on the active edge.", "case": "Loses both axes: kitchens and drivers do not see themselves in weather optics.", "kept": "Colour confined to edges; text stays achromatic.", "risk": "Too faint for urgent states.", "hero": "https://impeccable.style/worlds/cards/clouds-storms-auroras-iridescent-cloud-edge-hero.webp"},
+    {"id": "challenger-clay", "kind": "challenger", "catalogId": "clay-ceramics-fracture-coiled-earth-tower", "label": "Coiled Earth Tower", "verdict": "declined", "lineage": "coil-built earthen towers", "thesis": "Progress as courses rising one coil at a time.", "palette": ["#b5603a", "#6b3a22", "#efe6d8"], "materials": ["terracotta coils", "slip seams"], "viewport": "Banded courses of clay rising behind the headline.", "case": "Loses both axes: the rescue flow is a relay, not a slow build.", "kept": "History accumulates as stacked courses.", "risk": "Heavy and slow for a time-critical task.", "hero": "https://impeccable.style/worlds/cards/clay-ceramics-fracture-coiled-earth-tower-hero.webp"},
+    {"id": "challenger-specimen", "kind": "challenger", "catalogId": "variable-font-specimen", "label": "Variable Font Specimen", "verdict": "declined", "lineage": "foundry type specimens", "thesis": "Letterforms carry everything.", "palette": ["#fafaf8", "#111111", "#ff4d1f"], "materials": ["paper", "glyph grid"], "viewport": "One giant glyph and a breathing grid.", "case": "Loses both axes: nothing about food rescue lives in a type specimen.", "kept": "Hierarchy by scale contrast alone.", "risk": "Self-regarding for a service product.", "hero": "https://impeccable.style/worlds/cards/variable-font-specimen-hero.webp"},
+    {"id": "challenger-teletext", "kind": "challenger", "catalogId": "broadcast-programming-teletext-service", "label": "Teletext Service", "verdict": "declined", "lineage": "broadcast teletext", "thesis": "Every page addressable by number.", "palette": ["#000000", "#ffff00", "#00ffff", "#ffffff", "#ff0000"], "materials": ["block mosaic", "40×24 grid"], "viewport": "P100 index of live rescues.", "case": "Loses both axes: retro broadcast is foreign to the audience and hurts phone readability.", "kept": "One ticket number addresses each rescue everywhere.", "risk": "Novelty over clarity.", "hero": "https://impeccable.style/worlds/cards/broadcast-programming-teletext-service-hero.webp"},
+    {"id": "challenger-dancehall", "kind": "challenger", "catalogId": "posters-covers-sleeves-soundsystem-dance-poster", "label": "Soundsystem Dance Poster", "verdict": "declined", "lineage": "Jamaican dance posters", "thesis": "Billing weight ranks what matters.", "palette": ["#f5ff3a", "#ff4fa3", "#111111"], "materials": ["fluorescent card", "screened ink"], "viewport": "Ranked block caps over a hand-ruled date grid.", "case": "Loses both axes: too loud for daily operational screens.", "kept": "Urgency gets billing weight.", "risk": "Exhausting on working screens.", "hero": "https://impeccable.style/worlds/cards/posters-covers-sleeves-soundsystem-dance-poster-hero.webp"},
+    {"id": "challenger-dubois", "kind": "challenger", "catalogId": "dubois-data-portraits", "label": "Du Bois Data Portraits", "verdict": "declined", "lineage": "1900 Du Bois data portraits", "thesis": "Statistics as bold graphic argument.", "palette": ["#efe3cc", "#c8102e", "#e8b417", "#1f6b45", "#111111"], "materials": ["inked board", "hand-lettered captions"], "viewport": "A crimson spiral of meals delivered.", "case": "Loses both axes: strong for impact, but foreign to the audience and silent about the workflow.", "kept": "Impact drawn as flat ruled bars.", "risk": "Only one section has data to argue with.", "hero": "https://impeccable.style/worlds/cards/dubois-data-portraits-hero.webp"}
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "buildPath": {"value": "code", "toggle": false},
+  "canon": true,
+  "canonCard": {
+    "kind": "canon",
+    "label": "The category standard",
+    "thesis": "A clean nonprofit platform page, executed impeccably.",
+    "palette": ["#ffffff", "#111827", "#15803d"],
+    "materials": ["clean grid", "product photography"],
+    "viewport": "Headline and Report action beside a photo, three feature cards below.",
+    "risk": "Indistinguishable from every other food-donation platform by design.",
+    "html": ".impeccable/mocks/decision/canon.html",
+    "comp": ".impeccable/mocks/decision/canon.webp"
+  },
+  "steer": true
+}

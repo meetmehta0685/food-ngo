@@ -12,7 +12,6 @@ import {
   MapPin,
   Package,
   ShieldCheck,
-  Sparkle,
   SpinnerGap,
   ForkKnife,
 } from "@phosphor-icons/react"
@@ -253,20 +252,15 @@ export function DonationForm() {
   const errors = form.formState.errors
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]">
-      <Card className="border-primary/15">
-        <CardHeader className="gap-3 border-b pb-6">
-          <Badge variant="outline" className="w-fit gap-2 font-mono text-[10px] uppercase tracking-[0.12em]">
-            <Sparkle data-icon="inline-start" />
-            New rescue request
-          </Badge>
-          <CardTitle className="text-2xl tracking-[-0.03em]">Report available food.</CardTitle>
-          <CardDescription className="max-w-xl leading-6">Provide the portions, safe window, and pickup pin. Nearby verified NGOs are alerted automatically.</CardDescription>
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)] lg:gap-8">
+      <Card className="gap-0 py-0">
+        <CardHeader className="bg-muted/50 border-b px-5 py-5 sm:px-8">
+          <CardDescription className="text-foreground/80 max-w-xl text-base leading-relaxed">Provide the portions, safe window, and pickup pin. Nearby verified NGOs are alerted automatically.</CardDescription>
         </CardHeader>
-        <CardContent className="pt-6">
-          <form onSubmit={onSubmit} className="flex flex-col gap-6" noValidate>
+        <CardContent className="px-5 py-7 sm:px-8">
+          <form onSubmit={onSubmit} className="flex flex-col gap-9" noValidate>
             <FieldSet>
-              <FieldLegend variant="label">Start with the food</FieldLegend>
+              <FieldLegend variant="legend" className="font-display text-2xl! font-semibold">Start with the food</FieldLegend>
               <FieldGroup>
                 <Field data-invalid={Boolean(errors.foodType) || undefined}>
                   <FieldLabel>Food category</FieldLabel>
@@ -281,7 +275,7 @@ export function DonationForm() {
                     spacing={0}
                   >
                     {foodPresets.map((item) => (
-                      <ToggleGroupItem key={item.type} value={item.type} className="h-auto justify-start gap-2 px-3 py-3 text-left text-xs">
+                      <ToggleGroupItem key={item.type} value={item.type} className="h-auto justify-start gap-2 px-3 py-3.5 text-left text-sm font-medium">
                         <ForkKnife data-icon="inline-start" />
                         <span>{item.label}</span>
                       </ToggleGroupItem>
@@ -304,8 +298,8 @@ export function DonationForm() {
               </FieldGroup>
             </FieldSet>
 
-            <FieldSet>
-              <FieldLegend variant="label">Set the safe window</FieldLegend>
+            <FieldSet className="border-t pt-8">
+              <FieldLegend variant="legend" className="font-display text-2xl! font-semibold">Set the safe window</FieldLegend>
               <FieldGroup>
                 <FieldGroup className="grid gap-4 sm:grid-cols-3">
                   <Field data-invalid={Boolean(errors.servesCount) || undefined}>
@@ -327,7 +321,7 @@ export function DonationForm() {
                 <Field>
                   <div className="flex items-center justify-between gap-4">
                     <FieldLabel>Deadline shortcut</FieldLabel>
-                    <span className="text-muted-foreground font-mono text-[10px]">Set from now</span>
+                    <span className="text-muted-foreground text-sm">Set from now</span>
                   </div>
                   <ToggleGroup
                     value={deadlinePreset ? [deadlinePreset] : []}
@@ -342,7 +336,7 @@ export function DonationForm() {
                     variant="outline"
                   >
                     {deadlinePresets.map((preset) => (
-                      <ToggleGroupItem key={preset.hours} value={String(preset.hours)} className="h-8 text-[10px]">
+                      <ToggleGroupItem key={preset.hours} value={String(preset.hours)} className="h-10 text-sm">
                         <Clock data-icon="inline-start" />
                         {preset.label}
                       </ToggleGroupItem>
@@ -352,8 +346,8 @@ export function DonationForm() {
               </FieldGroup>
             </FieldSet>
 
-            <FieldSet>
-              <FieldLegend variant="label">Place the pickup</FieldLegend>
+            <FieldSet className="border-t pt-8">
+              <FieldLegend variant="legend" className="font-display text-2xl! font-semibold">Place the pickup</FieldLegend>
               <FieldGroup>
                 <Field data-invalid={Boolean(errors.address) || undefined}>
                   <FieldLabel htmlFor="address"><MapPin data-icon="inline-start" />Street address and instructions</FieldLabel>
@@ -364,7 +358,7 @@ export function DonationForm() {
                 {addressSuggestions.length > 0 ? (
                   <div className="flex flex-col gap-1" aria-label="Address suggestions">
                     {addressSuggestions.map((candidate) => (
-                      <Button key={`${candidate.lat}:${candidate.lng}:${candidate.displayName}`} type="button" variant="ghost" className="h-auto justify-start whitespace-normal px-3 py-2 text-left text-xs" onClick={() => selectAddressSuggestion(candidate)}>
+                      <Button key={`${candidate.lat}:${candidate.lng}:${candidate.displayName}`} type="button" variant="ghost" className="h-auto justify-start whitespace-normal px-3 py-2.5 text-left text-sm font-normal" onClick={() => selectAddressSuggestion(candidate)}>
                         <MapPin data-icon="inline-start" />
                         <span>{candidate.displayName}</span>
                       </Button>
@@ -380,7 +374,7 @@ export function DonationForm() {
                     {currentLocationLoading ? <SpinnerGap data-icon="inline-start" className="animate-spin" /> : <Crosshair data-icon="inline-start" />}
                     {currentLocationLoading ? "Detecting…" : "Use current GPS"}
                   </Button>
-                  <Badge variant="outline" className="ml-auto font-mono text-[10px]">{lat.toFixed(4)}, {lng.toFixed(4)}</Badge>
+                  <Badge variant="outline" className="tabular ml-auto">{lat.toFixed(4)}, {lng.toFixed(4)}</Badge>
                 </div>
                 {selectedLocationName ? (
                   <Alert>
@@ -405,7 +399,7 @@ export function DonationForm() {
               </Alert>
             ) : null}
 
-            <Button type="submit" disabled={form.formState.isSubmitting} className="w-full">
+            <Button type="submit" size="lg" disabled={form.formState.isSubmitting} className="w-full">
               {form.formState.isSubmitting ? <SpinnerGap data-icon="inline-start" className="animate-spin" /> : <ArrowRight data-icon="inline-start" />}
               {form.formState.isSubmitting ? "Broadcasting rescue offer…" : "Broadcast rescue offer"}
             </Button>
@@ -415,7 +409,7 @@ export function DonationForm() {
 
       <Card className="h-fit lg:sticky lg:top-24">
         <CardHeader className="gap-2">
-          <CardTitle className="text-base">Verify the pickup pin</CardTitle>
+          <CardTitle>Verify the pickup pin</CardTitle>
           <CardDescription>Drag the map pin to the exact location a volunteer should use.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
@@ -423,13 +417,13 @@ export function DonationForm() {
             <MapPicker lat={lat} lng={lng} onChange={(nextLat, nextLng) => { setLat(nextLat); setLng(nextLng) }} />
           </div>
           <Separator />
-          <div className="flex flex-col gap-1 text-xs">
+          <div className="flex flex-col gap-1 text-sm">
             <p className="font-semibold">Location context</p>
             <p className="text-muted-foreground leading-6">The assigned NGO and volunteer use this coordinate to navigate the final handoff.</p>
           </div>
         </CardContent>
         <CardFooter className="border-t pt-4">
-          <span className="text-muted-foreground inline-flex items-center gap-2 font-mono text-[10px]"><ShieldCheck className="text-success" />Pin visible to assigned partners</span>
+          <span className="text-muted-foreground inline-flex items-center gap-2 text-sm"><ShieldCheck className="text-success" weight="bold" />Pin visible to assigned partners</span>
         </CardFooter>
       </Card>
     </div>

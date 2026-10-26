@@ -1,0 +1,24 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Banana leaf</title>
+<style>
+:root{--leaf:#2f6b2a;--leaf-l:#4f8f3a;--rice:#f4f1e6;--ink:#1b1f17;--turmeric:#e3a21a;--chilli:#c23a1e;--steel:#c9cdc8}
+*{box-sizing:border-box;margin:0}body{width:1440px;height:900px;background:var(--rice);font-family:Arial,sans-serif;color:var(--ink);overflow:hidden;position:relative}
+nav{display:flex;justify-content:space-between;align-items:center;padding:24px 64px;font-weight:700}
+.leaf{position:absolute;left:-40px;right:-40px;top:250px;height:560px;background:linear-gradient(170deg,var(--leaf-l),var(--leaf) 60%);border-radius:0 60% 0 60%/0 100% 0 100%}
+.leaf:before{content:"";position:absolute;left:0;right:0;top:50%;height:6px;background:#a9c98d;opacity:.8}
+.leaf:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(100deg,transparent 0 58px,rgba(255,255,255,.08) 58px 60px)}
+h1{position:absolute;left:64px;top:96px;font:900 84px/0.95 Georgia,serif;letter-spacing:-.02em;width:880px}
+.lede{position:absolute;left:980px;top:104px;width:390px;font-size:18px;line-height:1.5}
+.form{position:absolute;left:470px;top:340px;width:500px;background:var(--rice);border-radius:46% 54% 50% 50%/40% 40% 60% 60%;padding:46px 60px;box-shadow:0 10px 0 rgba(0,0,0,.12)}
+.form b{display:block;font:800 26px/1.1 Georgia,serif;margin-bottom:14px}.f{height:38px;border-bottom:2px solid var(--ink);margin:10px 0;font-size:13px;padding-top:12px;color:#555}
+.go{margin-top:18px;background:var(--chilli);color:#fff;padding:14px 20px;font-weight:800;display:inline-block}
+.dish{position:absolute;width:150px;height:150px;border-radius:50%;display:grid;place-items:center;text-align:center;font:700 13px/1.3 Arial;padding:18px;color:var(--ink)}
+.d1{left:120px;top:320px;background:var(--turmeric)}.d2{left:150px;top:560px;background:var(--steel)}.d3{left:1080px;top:330px;background:#f0c9a0}.d4{left:1120px;top:570px;background:var(--rice)}
+</style></head><body>
+<nav><span>Food Rescue Network</span><span>Sign in</span></nav>
+<h1>Surplus served before it spoils.</h1>
+<p class="lede">Report what is left. The nearest NGOs see it, the first to accept takes it, and a volunteer carries it across.</p>
+<div class="leaf"></div>
+<div class="dish d1">DONOR<br>reports surplus</div><div class="dish d2">3 NGOs<br>notified nearby</div>
+<div class="form"><b>Report surplus</b><div class="f">What food? · Serves how many?</div><div class="f">Pickup address</div><div class="f">Pickup by</div><span class="go">Serve it to the network →</span></div>
+<div class="dish d3">VOLUNTEER<br>carries it</div><div class="dish d4">✓ NGO<br>confirms receipt</div>
+</body></html>

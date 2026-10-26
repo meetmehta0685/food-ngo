@@ -6,13 +6,6 @@ import { useState } from "react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { formatAppTime } from "@/lib/format-date"
 
 export function PickupOtpCard({ assignmentId }: { assignmentId: string }) {
@@ -55,28 +48,24 @@ export function PickupOtpCard({ assignmentId }: { assignmentId: string }) {
   }
 
   return (
-    <Card className="border-primary/20 bg-primary/5">
-      <CardHeader>
-        <div className="flex items-start gap-3">
-          <span className="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-md">
-            <Key data-icon="inline-start" weight="bold" />
-          </span>
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <CardTitle>Pickup Verification PIN</CardTitle>
-            <CardDescription>
-              Generate this 6-digit PIN when the volunteer driver arrives. Share it with the driver after food is loaded.
-            </CardDescription>
-          </div>
-          <Badge className="hidden shrink-0 sm:inline-flex" variant="secondary">
-            Secure handoff
-          </Badge>
+    <section className="flex flex-col gap-5 border-t pt-6" aria-labelledby="pickup-pin-title">
+      <div className="flex items-start gap-3">
+        <Key className="text-primary mt-1 size-5 shrink-0" weight="bold" />
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <h3 id="pickup-pin-title" className="text-xl">Pickup Verification PIN</h3>
+          <p className="text-muted-foreground text-sm leading-relaxed">
+            Generate this 6-digit PIN when the volunteer driver arrives. Share it with the driver after food is loaded.
+          </p>
         </div>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
+        <Badge className="hidden shrink-0 sm:inline-flex" variant="outline">
+          Secure handoff
+        </Badge>
+      </div>
+      <div className="flex flex-col gap-4">
         {code ? (
-          <div className="border-primary/30 bg-background flex flex-col gap-1 rounded-md border px-4 py-4 text-center">
-            <p className="text-primary pl-3 font-mono text-3xl font-bold tracking-[0.4em]">{code}</p>
-            <p className="text-muted-foreground font-mono text-[11px]">
+          <div className="flex flex-col items-start gap-1 py-2">
+            <p className="font-display tabular pl-[0.18em] text-5xl font-semibold tracking-[0.18em]">{code}</p>
+            <p className="text-muted-foreground tabular text-sm">
               Valid until: {expiresAt ? formatAppTime(expiresAt) : "Soon"}
             </p>
           </div>
@@ -101,7 +90,7 @@ export function PickupOtpCard({ assignmentId }: { assignmentId: string }) {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         ) : null}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   )
 }

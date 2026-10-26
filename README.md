@@ -57,12 +57,9 @@ npm run db:generate
 npm run dev
 ```
 
-Run the background worker in a second terminal. It processes offer expiry,
-automatic reassignment, and committed Ably events:
-
-```bash
-npm run worker:rescue:dev
-```
+There is no separate worker. After each authenticated API request, the server
+expires stale volunteer offers, reassigns them, and publishes pending Ably events
+(`lib/background-sync.ts`).
 
 ## Database migrations
 

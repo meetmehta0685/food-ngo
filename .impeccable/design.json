@@ -1,49 +1,326 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-04T00:00:00.000Z",
+  "generatedAt": "2026-10-26T15:59:48.776290+00:00",
   "title": "Design System: Food Rescue Network",
   "extensions": {
     "colorMeta": {
-      "work-surface": {
-        "role": "neutral",
-        "displayName": "Work Surface",
-        "canonical": "oklch(0.975 0.015 94)",
-        "tonalRamp": ["oklch(0.18 0.015 94)", "oklch(0.3 0.015 94)", "oklch(0.42 0.015 94)", "oklch(0.54 0.015 94)", "oklch(0.66 0.015 94)", "oklch(0.78 0.015 94)", "oklch(0.88 0.015 94)", "oklch(0.975 0.015 94)"]
-      },
-      "signal-green": {
+      "kumkum": {
         "role": "primary",
-        "displayName": "Signal Green",
-        "canonical": "oklch(0.39 0.115 164)",
-        "tonalRamp": ["oklch(0.15 0.115 164)", "oklch(0.25 0.115 164)", "oklch(0.35 0.115 164)", "oklch(0.45 0.115 164)", "oklch(0.55 0.115 164)", "oklch(0.65 0.115 164)", "oklch(0.75 0.115 164)", "oklch(0.85 0.115 164)"]
+        "displayName": "Kumkum Red",
+        "canonical": "oklch(0.52 0.19 27)",
+        "tonalRamp": [
+          "oklch(0.15 0.19 27)",
+          "oklch(0.27 0.19 27)",
+          "oklch(0.39 0.19 27)",
+          "oklch(0.51 0.19 27)",
+          "oklch(0.63 0.19 27)",
+          "oklch(0.75 0.19 27)",
+          "oklch(0.86 0.19 27)",
+          "oklch(0.95 0.19 27)"
+        ]
       },
-      "attention-amber": {
+      "turmeric": {
+        "role": "secondary",
+        "displayName": "Turmeric",
+        "canonical": "oklch(0.78 0.15 80)",
+        "tonalRamp": [
+          "oklch(0.15 0.15 80)",
+          "oklch(0.27 0.15 80)",
+          "oklch(0.39 0.15 80)",
+          "oklch(0.51 0.15 80)",
+          "oklch(0.63 0.15 80)",
+          "oklch(0.75 0.15 80)",
+          "oklch(0.86 0.15 80)",
+          "oklch(0.95 0.15 80)"
+        ]
+      },
+      "turmeric-wash": {
+        "role": "secondary",
+        "displayName": "Turmeric Wash",
+        "canonical": "oklch(0.86 0.13 85)",
+        "tonalRamp": [
+          "oklch(0.15 0.13 85)",
+          "oklch(0.27 0.13 85)",
+          "oklch(0.39 0.13 85)",
+          "oklch(0.51 0.13 85)",
+          "oklch(0.63 0.13 85)",
+          "oklch(0.75 0.13 85)",
+          "oklch(0.86 0.13 85)",
+          "oklch(0.95 0.13 85)"
+        ]
+      },
+      "leaf": {
         "role": "tertiary",
-        "displayName": "Attention Amber",
-        "canonical": "oklch(0.83 0.14 83)",
-        "tonalRamp": ["oklch(0.15 0.14 83)", "oklch(0.25 0.14 83)", "oklch(0.35 0.14 83)", "oklch(0.45 0.14 83)", "oklch(0.55 0.14 83)", "oklch(0.65 0.14 83)", "oklch(0.75 0.14 83)", "oklch(0.83 0.14 83)"]
+        "displayName": "Leaf Green",
+        "canonical": "oklch(0.5 0.12 150)",
+        "tonalRamp": [
+          "oklch(0.15 0.12 150)",
+          "oklch(0.27 0.12 150)",
+          "oklch(0.39 0.12 150)",
+          "oklch(0.51 0.12 150)",
+          "oklch(0.63 0.12 150)",
+          "oklch(0.75 0.12 150)",
+          "oklch(0.86 0.12 150)",
+          "oklch(0.95 0.12 150)"
+        ]
       },
-      "urgent-red": {
+      "danger": {
         "role": "error",
-        "displayName": "Urgent Red",
-        "canonical": "oklch(0.58 0.19 28)",
-        "tonalRamp": ["oklch(0.15 0.19 28)", "oklch(0.25 0.19 28)", "oklch(0.35 0.19 28)", "oklch(0.45 0.19 28)", "oklch(0.55 0.19 28)", "oklch(0.65 0.19 28)", "oklch(0.75 0.19 28)", "oklch(0.85 0.19 28)"]
+        "displayName": "Danger",
+        "canonical": "oklch(0.5 0.2 25)",
+        "tonalRamp": [
+          "oklch(0.15 0.2 25)",
+          "oklch(0.27 0.2 25)",
+          "oklch(0.39 0.2 25)",
+          "oklch(0.51 0.2 25)",
+          "oklch(0.63 0.2 25)",
+          "oklch(0.75 0.2 25)",
+          "oklch(0.86 0.2 25)",
+          "oklch(0.95 0.2 25)"
+        ]
+      },
+      "laterite": {
+        "role": "neutral",
+        "displayName": "Laterite Threshold",
+        "canonical": "oklch(0.3 0.058 38)",
+        "tonalRamp": [
+          "oklch(0.15 0.058 38)",
+          "oklch(0.27 0.058 38)",
+          "oklch(0.39 0.058 38)",
+          "oklch(0.51 0.058 38)",
+          "oklch(0.63 0.058 38)",
+          "oklch(0.75 0.058 38)",
+          "oklch(0.86 0.058 38)",
+          "oklch(0.95 0.058 38)"
+        ]
+      },
+      "rice": {
+        "role": "neutral",
+        "displayName": "Rice Flour",
+        "canonical": "oklch(0.955 0.012 90)",
+        "tonalRamp": [
+          "oklch(0.15 0.012 90)",
+          "oklch(0.27 0.012 90)",
+          "oklch(0.39 0.012 90)",
+          "oklch(0.51 0.012 90)",
+          "oklch(0.63 0.012 90)",
+          "oklch(0.75 0.012 90)",
+          "oklch(0.86 0.012 90)",
+          "oklch(0.95 0.012 90)"
+        ]
+      },
+      "limewash": {
+        "role": "neutral",
+        "displayName": "Limewash",
+        "canonical": "oklch(0.972 0.007 100)",
+        "tonalRamp": [
+          "oklch(0.15 0.007 100)",
+          "oklch(0.27 0.007 100)",
+          "oklch(0.39 0.007 100)",
+          "oklch(0.51 0.007 100)",
+          "oklch(0.63 0.007 100)",
+          "oklch(0.75 0.007 100)",
+          "oklch(0.86 0.007 100)",
+          "oklch(0.95 0.007 100)"
+        ]
+      },
+      "sheet": {
+        "role": "neutral",
+        "displayName": "Sheet",
+        "canonical": "oklch(0.992 0.004 100)",
+        "tonalRamp": [
+          "oklch(0.15 0.004 100)",
+          "oklch(0.27 0.004 100)",
+          "oklch(0.39 0.004 100)",
+          "oklch(0.51 0.004 100)",
+          "oklch(0.63 0.004 100)",
+          "oklch(0.75 0.004 100)",
+          "oklch(0.86 0.004 100)",
+          "oklch(0.95 0.004 100)"
+        ]
+      },
+      "plaster": {
+        "role": "neutral",
+        "displayName": "Plaster",
+        "canonical": "oklch(0.948 0.011 95)",
+        "tonalRamp": [
+          "oklch(0.15 0.011 95)",
+          "oklch(0.27 0.011 95)",
+          "oklch(0.39 0.011 95)",
+          "oklch(0.51 0.011 95)",
+          "oklch(0.63 0.011 95)",
+          "oklch(0.75 0.011 95)",
+          "oklch(0.86 0.011 95)",
+          "oklch(0.95 0.011 95)"
+        ]
+      },
+      "ash-ink": {
+        "role": "neutral",
+        "displayName": "Ash Ink",
+        "canonical": "oklch(0.23 0.014 60)",
+        "tonalRamp": [
+          "oklch(0.15 0.014 60)",
+          "oklch(0.27 0.014 60)",
+          "oklch(0.39 0.014 60)",
+          "oklch(0.51 0.014 60)",
+          "oklch(0.63 0.014 60)",
+          "oklch(0.75 0.014 60)",
+          "oklch(0.86 0.014 60)",
+          "oklch(0.95 0.014 60)"
+        ]
+      },
+      "ash-muted": {
+        "role": "neutral",
+        "displayName": "Ash Muted",
+        "canonical": "oklch(0.45 0.016 60)",
+        "tonalRamp": [
+          "oklch(0.15 0.016 60)",
+          "oklch(0.27 0.016 60)",
+          "oklch(0.39 0.016 60)",
+          "oklch(0.51 0.016 60)",
+          "oklch(0.63 0.016 60)",
+          "oklch(0.75 0.016 60)",
+          "oklch(0.86 0.016 60)",
+          "oklch(0.95 0.016 60)"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(0.87 0.012 90)",
+        "tonalRamp": [
+          "oklch(0.15 0.012 90)",
+          "oklch(0.27 0.012 90)",
+          "oklch(0.39 0.012 90)",
+          "oklch(0.51 0.012 90)",
+          "oklch(0.63 0.012 90)",
+          "oklch(0.75 0.012 90)",
+          "oklch(0.86 0.012 90)",
+          "oklch(0.95 0.012 90)"
+        ]
+      },
+      "night-threshold": {
+        "role": "neutral",
+        "displayName": "Night Threshold (dark theme ground)",
+        "canonical": "oklch(0.205 0.016 50)",
+        "tonalRamp": [
+          "oklch(0.15 0.016 50)",
+          "oklch(0.27 0.016 50)",
+          "oklch(0.39 0.016 50)",
+          "oklch(0.51 0.016 50)",
+          "oklch(0.63 0.016 50)",
+          "oklch(0.75 0.016 50)",
+          "oklch(0.86 0.016 50)",
+          "oklch(0.95 0.016 50)"
+        ]
+      },
+      "night-kumkum": {
+        "role": "primary",
+        "displayName": "Night Kumkum (dark theme action)",
+        "canonical": "oklch(0.64 0.19 30)",
+        "tonalRamp": [
+          "oklch(0.15 0.19 30)",
+          "oklch(0.27 0.19 30)",
+          "oklch(0.39 0.19 30)",
+          "oklch(0.51 0.19 30)",
+          "oklch(0.63 0.19 30)",
+          "oklch(0.75 0.19 30)",
+          "oklch(0.86 0.19 30)",
+          "oklch(0.95 0.19 30)"
+        ]
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Jakarta Display", "purpose": "Hero statements and major page headings." },
-      "label": { "displayName": "JetBrains Telemetry", "purpose": "Statuses, IDs, timestamps, and compact operational labels." }
+      "display": {
+        "displayName": "Display (mobile)",
+        "purpose": "Landing hero headline at 2.9rem on phones."
+      },
+      "display-lg": {
+        "displayName": "Display (desktop)",
+        "purpose": "Landing hero at 5.75rem from lg (4.5rem at sm)."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles via PageHeader, 2.25rem to 3rem at sm; landing section heads."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card titles and subsection heads."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Root reading size, Mukta 1rem / 1.55."
+      },
+      "body-lead": {
+        "displayName": "Lead",
+        "purpose": "Sentence under a page or section title."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Buttons, nav links, metadata."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "Ledger values in tabular Eczar."
+      }
     },
     "shadows": [
-      { "name": "shell-ambient", "value": "0 1px 3px color-mix(in oklch, var(--foreground) 12%, transparent)", "purpose": "Separate the floating navigation shell from the work surface." },
-      { "name": "focus-ring", "value": "0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent)", "purpose": "Keyboard focus feedback shared by shadcn controls." }
+      {
+        "name": "popover-lift",
+        "value": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1), 0 0 0 1px color-mix(in oklch, var(--foreground) 10%, transparent)",
+        "purpose": "Select, combobox and dropdown menus."
+      },
+      {
+        "name": "sheet-drawer",
+        "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+        "purpose": "Mobile navigation sheet."
+      },
+      {
+        "name": "sign-in-sheet",
+        "value": "0 24px 48px -28px color-mix(in oklch, var(--foreground) 35%, transparent)",
+        "purpose": "The lone sign-in / sign-up card."
+      }
     ],
     "motion": [
-      { "name": "meter-sweep", "value": "4.8s cubic-bezier(0.22, 1, 0.36, 1) infinite", "purpose": "Subtle VU-meter needle sweep; disabled under prefers-reduced-motion." },
-      { "name": "state-transition", "value": "transition-colors", "purpose": "Small semantic state changes on buttons, badges, and status surfaces." }
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Kolam draw, node pop-in, kolam mark hover rotation."
+      },
+      {
+        "name": "kolam-draw",
+        "value": "1.8s ease-out-expo 0.25s",
+        "purpose": "Hero kolam stroke drawing in once via stroke-dashoffset."
+      },
+      {
+        "name": "kolam-dot-in",
+        "value": "0.5s ease-out-expo, staggered 0.25s to 1.85s",
+        "purpose": "Nodes scale from 0.4 and fade in along the line."
+      },
+      {
+        "name": "control-transition",
+        "value": "200ms ease-out",
+        "purpose": "Button colour changes and 1px press; nav underline scales in over 300ms."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "0.01ms",
+        "purpose": "All animation and transition collapsed under prefers-reduced-motion."
+      }
     ],
     "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "lg", "value": "1024px" }
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
     ]
   },
   "components": [
@@ -51,62 +328,126 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "The clear next step for broadcasting surplus or progressing a rescue.",
-      "html": "<button class=\"ds-btn-primary\">Broadcast surplus</button>",
-      "css": ".ds-btn-primary{background:var(--primary);color:var(--primary-foreground);border:1px solid transparent;border-radius:var(--radius-sm);padding:.5rem .75rem;font:500 .75rem/1.6 var(--font-sans-family);transition:background-color .2s,color .2s,box-shadow .2s}.ds-btn-primary:hover{background:color-mix(in oklch,var(--primary) 88%,var(--foreground))}.ds-btn-primary:focus-visible{outline:2px solid var(--ring);outline-offset:2px}"
+      "description": "The one action colour: kumkum fill for the single primary action on a screen.",
+      "html": "<button class=\"ds-btn-primary\">Report surplus food <svg width=\"16\" height=\"16\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M221.66 133.66l-72 72a8 8 0 0 1-11.32-11.32L196.69 136H40a8 8 0 0 1 0-16h156.69l-58.35-58.34a8 8 0 0 1 11.32-11.32l72 72a8 8 0 0 1 0 11.32Z\"/></svg></button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px;border:1px solid transparent;border-radius:10px;background:oklch(0.52 0.19 27);color:oklch(0.985 0.006 90);font:600 0.875rem/1 Mukta,system-ui,sans-serif;cursor:pointer;transition:background-color .2s ease-out,transform .2s ease-out;}.ds-btn-primary:hover{background:color-mix(in oklch,oklch(0.52 0.19 27) 88%,transparent);}.ds-btn-primary:hover svg{transform:translateX(2px);}.ds-btn-primary svg{transition:transform .2s;}.ds-btn-primary:focus-visible{outline:none;box-shadow:0 0 0 2px oklch(0.972 0.007 100),0 0 0 4px color-mix(in oklch,oklch(0.52 0.19 27) 40%,transparent);}.ds-btn-primary:active{transform:translateY(1px);}"
     },
     {
       "name": "Outline Button",
       "kind": "button",
       "refersTo": "button-outline",
-      "description": "A secondary action that keeps the paper surface visible.",
-      "html": "<button class=\"ds-btn-outline\">See the signal path</button>",
-      "css": ".ds-btn-outline{background:transparent;color:var(--foreground);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .75rem;font:500 .75rem/1.6 var(--font-sans-family);transition:background-color .2s,color .2s,border-color .2s}.ds-btn-outline:hover{background:var(--muted);border-color:var(--ring)}.ds-btn-outline:focus-visible{outline:2px solid var(--ring);outline-offset:2px}"
+      "description": "Secondary action: ink outline that inverts to solid ink on hover.",
+      "html": "<button class=\"ds-btn-outline\">Join the network</button>",
+      "css": ".ds-btn-outline{height:44px;padding:0 16px;border:1px solid color-mix(in oklch,oklch(0.23 0.014 60) 70%,transparent);border-radius:10px;background:transparent;color:oklch(0.23 0.014 60);font:600 0.875rem/1 Mukta,system-ui,sans-serif;cursor:pointer;transition:background-color .2s,color .2s;}.ds-btn-outline:hover{background:oklch(0.23 0.014 60);color:oklch(0.972 0.007 100);}.ds-btn-outline:focus-visible{outline:none;box-shadow:0 0 0 2px oklch(0.972 0.007 100),0 0 0 4px color-mix(in oklch,oklch(0.52 0.19 27) 40%,transparent);}"
     },
     {
-      "name": "Paper Card",
-      "kind": "card",
-      "refersTo": "card",
-      "description": "A quiet container for one decision, workflow, or readout.",
-      "html": "<article class=\"ds-card\"><h3>Rescue signal bridge</h3><p>One view from surplus to verified handover.</p></article>",
-      "css": ".ds-card{background:var(--card);color:var(--card-foreground);border:1px solid var(--border);border-radius:var(--radius-md);padding:1rem}.ds-card h3{margin:0;font:600 1.125rem/1.3 var(--font-display-family);letter-spacing:-.025em}.ds-card p{margin:.25rem 0 0;color:var(--muted-foreground);font:400 .75rem/1.6 var(--font-sans-family)}"
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Quiet secondary action, e.g. Decline beside Accept.",
+      "html": "<button class=\"ds-btn-ghost\">Decline</button>",
+      "css": ".ds-btn-ghost{height:44px;padding:0 16px;border:1px solid transparent;border-radius:10px;background:transparent;color:color-mix(in oklch,oklch(0.23 0.014 60) 80%,transparent);font:600 0.875rem/1 Mukta,system-ui,sans-serif;cursor:pointer;transition:background-color .2s,color .2s;}.ds-btn-ghost:hover{background:oklch(0.945 0.009 95);color:oklch(0.23 0.014 60);}.ds-btn-ghost:focus-visible{outline:none;box-shadow:0 0 0 2px color-mix(in oklch,oklch(0.52 0.19 27) 40%,transparent);}"
     },
     {
-      "name": "Field Input",
+      "name": "Text Input",
       "kind": "input",
       "refersTo": "input",
-      "description": "A labeled shadcn field control with a calm paper surface and shared focus ring.",
-      "html": "<label class=\"ds-field\"><span>Pickup area</span><input placeholder=\"e.g. Connaught Place\" /></label>",
-      "css": ".ds-field{display:flex;flex-direction:column;gap:.375rem;color:var(--foreground);font:500 .75rem/1.4 var(--font-sans-family)}.ds-field input{background:var(--input);color:var(--foreground);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .75rem;font:400 .75rem/1.6 var(--font-sans-family);outline:none}.ds-field input::placeholder{color:var(--muted-foreground)}.ds-field input:focus-visible{border-color:var(--ring);box-shadow:0 0 0 3px color-mix(in oklch,var(--ring) 30%,transparent)}"
+      "description": "Sheet-filled field with a kumkum focus ring and caret.",
+      "html": "<input class=\"ds-input\" placeholder=\"Pickup address\" />",
+      "css": ".ds-input{width:280px;height:44px;padding:4px 12px;border:1px solid oklch(0.8 0.015 80);border-radius:10px;background:oklch(0.992 0.004 100);color:oklch(0.23 0.014 60);caret-color:oklch(0.52 0.19 27);font:400 1rem Mukta,system-ui,sans-serif;outline:none;transition:border-color .15s,box-shadow .15s;}.ds-input::placeholder{color:oklch(0.45 0.016 60);}.ds-input:hover{border-color:color-mix(in oklch,oklch(0.23 0.014 60) 40%,transparent);}.ds-input:focus-visible{border-color:oklch(0.52 0.19 27);box-shadow:0 0 0 2px color-mix(in oklch,oklch(0.52 0.19 27) 25%,transparent);}"
     },
     {
-      "name": "Status Chip",
+      "name": "Status Badge",
       "kind": "chip",
-      "refersTo": "status-chip",
-      "description": "A compact operational state for live, verified, attention, or role context.",
-      "html": "<span class=\"ds-chip\">Live</span>",
-      "css": ".ds-chip{display:inline-flex;align-items:center;gap:.375rem;width:max-content;background:color-mix(in oklch,var(--success) 12%,transparent);color:var(--success);border:1px solid color-mix(in oklch,var(--success) 30%,transparent);border-radius:999px;padding:.125rem .5rem;font:500 .625rem/1.4 var(--font-mono-family);letter-spacing:.12em;text-transform:uppercase}"
+      "refersTo": "badge-outline",
+      "description": "Pill status with tabular figures; leaf fill when delivered.",
+      "html": "<span class=\"ds-badge\">Urgent · 1.4 km</span> <span class=\"ds-badge ds-badge-leaf\">7 of 7</span>",
+      "css": ".ds-badge{display:inline-flex;align-items:center;height:24px;padding:2px 10px;border:1px solid color-mix(in oklch,oklch(0.23 0.014 60) 25%,transparent);border-radius:9999px;color:oklch(0.23 0.014 60);font:600 .75rem/1 Mukta,system-ui,sans-serif;font-variant-numeric:tabular-nums;}.ds-badge-leaf{background:oklch(0.5 0.12 150);border-color:transparent;color:oklch(0.985 0.006 90);}"
     },
     {
-      "name": "Floating Navigation",
+      "name": "Workspace Nav",
       "kind": "nav",
-      "refersTo": "navigation-shell",
-      "description": "The compact shell that keeps public routes and the broadcast action in reach.",
-      "html": "<nav class=\"ds-nav\"><strong>Food Rescue Network</strong><a href=\"#\">How it works</a><button>Report surplus</button></nav>",
-      "css": ".ds-nav{display:flex;align-items:center;gap:1rem;background:color-mix(in oklch,var(--card) 95%,transparent);color:var(--foreground);border:1px solid var(--border);border-radius:var(--radius-md);padding:.625rem 1rem;box-shadow:0 1px 3px color-mix(in oklch,var(--foreground) 12%,transparent);font:500 .75rem/1.6 var(--font-sans-family)}.ds-nav strong{margin-right:auto;font:600 .875rem/1.3 var(--font-display-family)}.ds-nav a{color:var(--muted-foreground);text-decoration:none}.ds-nav a:hover{color:var(--foreground)}.ds-nav button{background:var(--primary);color:var(--primary-foreground);border:0;border-radius:var(--radius-sm);padding:.375rem .625rem;font:500 .75rem/1.6 var(--font-sans-family)}"
+      "refersTo": "threshold-band",
+      "description": "Sticky limewash bar: kolam mark + Eczar wordmark, role links with a kumkum underline on the active page.",
+      "html": "<header class=\"ds-nav\"><a class=\"ds-brand\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 40 40\"><g fill=\"oklch(0.23 0.014 60)\"><circle cx=\"8\" cy=\"20\" r=\"3.2\"/><circle cx=\"20\" cy=\"20\" r=\"2.2\" opacity=\".55\"/><circle cx=\"32\" cy=\"20\" r=\"3.2\"/><circle cx=\"14\" cy=\"10\" r=\"1.6\" opacity=\".45\"/><circle cx=\"26\" cy=\"30\" r=\"1.6\" opacity=\".45\"/></g><path d=\"M8 20 C 9 6, 19 4, 20 12 C 21 20, 19 20, 20 28 C 21 36, 31 34, 32 20\" fill=\"none\" stroke=\"oklch(0.52 0.19 27)\" stroke-width=\"2.6\" stroke-linecap=\"round\"/></svg>Food Rescue Network</a><nav><a class=\"ds-link ds-active\">Rescue inbox</a><a class=\"ds-link\">Logistics</a></nav></header>",
+      "css": ".ds-nav{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:12px 24px;background:color-mix(in oklch,oklch(0.972 0.007 100) 80%,transparent);border-bottom:1px solid oklch(0.87 0.012 90);}.ds-brand{display:flex;align-items:center;gap:10px;font:600 1.25rem/1 Eczar,Georgia,serif;letter-spacing:-0.015em;color:oklch(0.23 0.014 60);}.ds-nav nav{display:flex;gap:24px;}.ds-link{position:relative;padding:8px 0;font:600 .875rem Mukta,system-ui,sans-serif;color:oklch(0.45 0.016 60);cursor:pointer;transition:color .2s;}.ds-link:hover,.ds-active{color:oklch(0.23 0.014 60);}.ds-link::after{content:'';position:absolute;left:0;right:0;bottom:-13px;height:2px;background:oklch(0.52 0.19 27);transform:scaleX(0);transform-origin:left;transition:transform .3s;}.ds-active::after{transform:scaleX(1);}"
+    },
+    {
+      "name": "Kolam Route",
+      "kind": "custom",
+      "refersTo": "threshold-band",
+      "description": "Signature progress line: solid stroke over reached stages, dotted guide ahead; done = filled dot, live = turmeric ringed dot, pending = hollow ring.",
+      "html": "<figure class=\"ds-kolam\"><svg viewBox=\"-50 -70 400 140\" width=\"360\"><g fill=\"currentColor\" opacity=\".25\"><circle cx=\"-50\" cy=\"-57\" r=\"1.6\"/><circle cx=\"0\" cy=\"-57\" r=\"1.6\"/><circle cx=\"50\" cy=\"-57\" r=\"1.6\"/><circle cx=\"100\" cy=\"-57\" r=\"1.6\"/><circle cx=\"150\" cy=\"-57\" r=\"1.6\"/><circle cx=\"200\" cy=\"-57\" r=\"1.6\"/><circle cx=\"250\" cy=\"-57\" r=\"1.6\"/><circle cx=\"300\" cy=\"-57\" r=\"1.6\"/><circle cx=\"350\" cy=\"-57\" r=\"1.6\"/><circle cx=\"-50\" cy=\"57\" r=\"1.6\"/><circle cx=\"0\" cy=\"57\" r=\"1.6\"/><circle cx=\"50\" cy=\"57\" r=\"1.6\"/><circle cx=\"100\" cy=\"57\" r=\"1.6\"/><circle cx=\"150\" cy=\"57\" r=\"1.6\"/><circle cx=\"200\" cy=\"57\" r=\"1.6\"/><circle cx=\"250\" cy=\"57\" r=\"1.6\"/><circle cx=\"300\" cy=\"57\" r=\"1.6\"/><circle cx=\"350\" cy=\"57\" r=\"1.6\"/></g><g fill=\"currentColor\" opacity=\".6\"><circle cx=\"50\" cy=\"-22\" r=\"2.4\"/><circle cx=\"150\" cy=\"22\" r=\"2.4\"/><circle cx=\"250\" cy=\"-22\" r=\"2.4\"/></g><path d=\"M0 0 C30 0 30 -8 35 -8 A21 21 0 1 1 65 -8 C70 -8 70 0 100 0 C130 0 130 8 135 8 A21 21 0 1 0 165 8 C170 8 170 0 200 0\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M200 0 C230 0 230 -8 235 -8 A21 21 0 1 1 265 -8 C270 -8 270 0 300 0\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-dasharray=\"1.5 5\" opacity=\".2\" stroke-linecap=\"round\"/><circle cx=\"0\" cy=\"0\" r=\"7.5\" fill=\"currentColor\"/><circle cx=\"100\" cy=\"0\" r=\"7.5\" fill=\"currentColor\"/><circle cx=\"200\" cy=\"0\" r=\"12\" fill=\"none\" stroke=\"oklch(0.78 0.15 80)\" stroke-width=\"2.5\"/><circle cx=\"200\" cy=\"0\" r=\"5.5\" fill=\"oklch(0.78 0.15 80)\"/><circle cx=\"300\" cy=\"0\" r=\"6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" opacity=\".6\"/></svg><figcaption class=\"ds-kolam-labels\"><span>Report</span><span>Match</span><span>Carry</span><span class=\"ds-pending\">Verify</span></figcaption></figure>",
+      "css": ".ds-kolam{margin:0;padding:24px;color:oklch(0.23 0.014 60);background:oklch(0.972 0.007 100);font-family:Mukta,system-ui,sans-serif;}.ds-kolam svg{display:block;overflow:visible;}.ds-kolam-labels{display:grid;grid-template-columns:repeat(4,90px);font-weight:600;font-size:.875rem;}.ds-pending{color:oklch(0.45 0.016 60);}"
+    },
+    {
+      "name": "Ruled Record Row",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Working-screen record: hairline-ruled row with badge, Eczar title, muted metadata and stacked actions.",
+      "html": "<ul class=\"ds-rows\"><li class=\"ds-row\"><div><span class=\"ds-row-meta\">Pickup by <time>18:30</time> · 1.4 km</span><h3 class=\"ds-row-title\">Veg biryani</h3><p class=\"ds-row-sub\">12 kg · 40 meals</p></div><div class=\"ds-row-actions\"><button class=\"ds-row-accept\">Accept rescue</button><button class=\"ds-row-decline\">Decline</button></div></li></ul>",
+      "css": ".ds-rows{list-style:none;margin:0;padding:0;border-top:1px solid oklch(0.87 0.012 90);font-family:Mukta,system-ui,sans-serif;color:oklch(0.23 0.014 60);}.ds-row{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:20px 0;border-bottom:1px solid oklch(0.87 0.012 90);}.ds-row-meta{font-size:.875rem;font-weight:600;font-variant-numeric:tabular-nums;}.ds-row-title{margin:6px 0 2px;font:600 1.5rem/1.05 Eczar,Georgia,serif;letter-spacing:-0.02em;}.ds-row-sub{margin:0;font-size:.875rem;color:oklch(0.45 0.016 60);}.ds-row-actions{display:flex;flex-direction:column;gap:8px;}.ds-row-actions button{width:160px;height:40px;border-radius:10px;border:1px solid transparent;font:600 .875rem Mukta,system-ui,sans-serif;cursor:pointer;}.ds-row-accept{background:oklch(0.52 0.19 27);color:oklch(0.985 0.006 90);}.ds-row-accept:hover{background:color-mix(in oklch,oklch(0.52 0.19 27) 88%,transparent);}.ds-row-decline{background:transparent;color:oklch(0.23 0.014 60);}.ds-row-decline:hover{background:oklch(0.945 0.009 95);}"
     }
   ],
   "narrative": {
-    "northStar": "The VU-Meter Bridge",
-    "overview": "Food Rescue Network treats surplus coordination as a live signal: food is reported, matched, dispatched, and verified across one readable chain. The interface uses a warm work-surface neutral as its desk, ink typography as the control-room readout, and a green signal that becomes amber or red only when attention is needed.\n\nThe system is operational rather than ornamental. Cards are quiet containers for decisions, mono labels provide telemetry, and the recurring meter motif gives realtime status a memorable visual language.",
-    "keyCharacteristics": ["Warm paper surfaces with grounded ink text.", "Green active signal, amber attention, red urgent state.", "Compact shadcn controls with Phosphor iconography.", "VU-meter telemetry as the signature visual, not decoration."],
-    "rules": [
-      { "name": "The Signal Rarity Rule", "body": "Green is a live operational signal, not a blanket decoration; reserve amber and red for their meaning.", "section": "colors" },
-      { "name": "The Token-Only Rule", "body": "Product UI never introduces page-level hex, RGB, or ad-hoc color utilities. Extend the global semantic vocabulary instead.", "section": "colors" },
-      { "name": "The Two-Register Rule", "body": "Use Jakarta for human decisions and explanations; use JetBrains Mono for operational state, never for long-form reading.", "section": "typography" },
-      { "name": "The Desk-Depth Rule", "body": "Use tonal layering first, a quiet border second, and a small shadow only when a surface needs separation from the workbench.", "section": "elevation" }
+    "northStar": "The Swept Threshold",
+    "overview": "Every rescue is drawn as one continuous kolam line threaded through a dot lattice: donor, nearest NGOs, the claiming partner, the volunteer, the verified handover. The public face is a swept laterite threshold with rice-flour dots and a line that draws itself; the working screens are the same line in ash ink on a calm limewash sheet, where each role sees exactly how far its food has travelled. The kolam is the only motif, and it is never ornament: it always plots real stages and real progress.\n\nWorking screens are dense but quiet. Records sit on hairline-ruled rows, not tiles; type does the hierarchy work (Eczar for headings and figures, Mukta for everything read or operated); colour is reserved for meaning. Three pigments carry state, kumkum red for action, turmeric for what is live, leaf green for what is verified, and nothing else competes with them. Depth is flat: hairlines, a plaster tone, and the dark threshold band are the only layering devices.\n\nThe system refuses the charity page (soft gradients, heart iconography as decoration, smiling stock) and the dashboard of identical cards.",
+    "keyCharacteristics": [
+      "One motif, the kolam line on a dot lattice, used only where it plots real progress.",
+      "Two grounds: laterite threshold (landing hero, footer) and limewash sheet (all working screens), plus a dark \"swept threshold\" theme.",
+      "Kumkum is the single action colour; turmeric = live; leaf = verified.",
+      "Eczar display serif with Mukta UI sans, both with Devanagari coverage; tabular figures for times, distances, counts.",
+      "Ruled rows and ledgers for records; one card shell per region at most.",
+      "Flat, hairline-built surfaces with softly rounded (10–12px), square-shouldered controls."
     ],
-    "dos": ["Do use global semantic tokens for every product surface and state.", "Do compose forms from shadcn Field, FieldGroup, FieldError, and the appropriate control primitive.", "Do use Empty for zero states, Alert for errors and important callouts, Progress for measurable progress, and Badge for compact status.", "Do preserve keyboard focus, readable labels, reduced motion, and mobile stacking."],
-    "donts": ["Don't introduce gradients, glow-heavy effects, page-local palettes, or generic dark dashboard chrome.", "Don't use raw HTML controls where a shadcn primitive exists.", "Don't use Lucide, emoji, or mixed icon libraries; use Phosphor with the configured shadcn icon contract.", "Don't present illustrative impact numbers as verified operational facts.", "Don't use animation to communicate information that is not also available as text."]
+    "rules": [
+      {
+        "name": "The One Action Colour Rule",
+        "body": "Kumkum is the only colour an actionable control may be filled with. Secondary actions are ink outlines or ghost buttons; never a second accent.",
+        "section": "colors"
+      },
+      {
+        "name": "The Pigment Means Something Rule",
+        "body": "Turmeric only ever marks the live/current step; leaf only ever marks verified or delivered. Neither is used decoratively.",
+        "section": "colors"
+      },
+      {
+        "name": "The Shape Carries State Rule",
+        "body": "State is never hue alone: done is a filled dot, live is a ringed dot with a turmeric core, pending is a hollow ring at reduced opacity, and every node carries screen-reader text (\"done\", \"in progress\", \"not yet\").",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Figures Rule",
+        "body": "Times, distances, counts and codes always set with tabular numerals (every `time` element and the tabular utility).",
+        "section": "typography"
+      },
+      {
+        "name": "The No Kicker Rule",
+        "body": "No eyebrow or kicker labels above headings, and no uppercase letter-spaced micro-labels. A heading stands on its own; context goes in the sentence beneath it.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Sheet Rule",
+        "body": "Cards and rows on working screens carry no shadow. Lift is reserved for things that float (menus, drawers) and the lone auth card.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** fill actions with kumkum only, and keep secondary actions as ink outline or ghost buttons.",
+      "**Do** use turmeric for the live/current step and leaf for verified/delivered, and pair each with a distinct mark shape plus screen-reader text.",
+      "**Do** draw a kolam route wherever a rescue's progress is shown, plotting the real current stage; leave the unreached path as the faint dotted guide.",
+      "**Do** list records as hairline-ruled rows and summarise numbers in a ruled ledger.",
+      "**Do** set times, distances, counts and codes in tabular figures.",
+      "**Do** keep page titles on the shared page header (Eczar 2.25rem → 3rem) with one lead sentence beneath.",
+      "**Do** keep controls 44px tall on phones, 40px from sm."
+    ],
+    "donts": [
+      "**Don't** use the kolam or the dot lattice as decoration; the lattice ground appears only where a kolam is drawn or as the faint dot sheet behind empty states.",
+      "**Don't** add a second accent colour or fill a secondary action with colour.",
+      "**Don't** build card grids of identical tiles or nest a card inside a card; one card shell per context region.",
+      "**Don't** put eyebrow or kicker labels above headings, or uppercase letter-spaced micro-labels anywhere.",
+      "**Don't** use soft gradients, decorative heart imagery or shadows on working-screen cards and rows.",
+      "**Don't** signal state by hue alone."
+    ]
   }
 }

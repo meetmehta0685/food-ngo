@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 2 — Two state machines</title>
+    <link rel="stylesheet" href="../assets/lesson.css" />
+  </head>
+  <body>
+    <main class="lesson-shell">
+      <p class="lesson-kicker">Lesson 02 · placement prep · 10 minutes</p>
+      <div class="hero">
+        <div>
+          <h1>Two state machines, one rescue</h1>
+          <p class="lede">Learn to separate the lifecycle of the food request from the lifecycle of one volunteer delivery attempt. This is the domain-model explanation interviewers are likely to probe.</p>
+        </div>
+        <aside class="mission-note">
+          <strong>Mission link</strong>
+          <p>Being able to name the state owner and guard makes debugging and architecture answers much sharper.</p>
+        </aside>
+      </div>
+
+      <section class="section">
+        <header><h2>The distinction</h2><p>Aggregate vs attempt.</p></header>
+        <div class="two-col">
+          <div class="callout blue">
+            <h3>Donation = overall request</h3>
+            <p><code>REPORTED → MATCHING → NOTIFIED → ACCEPTED → PICKUP_IN_PROGRESS → PICKED_UP → DELIVERED</code></p>
+            <p class="small">Question answered: “What is happening to the food donation?”</p>
+          </div>
+          <div class="callout mint">
+            <h3>Assignment = one attempt</h3>
+            <p><code>OFFERED → ACCEPTED → EN_ROUTE_TO_PICKUP → ARRIVED_AT_PICKUP → PICKED_UP → EN_ROUTE_TO_NGO → ARRIVED_AT_NGO → DELIVERED</code></p>
+            <p class="small">Question answered: “What is happening to this volunteer route?”</p>
+          </div>
+        </div>
+        <div class="callout" style="margin-top: 18px">
+          <p><strong>Why split them?</strong> An offer can expire, be rejected, or fail. The system can create a new assignment attempt for the same donation without resetting the donation or erasing the history of the first attempt.</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <header><h2>See the branches</h2><p>Terminal does not mean successful.</p></header>
+        <pre class="mermaid">flowchart LR
+  subgraph D["Donation lifecycle"]
+    D0["REPORTED"] --> D1["MATCHING"] --> D2["NOTIFIED"] --> D3["ACCEPTED"]
+    D3 --> D4["PICKUP_IN_PROGRESS"] --> D5["PICKED_UP"] --> D6["DELIVERED"]
+    D0 --> DC["CANCELLED"]
+    D1 --> DC
+    D2 --> DC
+    D3 --> DC
+    D4 --> DC
+    D5 --> DC
+  end
+  subgraph A["One rescue assignment"]
+    A0["OFFERED"] --> A1["EN_ROUTE_TO_PICKUP"] --> A2["ARRIVED_AT_PICKUP"]
+    A2 --> A3["EN_ROUTE_TO_NGO"] --> A4["ARRIVED_AT_NGO"] --> A5["DELIVERED"]
+    A0 --> AR["REJECTED"]
+    A0 --> AX["EXPIRED"]
+    A1 --> AF["FAILED"]
+    A2 --> AF
+    A3 --> AF
+    A4 --> AF
+  end
+  D3 -. "NGO accepts" .-> A0
+  A2 -. "OTP verified" .-> D4
+  A4 -. "NGO confirms" .-> D6</pre>
+        <p class="small" style="margin-top: 12px">If the diagram does not render offline, the source text remains readable and the same transitions are listed in the reference sheet.</p>
+      </section>
+
+      <section class="section">
+        <header><h2>Trace the important triggers</h2><p>Read the left side, then the right.</p></header>
+        <ol class="trace-list">
+          <li><div><b>NGO accepts a match</b><span><code>respondToMatchCandidate()</code> moves the donation from <code>NOTIFIED</code> to <code>ACCEPTED</code>. No volunteer assignment exists yet.</span></div></li>
+          <li><div><b>Volunteer accepts an offer</b><span><code>acceptVolunteerOffer()</code> records the acceptance event and immediately leaves the assignment in <code>EN_ROUTE_TO_PICKUP</code>. The trip has started, but the food has not been collected, so the donation remains <code>ACCEPTED</code>.</span></div></li>
+          <li><div><b>Volunteer reaches pickup</b><span><code>recordVolunteerLocation()</code> uses trusted GPS accuracy and dwell time to move the assignment to <code>ARRIVED_AT_PICKUP</code>. It does not prove handoff.</span></div></li>
+          <li><div><b>Donor OTP is verified</b><span><code>verifyPickupOtpForVolunteer()</code> records the handoff and moves the assignment toward the NGO. The donation advances through <code>PICKUP_IN_PROGRESS</code> and <code>PICKED_UP</code> in the same transaction.</span></div></li>
+          <li><div><b>NGO confirms receipt</b><span><code>confirmRescueDelivery()</code> requires <code>ARRIVED_AT_NGO</code>, then marks both the assignment and the donation delivered.</span></div></li>
+        </ol>
+      </section>
+
+      <section class="section">
+        <header><h2>Two code rules protect the graph</h2><p>State transitions are executable policy.</p></header>
+        <div class="two-col">
+          <div class="callout blue">
+            <h3>Donation guard</h3>
+            <p><a href="../lib/donations/status.ts"><code>assertTransition()</code></a> checks the allowed next donation status and throws <code>INVALID_STATUS_TRANSITION</code> for a jump.</p>
+          </div>
+          <div class="callout mint">
+            <h3>Assignment guard</h3>
+            <p><a href="../lib/rescue/status.ts"><code>assertRescueAssignmentTransition()</code></a> protects the delivery attempt and keeps terminal outcomes terminal.</p>
+          </div>
+        </div>
+        <div class="callout" style="margin-top: 18px">
+          <p><strong>Placement phrasing:</strong> “The state machines turn domain policy into code. Instead of trusting the UI to send sensible next statuses, the service validates every transition at the server boundary.”</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <header><h2>Retrieval practice</h2><p>Answer before checking the reference sheet.</p></header>
+        <div class="quiz" data-quiz data-correct="B">
+          <p class="quiz-question">Which machine owns <code>EN_ROUTE_TO_NGO</code>?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" type="button" data-option="A">The donation machine</button>
+            <button class="quiz-option" type="button" data-option="B" data-feedback="Correct. EN_ROUTE_TO_NGO describes one volunteer assignment's movement, not the donation's aggregate state.">The assignment machine</button>
+            <button class="quiz-option" type="button" data-option="C">The notification queue</button>
+            <button class="quiz-option" type="button" data-option="D">The matching service</button>
+          </div>
+          <p class="quiz-feedback" data-quiz-feedback aria-live="polite"></p>
+        </div>
+        <div class="quiz" data-quiz data-correct="B">
+          <p class="quiz-question">An offer expires before acceptance. What happens to donation?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" type="button" data-option="A">It becomes delivered</button>
+            <button class="quiz-option" type="button" data-option="B" data-feedback="Correct. The assignment becomes EXPIRED while the donation stays available for another attempt.">It stays accepted</button>
+            <button class="quiz-option" type="button" data-option="C">It becomes cancelled</button>
+            <button class="quiz-option" type="button" data-option="D">It returns reported</button>
+          </div>
+          <p class="quiz-feedback" data-quiz-feedback aria-live="polite"></p>
+        </div>
+        <div class="quiz" data-quiz data-correct="B">
+          <p class="quiz-question">What proves the food handoff before pickup status changes?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" type="button" data-option="A">A fresh GPS reading</button>
+            <button class="quiz-option" type="button" data-option="B" data-feedback="Correct. GPS proves arrival; the donor-controlled, short-lived OTP proves the handoff.">A valid pickup OTP</button>
+            <button class="quiz-option" type="button" data-option="C">A completed volunteer trip</button>
+            <button class="quiz-option" type="button" data-option="D">A pending NGO message</button>
+          </div>
+          <p class="quiz-feedback" data-quiz-feedback aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="section">
+        <header><h2>Primary source and follow-up</h2><p>Go to code when you are curious.</p></header>
+        <div class="two-col">
+          <div class="callout">
+            <p><a href="../reference/state-machines.html">State-machine reference sheet</a></p>
+            <p class="small">The compressed version of this lesson, including trigger alignment.</p>
+          </div>
+          <div class="callout">
+            <p><a href="https://www.prisma.io/docs/orm/prisma-client/queries/transactions">Prisma transactions</a></p>
+            <p class="small">The service moves related records together so current state and audit evidence do not drift apart.</p>
+          </div>
+        </div>
+        <p class="small" style="margin-top: 16px">Ask me a follow-up question, point to a transition that feels confusing, or reply “quiz lesson 2” when you are ready to retrieve it from memory.</p>
+      </section>
+
+      <nav class="footer-links" aria-label="Teaching links">
+        <a href="../reference/state-machines.html">Open reference sheet</a>
+        <a href="0001-trace-a-rescue.html">Review lesson 1</a>
+        <a href="../MISSION.md">Read the mission</a>
+      </nav>
+    </main>
+    <script src="../assets/quiz.js"></script>
+    <script src="../assets/mermaid-init.js"></script>
+  </body>
+</html>

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson 1 — Trace a rescue</title>
+    <link rel="stylesheet" href="../assets/lesson.css" />
+  </head>
+  <body>
+    <main class="lesson-shell">
+      <p class="lesson-kicker">Lesson 01 · placement prep · 10 minutes</p>
+      <div class="hero">
+        <div>
+          <h1>Trace one rescue from request to receipt</h1>
+          <p class="lede">Your first win is not memorising the repository. It is being able to follow one meaningful action across the UI, API, domain logic, database, and realtime layer.</p>
+        </div>
+        <aside class="mission-note">
+          <strong>Mission link</strong>
+          <p>This gives you the backbone for a two-minute project explanation in a placement interview.</p>
+        </aside>
+      </div>
+
+      <section class="section">
+        <header><h2>The mental model</h2><p>Every feature trace starts here.</p></header>
+        <div class="bridge" aria-label="Application layers">
+          <div class="bridge-step signal"><b>User action</b><span><code>DonationForm</code> sends JSON.</span></div>
+          <div class="bridge-step"><b>Route handler</b><span>Authenticates, authorizes, validates.</span></div>
+          <div class="bridge-step"><b>Domain service</b><span>Owns rules and transaction.</span></div>
+          <div class="bridge-step"><b>Database</b><span>Stores state plus history.</span></div>
+          <div class="bridge-step"><b>Observers</b><span>Notifications, SSE, and Ably.</span></div>
+        </div>
+        <div class="callout mint" style="margin-top: 18px">
+          <p><strong>Rule of thumb:</strong> route handlers are the boundary; services are the brain; Prisma models are the vocabulary; workers finish time-based work after the request ends.</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <header><h2>Follow the actual code</h2><p>Open each file in order.</p></header>
+        <ol class="trace-list">
+          <li><div><b><a href="../components/donor/donation-form.tsx"><code>components/donor/donation-form.tsx</code></a></b><span>The donor collects food details, pickup time, address, and coordinates, then sends <code>POST /api/donations</code>.</span></div></li>
+          <li><div><b><a href="../app/api/donations/route.ts"><code>app/api/donations/route.ts</code></a></b><span>The API boundary gets the session user, requires the <code>DONOR</code> role, rate-limits, parses the Zod schema, and calls the service.</span></div></li>
+          <li><div><b><a href="../lib/donations/service.ts"><code>createDonationForDonor()</code></a></b><span>The service geocodes if needed, ranks the top three NGOs, and opens a Prisma transaction that writes the donation, status events, candidate rows, notifications, and live-event outbox records.</span></div></li>
+          <li><div><b><a href="../lib/donations/service.ts"><code>respondToMatchCandidate()</code></a></b><span>When an NGO accepts, <code>updateMany</code> only claims a donation whose <code>assignedNgoId</code> is still null and whose status is matchable. That database condition makes “first acceptance wins” safe under concurrency.</span></div></li>
+          <li><div><b><a href="../lib/rescue/service.ts"><code>requestVolunteerForDonation()</code></a></b><span>The assigned NGO requests a volunteer. The service finds a fresh, nearby candidate, creates an <code>OFFERED</code> assignment, and notifies the volunteer.</span></div></li>
+          <li><div><b><a href="../workers/rescue-offers.ts"><code>workers/rescue-offers.ts</code></a></b><span>The worker expires offers, dispatches the next eligible volunteer, and publishes pending live events with retry behavior.</span></div></li>
+          <li><div><b><a href="../lib/rescue/service.ts"><code>verifyPickupOtpForVolunteer()</code></a></b><span>After a trusted geofence arrival, the donor receives a short-lived OTP. Verification advances the assignment toward the NGO and advances the donation to picked up.</span></div></li>
+          <li><div><b><a href="../lib/rescue/service.ts"><code>confirmRescueDelivery()</code></a></b><span>At the NGO geofence, the assigned NGO confirms receipt. The assignment and donation become <code>DELIVERED</code>, and the audit trail plus observers are updated.</span></div></li>
+        </ol>
+      </section>
+
+      <section class="section">
+        <header><h2>Notice the two clocks</h2><p>Overall request vs delivery attempt.</p></header>
+        <div class="two-col">
+          <div class="callout blue">
+            <h3>Donation</h3>
+            <p><code>REPORTED → MATCHING → NOTIFIED → ACCEPTED → PICKUP_IN_PROGRESS → PICKED_UP → DELIVERED</code></p>
+            <p class="small">This answers: “What is happening to the food request?”</p>
+          </div>
+          <div class="callout mint">
+            <h3>Assignment</h3>
+            <p><code>OFFERED → ... → ARRIVED_AT_NGO → DELIVERED</code></p>
+            <p class="small">This answers: “What is happening to this volunteer attempt?” A failed or expired attempt can be replaced.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <header><h2>Retrieval practice</h2><p>Answer before rereading the trace.</p></header>
+        <div class="quiz" data-quiz data-correct="B">
+          <p class="quiz-question">Where should the first-acceptance business rule live?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" type="button" data-option="A">The route handler</button>
+            <button class="quiz-option" type="button" data-option="B" data-feedback="Correct. The service owns the rule, and the conditional database update makes it concurrency-safe.">The domain service</button>
+            <button class="quiz-option" type="button" data-option="C">The client component</button>
+            <button class="quiz-option" type="button" data-option="D">The database schema</button>
+          </div>
+          <p class="quiz-feedback" data-quiz-feedback aria-live="polite"></p>
+        </div>
+        <div class="quiz" data-quiz data-correct="A">
+          <p class="quiz-question">How does the system prevent two NGOs claiming one donation?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" type="button" data-option="A" data-feedback="Correct. The update only succeeds while the donation is still unassigned and matchable.">A conditional update</button>
+            <button class="quiz-option" type="button" data-option="B">A client-side check</button>
+            <button class="quiz-option" type="button" data-option="C">A random sort</button>
+            <button class="quiz-option" type="button" data-option="D">A UI lock</button>
+          </div>
+          <p class="quiz-feedback" data-quiz-feedback aria-live="polite"></p>
+        </div>
+        <div class="quiz" data-quiz data-correct="B">
+          <p class="quiz-question">What makes live-event delivery recoverable?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" type="button" data-option="A">A direct browser poller</button>
+            <button class="quiz-option" type="button" data-option="B" data-feedback="Correct. LiveEvent rows are durable, claimed, retried, and marked published after Ably succeeds.">A durable event outbox</button>
+            <button class="quiz-option" type="button" data-option="C">A temporary memory queue</button>
+            <button class="quiz-option" type="button" data-option="D">A manual refresh button</button>
+          </div>
+          <p class="quiz-feedback" data-quiz-feedback aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="section">
+        <header><h2>Say it in an interview</h2><p>Use your own words next.</p></header>
+        <div class="interview">
+          <p>“I would trace a donor submission from <code>DonationForm</code> to the donations route handler, then into <code>createDonationForDonor</code>. The service performs matching and writes the donation plus its audit and notification records in one transaction. NGO acceptance uses a conditional update so concurrent requests cannot both claim the same donation. Volunteer delivery is a separate assignment state machine; a worker handles offer expiry and retries, while geofences and OTPs protect the handoff. The database remains authoritative, and realtime is a projection for the UI.”</p>
+          <small>If you can say this without reading it, you have the first layer of project fluency.</small>
+        </div>
+      </section>
+
+      <section class="section">
+        <header><h2>Primary sources</h2><p>Read only what supports this lesson.</p></header>
+        <div class="two-col">
+          <div class="callout">
+            <p><a href="https://nextjs.org/docs/app/guides/backend-for-frontend">Next.js Route Handlers</a></p>
+            <p class="small">Why <code>app/api/**/route.ts</code> is the HTTP boundary.</p>
+          </div>
+          <div class="callout">
+            <p><a href="https://www.prisma.io/docs/orm/prisma-client/queries/transactions">Prisma transactions</a></p>
+            <p class="small">Why related writes should succeed or roll back together.</p>
+          </div>
+        </div>
+        <p class="small" style="margin-top: 16px">For the next session, ask me about any file or say “quiz me on lesson 1.” Your questions are part of the lesson.</p>
+      </section>
+
+      <nav class="footer-links" aria-label="Teaching links">
+        <a href="../reference/project-map.html">Open project map</a>
+        <a href="../README.md">Read the project README</a>
+        <a href="../MISSION.md">Read the mission</a>
+      </nav>
+    </main>
+    <script src="../assets/quiz.js"></script>
+  </body>
+</html>

@@ -54,7 +54,7 @@ export function DonorDonationsTable({ donations, unavailable = false }: { donati
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border bg-card">
+    <div className="overflow-x-auto rounded-lg border bg-card">
       <Table>
         <TableHeader>
           <TableRow>
@@ -75,12 +75,12 @@ export function DonorDonationsTable({ donations, unavailable = false }: { donati
               <TableRow key={donation.id}>
                 <TableCell className="font-medium">
                   <span className="inline-flex min-w-0 items-center gap-2">
-                    <span className="bg-primary/10 text-primary flex size-7 shrink-0 items-center justify-center rounded-md"><ForkKnife /></span>
+                    <span className="text-primary flex size-7 shrink-0 items-center justify-center rounded-md"><ForkKnife /></span>
                     <span className="truncate">{donation.foodType}</span>
                   </span>
                 </TableCell>
                 <TableCell className="text-muted-foreground">{donation.quantity}</TableCell>
-                <TableCell className="font-mono tabular-nums">{donation.servesCount} meals</TableCell>
+                <TableCell className="tabular">{donation.servesCount} meals</TableCell>
                 <TableCell>
                   <Badge variant={isDelivered ? "secondary" : isAssigned ? "outline" : "ghost"}>{statusLabel(donation.status)}</Badge>
                 </TableCell>
@@ -91,10 +91,10 @@ export function DonorDonationsTable({ donations, unavailable = false }: { donati
                       <span className="truncate">{donation.assignedNgo.ngoProfile?.orgName ?? donation.assignedNgo.name}</span>
                     </span>
                   ) : (
-                    <span className="text-muted-foreground font-mono text-[10px]">Awaiting partner</span>
+                    <span className="text-muted-foreground tabular text-sm">Awaiting partner</span>
                   )}
                 </TableCell>
-                <TableCell className="text-muted-foreground font-mono text-[10px]">
+                <TableCell className="text-muted-foreground tabular text-sm">
                   <span className="inline-flex items-center gap-1.5"><Clock className="text-warning-foreground" />{formatAppTime(donation.pickupBy)}</span>
                 </TableCell>
                 <TableCell className="text-right">

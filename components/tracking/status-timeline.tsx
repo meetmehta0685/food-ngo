@@ -1,9 +1,10 @@
 import type { DonationStatus, Role } from "@prisma/client"
-import { CheckCircle, Circle, Clock } from "@phosphor-icons/react/dist/ssr"
+import { Clock } from "@phosphor-icons/react/dist/ssr"
 
+import { KolamRoute } from "@/components/kolam/kolam-route"
 import { Badge } from "@/components/ui/badge"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
-import { Progress } from "@/components/ui/progress"
+import { cn } from "@/lib/utils"
 import { statusLabel } from "@/lib/donations/labels"
 import { formatAppDateTime } from "@/lib/format-date"
 
@@ -36,20 +37,26 @@ export function StatusTimeline({
   events: TimelineEvent[]
 }) {
   const currentIndex = STATUS_ORDER.indexOf(currentStatus)
-  const progressValue = currentIndex < 0 ? 0 : ((currentIndex + 1) / STATUS_ORDER.length) * 100
+  const delivered = currentStatus === "DELIVERED"
 
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-muted-foreground font-mono text-[10px] font-medium uppercase tracking-widest">
-          Live status
-        </p>
-        <Badge variant="outline" className="border-primary/30 text-primary font-mono text-[10px]">
-          {statusLabel(currentStatus)}
+        <p className="text-sm font-semibold">Now: {statusLabel(currentStatus)}</p>
+        <Badge variant={delivered ? "default" : "outline"} className={cn(delivered && "bg-success text-success-foreground")}>
+          {currentIndex < 0 ? "–" : `${currentIndex + 1} of ${STATUS_ORDER.length}`}
         </Badge>
       </div>
 
-      <Progress value={progressValue} aria-label={`Delivery progress: ${statusLabel(currentStatus)}`} />
+      <KolamRoute
+        stages={STATUS_ORDER.map((status) => ({ key: status, label: statusLabel(status) }))}
+        current={Math.max(0, currentIndex)}
+        complete={delivered}
+        orientation="horizontal"
+        size="compact"
+        showLabels={false}
+        label={`Delivery progress: ${statusLabel(currentStatus)}`}
+      />
 
       {events.length === 0 ? (
         <Empty className="min-h-36 border-dashed p-4">
@@ -63,35 +70,38 @@ export function StatusTimeline({
         <ol className="flex flex-col">
           {events.map((event, index) => {
             const isLast = index === events.length - 1
+            const live = isLast && !delivered
 
             return (
-              <li key={event.id} className="relative flex gap-4 pb-4 last:pb-0">
+              <li key={event.id} className="relative flex gap-4 pb-5 last:pb-0">
                 {!isLast ? (
-                  <div className="bg-border absolute left-3 top-7 bottom-0 w-px" />
+                  <div className="bg-foreground/20 absolute bottom-0 left-[0.6875rem] top-6 w-0.5 rounded-full" />
                 ) : null}
 
-                <div className="relative z-10 mt-0.5 shrink-0">
-                  {isLast ? (
-                    <CheckCircle weight="fill" className="size-6 text-success" />
+                <div className="relative z-10 mt-1 flex size-6 shrink-0 items-center justify-center" aria-hidden="true">
+                  {live ? (
+                    <span className="border-warning flex size-6 items-center justify-center rounded-full border-2">
+                      <span className="bg-warning size-2.5 rounded-full" />
+                    </span>
                   ) : (
-                    <Circle weight="fill" className="size-6 text-muted-foreground/40" />
+                    <span className={cn("size-3.5 rounded-full", isLast ? "bg-success" : "bg-foreground")} />
                   )}
                 </div>
 
-                <div className="min-w-0 flex-1 pb-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-medium">{statusLabel(event.status)}</p>
-                    <span className="text-muted-foreground shrink-0 font-mono text-[10px]">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+                    <p className="text-base font-semibold">{statusLabel(event.status)}</p>
+                    <time className="text-muted-foreground shrink-0 text-sm">
                       {formatAppDateTime(event.createdAt)}
-                    </span>
+                    </time>
                   </div>
-                  <p className="text-muted-foreground mt-0.5 text-xs">
+                  <p className="text-muted-foreground mt-0.5 text-sm">
                     by {event.actor.name}
-                    <span className="text-border mx-1">/</span>
-                    <span className="font-mono text-[10px] uppercase">{event.actor.role}</span>
+                    <span className="text-border mx-1.5">/</span>
+                    <span className="text-xs font-semibold">{event.actor.role}</span>
                   </p>
                   {event.note ? (
-                    <p className="text-foreground/80 mt-1.5 text-xs leading-relaxed">{event.note}</p>
+                    <p className="text-foreground/80 mt-1.5 text-sm leading-relaxed">{event.note}</p>
                   ) : null}
                 </div>
               </li>

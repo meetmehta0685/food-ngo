@@ -56,12 +56,12 @@ export function NotificationBell() {
         variant="ghost"
         size="icon"
         aria-label="Open notifications"
-        className="rounded-lg"
+        className="rounded-md"
       >
         <BellIcon weight={unread > 0 ? "fill" : "regular"} />
       </Button>
       {unread > 0 ? (
-        <Badge className="motion-safe:animate-pulse absolute -right-1 -top-1 min-w-4 justify-center px-1 font-mono text-[0.625rem]">
+        <Badge className="bg-warning text-warning-foreground ring-background pointer-events-none absolute -right-0.5 -top-0.5 h-5 min-w-5 justify-center px-1 ring-2">
           {unread > 9 ? "9+" : unread}
         </Badge>
       ) : null}

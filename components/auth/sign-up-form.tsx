@@ -7,12 +7,10 @@ import {
   ArrowRight,
   Buildings,
   HandHeart,
-  Handshake,
   MapPin,
   NavigationArrow,
   Phone,
   ShieldCheck,
-  Sparkle,
   SpinnerGap,
   Truck,
   User,
@@ -20,7 +18,6 @@ import {
 } from "@phosphor-icons/react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -207,26 +204,13 @@ export function SignUpForm() {
   }
 
   return (
-    <Card className="w-full max-w-3xl border-primary/15">
-      <CardHeader className="gap-4 border-b pb-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-start gap-3">
-            <span className="bg-primary text-primary-foreground flex size-10 shrink-0 items-center justify-center rounded-lg">
-              <Handshake weight="duotone" />
-            </span>
-            <div className="flex flex-col gap-1">
-              <CardTitle className="text-xl">Join the rescue network</CardTitle>
-              <CardDescription>Choose the part of the handoff you want to move forward.</CardDescription>
-            </div>
-          </div>
-          <Badge variant="outline" className="shrink-0 gap-1.5 font-mono text-[10px] uppercase">
-            <Sparkle data-icon="inline-start" />
-            New partner
-          </Badge>
-        </div>
+    <Card className="w-full max-w-3xl gap-0 py-0 shadow-[0_24px_48px_-28px_color-mix(in_oklch,var(--foreground)_35%,transparent)]">
+      <CardHeader className="gap-2 px-6 pb-2 pt-8 sm:px-10">
+        <CardTitle className="text-4xl">Join the rescue network</CardTitle>
+        <CardDescription className="text-base">Choose the part of the handoff you want to move forward.</CardDescription>
       </CardHeader>
-      <CardContent className="pt-6">
-        <form onSubmit={submit} className="flex flex-col gap-6">
+      <CardContent className="px-6 pb-8 pt-6 sm:px-10">
+        <form onSubmit={submit} className="flex flex-col gap-7">
           <Field>
             <FieldLabel>Choose your role</FieldLabel>
             <Tabs value={role} onValueChange={(value) => setRole(value as AppRole)}>
@@ -234,7 +218,7 @@ export function SignUpForm() {
                 {roleOptions.map((option) => {
                   const Icon = option.icon
                   return (
-                    <TabsTrigger key={option.role} value={option.role} className="h-auto min-h-12 flex-col gap-1 py-2 text-[10px] sm:flex-row sm:text-xs">
+                    <TabsTrigger key={option.role} value={option.role} className="h-auto min-h-12 flex-col gap-1.5 py-2.5 text-sm font-semibold sm:flex-row">
                       <Icon data-icon="inline-start" />
                       <span>{option.label}</span>
                     </TabsTrigger>
@@ -242,7 +226,7 @@ export function SignUpForm() {
                 })}
               </TabsList>
               {roleOptions.map((option) => (
-                <TabsContent key={option.role} value={option.role} className="mt-2 text-muted-foreground text-[0.625rem]">
+                <TabsContent key={option.role} value={option.role} className="text-muted-foreground mt-3 text-sm">
                   {option.description} · Fields below adapt to this workspace.
                 </TabsContent>
               ))}
@@ -267,8 +251,8 @@ export function SignUpForm() {
           </Field>
 
           {role === "NGO" ? (
-            <FieldSet className="bg-surface rounded-lg border p-4 sm:p-5">
-              <FieldLegend variant="label" className="flex items-center gap-2"><Buildings /> NGO partner profile</FieldLegend>
+            <FieldSet className="border-t pt-7">
+              <FieldLegend variant="legend" className="font-display flex items-center gap-2 text-2xl! font-semibold"><Buildings /> NGO partner profile</FieldLegend>
               <FieldDescription>Give dispatchers the address and response radius for your kitchen or shelter.</FieldDescription>
               <FieldGroup className="mt-4">
                 <Field>
@@ -296,11 +280,11 @@ export function SignUpForm() {
                 <FieldGroup className="grid gap-4 sm:grid-cols-2">
                   <Field>
                     <FieldLabel htmlFor="ngo-lat">Latitude</FieldLabel>
-                    <Input id="ngo-lat" type="number" step="0.000001" className="font-mono" value={state.ngoProfile.lat} onChange={(event) => updateNgoField("lat", event.target.value)} required />
+                    <Input id="ngo-lat" type="number" step="0.000001" className="tabular" value={state.ngoProfile.lat} onChange={(event) => updateNgoField("lat", event.target.value)} required />
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="ngo-lng">Longitude</FieldLabel>
-                    <Input id="ngo-lng" type="number" step="0.000001" className="font-mono" value={state.ngoProfile.lng} onChange={(event) => updateNgoField("lng", event.target.value)} required />
+                    <Input id="ngo-lng" type="number" step="0.000001" className="tabular" value={state.ngoProfile.lng} onChange={(event) => updateNgoField("lng", event.target.value)} required />
                   </Field>
                 </FieldGroup>
               </FieldGroup>
@@ -308,8 +292,8 @@ export function SignUpForm() {
           ) : null}
 
           {role === "VOLUNTEER" ? (
-            <FieldSet className="bg-surface rounded-lg border p-4 sm:p-5">
-              <FieldLegend variant="label" className="flex items-center gap-2"><Truck /> Volunteer transport profile</FieldLegend>
+            <FieldSet className="border-t pt-7">
+              <FieldLegend variant="legend" className="font-display flex items-center gap-2 text-2xl! font-semibold"><Truck /> Volunteer transport profile</FieldLegend>
               <FieldDescription>Set the range and capacity that should shape your rescue offers.</FieldDescription>
               <FieldGroup className="mt-4">
                 <Field>
@@ -345,16 +329,17 @@ export function SignUpForm() {
             </Alert>
           ) : null}
 
-          <Button type="submit" disabled={loading} className="w-full">
+          <Button type="submit" size="lg" disabled={loading} className="w-full">
             {loading ? <SpinnerGap data-icon="inline-start" className="animate-spin" /> : <ArrowRight data-icon="inline-start" />}
             {loading ? "Creating partner account…" : `Complete ${role.charAt(0) + role.slice(1).toLowerCase()} registration`}
           </Button>
         </form>
       </CardContent>
-      <CardFooter className="border-t pt-4">
-        <div className="text-muted-foreground flex w-full items-center gap-1.5 text-[0.625rem]">
-          <span className="inline-flex items-center gap-1.5"><ShieldCheck className="text-success" />Role-based workspace access</span>
-        </div>
+      <CardFooter className="bg-muted/60 border-t px-6 py-4 sm:px-10">
+        <span className="text-muted-foreground inline-flex items-center gap-2 text-sm">
+          <ShieldCheck className="text-success" weight="bold" />
+          Role-based workspace access
+        </span>
       </CardFooter>
     </Card>
   )

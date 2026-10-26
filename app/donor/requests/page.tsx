@@ -1,19 +1,10 @@
 import Link from "next/link"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
-import {
-  ArrowRight,
-  ChartLineUp,
-  CheckCircle,
-  Leaf,
-  MapPin,
-  Package,
-  Plus,
-  Pulse,
-  ForkKnife,
-} from "@phosphor-icons/react/dist/ssr"
+import { ArrowRight, MapPin, Package, Plus } from "@phosphor-icons/react/dist/ssr"
 
 import { DonorDonationsTable } from "@/components/donor/donations-table"
+import { KolamRoute } from "@/components/kolam/kolam-route"
 import { MapView } from "@/components/maps/map-view"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -26,19 +17,19 @@ import { getRoleHomePath } from "@/lib/auth/roles"
 
 const rescueFlow = [
   {
+    key: "report",
     label: "Report",
-    description: "Share safe surplus and a pickup window.",
-    icon: ForkKnife,
+    detail: "Share safe surplus and a pickup window.",
   },
   {
+    key: "match",
     label: "Match",
-    description: "A nearby partner takes ownership.",
-    icon: MapPin,
+    detail: "A nearby partner takes ownership.",
   },
   {
+    key: "handoff",
     label: "Handoff",
-    description: "The delivery is confirmed and visible.",
-    icon: CheckCircle,
+    detail: "The delivery is confirmed and visible.",
   },
 ] as const
 
@@ -120,28 +111,24 @@ export default async function DonorRequestsPage() {
   }))
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div className="flex flex-col gap-1.5">
-          <Badge variant="outline" className="w-fit gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em]">
-            <Pulse data-icon="inline-start" />
-            Donor workspace
-          </Badge>
-          <h1 className="text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">Your rescue history</h1>
-          <p className="text-muted-foreground max-w-2xl text-sm leading-6">Welcome back, {session.user.name || "donor"}. Broadcast a new request or follow an active handover.</p>
+    <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-3">
+          <h1 className="text-4xl sm:text-5xl">Your rescue history</h1>
+          <p className="text-muted-foreground max-w-2xl text-lg leading-relaxed">Welcome back, {session.user.name || "donor"}. Broadcast a new request or follow an active handover.</p>
         </div>
-        <Button render={<Link href="/donor/new" />} nativeButton={false}>
+        <Button render={<Link href="/donor/new" />} nativeButton={false} size="lg" className="w-fit shrink-0">
           <Plus data-icon="inline-start" />
           Report surplus
           <ArrowRight data-icon="inline-end" />
         </Button>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <MetricCard icon={ForkKnife} label="Meals donated" value={`${totalMealsDonated.toLocaleString()}+`} />
-        <MetricCard icon={Leaf} label="Estimated CO₂ saved" value={`${totalCo2SavedKg.toLocaleString()} kg`} />
-        <MetricCard icon={ChartLineUp} label="Requests in history" value={String(donations.length)} />
-      </div>
+      <dl className="grid grid-cols-1 border-y sm:grid-cols-3 sm:divide-x">
+        <LedgerFigure label="Meals donated" value={`${totalMealsDonated.toLocaleString()}+`} />
+        <LedgerFigure label="Estimated CO₂ saved" value={`${totalCo2SavedKg.toLocaleString()} kg`} />
+        <LedgerFigure label="Requests in history" value={String(donations.length)} />
+      </dl>
 
       {loadError ? (
         <Alert variant="destructive">
@@ -151,52 +138,31 @@ export default async function DonorRequestsPage() {
         </Alert>
       ) : null}
 
-      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(18rem,0.7fr)]">
-        <section className="flex min-w-0 flex-col gap-3">
+      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(18rem,0.7fr)]">
+        <section className="flex min-w-0 flex-col gap-4">
           <div className="flex items-end justify-between gap-4">
             <div className="flex flex-col gap-1">
-              <h2 className="text-lg font-semibold tracking-[-0.02em]">Recent rescue requests</h2>
-              <p className="text-muted-foreground text-xs">Track matching, pickup, and verified handover states.</p>
+              <h2 className="text-2xl">Recent rescue requests</h2>
+              <p className="text-muted-foreground text-sm">Track matching, pickup, and verified handover states.</p>
             </div>
-            <Badge variant="secondary" className="font-mono text-[10px]">{donations.length} total</Badge>
+            <Badge variant="outline">{donations.length} total</Badge>
           </div>
           <DonorDonationsTable donations={serializedDonations} unavailable={Boolean(loadError)} />
 
-          <div className="border-border/80 mt-2 border-t pt-4">
-            <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-              <div>
-                <h3 className="text-sm font-semibold tracking-[-0.02em]">How each rescue moves</h3>
-                <p className="text-muted-foreground mt-1 text-xs leading-5">
-                  One clear chain from surplus to a verified handoff.
-                </p>
-              </div>
-              <span className="text-muted-foreground font-mono text-[0.625rem] uppercase tracking-[0.14em]">
-                Rescue signal
-              </span>
+          <div className="mt-6 flex flex-col gap-5 border-t pt-6">
+            <div>
+              <h3 className="text-xl">How each rescue moves</h3>
+              <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
+                One clear chain from surplus to a verified handoff.
+              </p>
             </div>
-            <div className="mt-3 grid gap-2 sm:grid-cols-3">
-              {rescueFlow.map((step) => {
-                const Icon = step.icon
-
-                return (
-                  <div key={step.label} className="border-border/70 bg-card/55 flex items-start gap-2.5 rounded-md border px-3 py-2.5">
-                    <span className="bg-primary/10 text-primary mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md">
-                      <Icon weight="duotone" />
-                    </span>
-                    <span className="flex min-w-0 flex-col gap-0.5">
-                      <span className="text-xs font-semibold">{step.label}</span>
-                      <span className="text-muted-foreground text-[10px] leading-4">{step.description}</span>
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
+            <KolamRoute stages={rescueFlow} current={2} complete label="How each rescue moves" />
           </div>
         </section>
 
         <Card className="h-fit">
           <CardHeader className="gap-2">
-            <CardTitle className="text-base">Partner signal map</CardTitle>
+            <CardTitle>Partner signal map</CardTitle>
             <CardDescription>
               {mapDonation ? "Latest active request and its assigned partner route." : "Your first request will create the first rescue route."}
             </CardDescription>
@@ -204,7 +170,7 @@ export default async function DonorRequestsPage() {
           <CardContent className="flex flex-col gap-4">
             {mapDonation ? (
               <>
-                <div className="flex flex-wrap gap-x-4 gap-y-2 rounded-md border bg-surface p-3 text-[10px] font-medium">
+                <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium">
                   <span className="text-primary inline-flex items-center gap-1.5"><MapPin weight="fill" /> Pickup pin</span>
                   <span className="text-muted-foreground inline-flex items-center gap-1.5"><MapPin /> Assigned partner</span>
                 </div>
@@ -230,18 +196,11 @@ export default async function DonorRequestsPage() {
   )
 }
 
-function MetricCard({ icon: Icon, label, value }: { icon: typeof ForkKnife; label: string; value: string }) {
+function LedgerFigure({ label, value }: { label: string; value: string }) {
   return (
-    <Card>
-      <CardContent className="flex items-center gap-3 pt-5">
-        <span className="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-md">
-          <Icon weight="duotone" />
-        </span>
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-muted-foreground truncate text-[10px] font-mono uppercase tracking-[0.1em]">{label}</span>
-          <span className="text-foreground font-mono text-xl font-semibold tabular-nums">{value}</span>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="flex flex-col-reverse gap-1 border-b py-5 last:border-b-0 sm:border-b-0 sm:px-6 sm:first:pl-0">
+      <dt className="text-muted-foreground text-sm">{label}</dt>
+      <dd className="font-display tabular text-4xl font-semibold leading-none tracking-[-0.02em]">{value}</dd>
+    </div>
   )
 }

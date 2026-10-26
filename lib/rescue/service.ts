@@ -77,11 +77,7 @@ export async function expireRescueOffers(input: {
   volunteerId?: string
   batchSize?: number
 }) {
-  const config = getRescueDispatchConfig()
-  const batchSize = Math.min(
-    100,
-    Math.max(1, input.batchSize ?? config.workerBatchSize),
-  )
+  const batchSize = input.batchSize ?? 20
 
   return db.$transaction(async (tx) => {
     const donationFilter = input.donationId

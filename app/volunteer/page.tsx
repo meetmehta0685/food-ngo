@@ -1,7 +1,8 @@
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
-import { Pulse, UserCircle } from "@phosphor-icons/react/dist/ssr"
+import { UserCircle } from "@phosphor-icons/react/dist/ssr"
 
+import { PageHeader } from "@/components/layout/page-header"
 import { AvailabilityControl } from "@/components/volunteer/availability-control"
 import {
   RescueOffers,
@@ -10,7 +11,6 @@ import {
 import { authOptions } from "@/lib/auth/options"
 import { db } from "@/lib/db"
 import { listVolunteerAssignments } from "@/lib/rescue/service"
-import { Badge } from "@/components/ui/badge"
 
 export default async function VolunteerDashboardPage() {
   const session = await getServerSession(authOptions)
@@ -61,15 +61,12 @@ export default async function VolunteerDashboardPage() {
   )
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div className="flex flex-col gap-2">
-          <Badge variant="outline" className="w-fit gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em]"><Pulse data-icon="inline-start" />Volunteer mission center</Badge>
-          <h1 className="text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">Move the next handoff.</h1>
-          <p className="text-muted-foreground max-w-2xl text-sm leading-6">Keep your availability and location current so time-sensitive rescue offers can find you.</p>
-        </div>
-        <div className="text-muted-foreground inline-flex items-center gap-2 text-xs"><UserCircle className="text-primary" />{session.user.name || "Volunteer"}</div>
-      </div>
+    <div className="flex flex-col gap-10">
+      <PageHeader
+        title="Move the next handoff."
+        description="Keep your availability and location current so time-sensitive rescue offers can find you."
+        actions={<span className="text-muted-foreground inline-flex items-center gap-2 text-sm font-medium"><UserCircle className="text-primary size-5" />{session.user.name || "Volunteer"}</span>}
+      />
 
       <AvailabilityControl initialProfile={{ isAvailable: profile.isAvailable, currentLat: profile.currentLat, currentLng: profile.currentLng, lastLocationAt: profile.lastLocationAt?.toISOString() ?? null }} />
       <RescueOffers assignments={assignmentViews} simulatorEnabled={process.env.NODE_ENV !== "production" && process.env.ENABLE_LOCATION_SIMULATOR === "true"} />

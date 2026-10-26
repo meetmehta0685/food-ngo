@@ -249,6 +249,10 @@ export function MapViewClient({
 
     map.addControl(new NavigationControl({ showCompass: false }), "top-right");
 
+    // The container can change size after first paint (font swap, grid settling); trackResize only follows the window.
+    const resizeObserver = new ResizeObserver(() => map.resize());
+    resizeObserver.observe(containerRef.current);
+
     const handleLoad = () => {
       map.addSource("route", {
         type: "geojson",
@@ -278,6 +282,7 @@ export function MapViewClient({
     mapRef.current = map;
 
     return () => {
+      resizeObserver.disconnect();
       map.off("load", handleLoad);
       Object.values(markersRef.current).forEach((marker) => marker.remove());
       markersRef.current = {};
@@ -390,7 +395,7 @@ export function MapViewClient({
           data-live-lat={displayedCourier?.lat ?? ""}
           data-live-lng={displayedCourier?.lng ?? ""}
           aria-live="polite"
-          className="bg-background/95 absolute bottom-3 left-3 border-primary/30 p-0 text-[0.625rem] shadow-lg backdrop-blur"
+          className="bg-background/95 absolute bottom-3 left-3 border-primary/30 p-0 text-xs shadow-lg backdrop-blur"
         >
           <CardContent className="flex flex-col gap-1 p-3">
             <Badge

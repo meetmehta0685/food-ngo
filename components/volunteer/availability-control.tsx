@@ -1,6 +1,6 @@
 "use client"
 
-import { Crosshair, MapPin, Pulse, ShieldCheck, SpinnerGap, WarningCircle } from "@phosphor-icons/react"
+import { Crosshair, MapPin, ShieldCheck, SpinnerGap, WarningCircle } from "@phosphor-icons/react"
 import { useState } from "react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -69,24 +69,21 @@ export function AvailabilityControl({ initialProfile }: { initialProfile: Availa
   return (
     <Card>
       <CardHeader className="gap-4 border-b pb-5 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex items-start gap-3">
-          <span className="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-lg"><Pulse weight="duotone" /></span>
-          <div className="flex flex-col gap-1"><CardTitle className="text-lg">Dispatch availability</CardTitle><CardDescription className="max-w-xl leading-6">Going online shares your live position with nearby dispatchers so rescue offers can be assigned quickly.</CardDescription></div>
-        </div>
-        <div className="flex items-center gap-3 rounded-md border bg-surface px-3 py-2">
-          <Badge variant={profile.isAvailable ? "secondary" : "outline"} className="gap-1.5 font-mono text-[10px] uppercase"><span className={cn("size-1.5 rounded-full", profile.isAvailable ? "bg-success" : "bg-muted-foreground")} />{pending ? "Updating" : profile.isAvailable ? "On standby" : "Off duty"}</Badge>
+        <div className="flex flex-col gap-1.5"><CardTitle>Dispatch availability</CardTitle><CardDescription className="max-w-xl text-base leading-relaxed">Going online shares your live position with nearby dispatchers so rescue offers can be assigned quickly.</CardDescription></div>
+        <div className="bg-muted/70 flex w-fit items-center gap-3 self-start rounded-full py-1.5 pl-1.5 pr-3">
+          <Badge variant={profile.isAvailable ? "secondary" : "outline"} className="gap-1.5 tabular text-xs "><span className={cn("size-1.5 rounded-full", profile.isAvailable ? "bg-success" : "bg-muted-foreground")} />{pending ? "Updating" : profile.isAvailable ? "On standby" : "Off duty"}</Badge>
           <Switch checked={profile.isAvailable} disabled={pending} onCheckedChange={changeAvailability} aria-label="Volunteer availability" />
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-4 pt-5">
-        <div className="bg-surface flex flex-wrap items-center gap-3 rounded-lg border p-4">
-          <span className="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-md"><MapPin weight="duotone" /></span>
-          <div className="flex min-w-0 flex-1 flex-col gap-1"><p className="text-xs font-semibold">Current GPS dispatch pin</p><p className="text-primary truncate font-mono text-xs font-semibold">{profile.currentLat !== null && profile.currentLng !== null ? `${profile.currentLat.toFixed(5)}, ${profile.currentLng.toFixed(5)}` : "Location not transmitted yet"}</p></div>
+        <div className="flex flex-wrap items-center gap-3 border-b pb-5">
+          <MapPin className="text-primary size-5 shrink-0" weight="bold" />
+          <div className="flex min-w-0 flex-1 flex-col gap-1"><p className="text-sm font-semibold">Current GPS dispatch pin</p><p className="text-primary tabular break-all text-base font-semibold">{profile.currentLat !== null && profile.currentLng !== null ? `${profile.currentLat.toFixed(5)}, ${profile.currentLng.toFixed(5)}` : "Location not transmitted yet"}</p></div>
           <Button type="button" variant="outline" size="sm" onClick={refreshLocation} disabled={pending || !profile.isAvailable}>{pending ? <SpinnerGap data-icon="inline-start" className="animate-spin" /> : <Crosshair data-icon="inline-start" />}Refresh pin</Button>
         </div>
-        {profile.lastLocationAt ? <p className="text-muted-foreground text-right font-mono text-[10px]">Last signal update: {formatAppDateTime(profile.lastLocationAt)}</p> : null}
+        {profile.lastLocationAt ? <p className="text-muted-foreground text-right tabular text-sm">Last signal update: {formatAppDateTime(profile.lastLocationAt)}</p> : null}
         {error ? <Alert variant="destructive"><WarningCircle /><AlertTitle>Availability needs attention</AlertTitle><AlertDescription>{error}</AlertDescription></Alert> : null}
-        <p className="text-muted-foreground inline-flex items-center gap-2 text-[11px]"><ShieldCheck className="text-success" />Only active rescue operations use your live location.</p>
+        <p className="text-muted-foreground inline-flex items-center gap-2 text-sm"><ShieldCheck className="text-success" />Only active rescue operations use your live location.</p>
       </CardContent>
     </Card>
   )

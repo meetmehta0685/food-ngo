@@ -54,13 +54,13 @@ export function LocationSimulator({
   }
 
   return (
-    <div className="bg-warning/5 mt-3 rounded-lg border border-dashed p-4">
+    <div className="mt-1 border-t border-dashed pt-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-warning-foreground text-xs font-semibold">
+          <p className="text-sm font-semibold">
             Development location simulator
           </p>
-          <p className="mt-1 text-[11px] text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground">
             Uses the real location API and geofence transition without physical
             travel.
           </p>

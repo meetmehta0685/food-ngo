@@ -29,7 +29,7 @@ export function NgoInboxWorkspace({ candidates }: { candidates: InboxCandidate[]
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Badge variant="secondary" className="font-mono text-[10px]">
+        <Badge variant="outline">
           {filteredCandidates.length} visible
         </Badge>
         <Select items={filterItems} value={filter} onValueChange={(value) => setFilter(value ?? "ALL")}>

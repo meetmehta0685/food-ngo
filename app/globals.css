@@ -2,6 +2,8 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+@custom-variant dark (&:is(.dark *));
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -28,6 +30,10 @@
   --color-warning-foreground: var(--warning-foreground);
   --color-surface: var(--surface);
   --color-surface-foreground: var(--surface-foreground);
+  --color-threshold: var(--threshold);
+  --color-threshold-foreground: var(--threshold-foreground);
+  --color-threshold-muted: var(--threshold-muted);
+  --color-rice: var(--rice);
   --font-sans: var(--font-sans-family);
   --font-display: var(--font-display-family);
   --font-mono: var(--font-mono-family);
@@ -35,39 +41,73 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Limewash sheet: working screens are read in daylight kitchens and on phones outdoors. */
 :root {
   color-scheme: light;
-  --background: oklch(0.975 0.018 250);
-  --foreground: oklch(0.205 0.04 255);
-  --card: oklch(0.995 0.008 250);
-  --card-foreground: oklch(0.205 0.04 255);
-  --popover: oklch(0.995 0.008 250);
-  --popover-foreground: oklch(0.205 0.04 255);
-  --primary: oklch(0.68 0.17 67);
-  --primary-foreground: oklch(0.14 0.035 255);
-  --secondary: oklch(0.92 0.04 250);
-  --secondary-foreground: oklch(0.25 0.05 255);
-  --muted: oklch(0.94 0.027 250);
-  --muted-foreground: oklch(0.28 0.03 255);
-  --accent: oklch(0.84 0.13 158);
-  --accent-foreground: oklch(0.2 0.04 255);
-  --destructive: oklch(0.58 0.19 28);
-  --destructive-foreground: oklch(0.98 0.015 95);
-  --border: oklch(0.86 0.04 250);
-  --input: oklch(0.81 0.05 250);
-  --ring: oklch(0.55 0.16 67);
-  --success: oklch(0.52 0.15 160);
-  --success-foreground: oklch(0.98 0.015 95);
-  --warning: oklch(0.72 0.16 76);
-  --warning-foreground: oklch(0.23 0.04 255);
-  --surface: oklch(0.945 0.035 250);
-  --surface-foreground: oklch(0.24 0.04 255);
-  --radius: 0.875rem;
-  --font-sans-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-mono-family: "JetBrains Mono", ui-monospace, monospace;
+  --background: oklch(0.972 0.007 100);
+  --foreground: oklch(0.23 0.014 60);
+  --card: oklch(0.992 0.004 100);
+  --card-foreground: oklch(0.23 0.014 60);
+  --popover: oklch(0.992 0.004 100);
+  --popover-foreground: oklch(0.23 0.014 60);
+  --primary: oklch(0.52 0.19 27);
+  --primary-foreground: oklch(0.985 0.006 90);
+  --secondary: oklch(0.93 0.012 95);
+  --secondary-foreground: oklch(0.27 0.016 60);
+  --muted: oklch(0.945 0.009 95);
+  --muted-foreground: oklch(0.45 0.016 60);
+  --accent: oklch(0.86 0.13 85);
+  --accent-foreground: oklch(0.26 0.04 60);
+  --destructive: oklch(0.5 0.2 25);
+  --destructive-foreground: oklch(0.985 0.006 90);
+  --border: oklch(0.87 0.012 90);
+  --input: oklch(0.8 0.015 80);
+  --ring: oklch(0.52 0.19 27);
+  --success: oklch(0.5 0.12 150);
+  --success-foreground: oklch(0.985 0.006 90);
+  --warning: oklch(0.78 0.15 80);
+  --warning-foreground: oklch(0.26 0.04 60);
+  --surface: oklch(0.948 0.011 95);
+  --surface-foreground: oklch(0.27 0.016 60);
+  --threshold: oklch(0.3 0.058 38);
+  --threshold-foreground: oklch(0.965 0.012 85);
+  --threshold-muted: oklch(0.83 0.03 70);
+  --rice: oklch(0.955 0.012 90);
+  --radius: 0.75rem;
+  --font-mono-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+/* Swept threshold: the same world after dark. */
+.dark {
+  color-scheme: dark;
+  --background: oklch(0.205 0.016 50);
+  --foreground: oklch(0.945 0.012 90);
+  --card: oklch(0.245 0.018 50);
+  --card-foreground: oklch(0.945 0.012 90);
+  --popover: oklch(0.255 0.018 50);
+  --popover-foreground: oklch(0.945 0.012 90);
+  --primary: oklch(0.64 0.19 30);
+  --primary-foreground: oklch(0.16 0.02 40);
+  --secondary: oklch(0.3 0.018 55);
+  --secondary-foreground: oklch(0.93 0.012 90);
+  --muted: oklch(0.28 0.016 55);
+  --muted-foreground: oklch(0.76 0.02 75);
+  --accent: oklch(0.8 0.14 85);
+  --accent-foreground: oklch(0.2 0.03 60);
+  --destructive: oklch(0.65 0.2 27);
+  --destructive-foreground: oklch(0.16 0.02 40);
+  --border: oklch(0.34 0.018 55);
+  --input: oklch(0.42 0.02 60);
+  --ring: oklch(0.64 0.19 30);
+  --success: oklch(0.7 0.13 150);
+  --success-foreground: oklch(0.18 0.03 150);
+  --warning: oklch(0.8 0.14 85);
+  --warning-foreground: oklch(0.2 0.03 60);
+  --surface: oklch(0.27 0.017 52);
+  --surface-foreground: oklch(0.93 0.012 90);
 }
 
 @layer base {
@@ -77,21 +117,29 @@
 
   html {
     background: var(--background);
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
     background: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans-family);
+    font-size: 1rem;
+    line-height: 1.55;
     min-width: 320px;
     text-rendering: optimizeLegibility;
+    font-feature-settings: "kern";
   }
 
   a {
     outline: none;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
   }
 
-  a:focus-visible {
+  a:focus-visible,
+  [role="button"]:focus-visible,
+  summary:focus-visible {
     border-radius: var(--radius-sm);
     outline: 2px solid var(--ring);
     outline-offset: 3px;
@@ -100,23 +148,90 @@
   h1,
   h2,
   h3,
-  h4,
-  h5,
-  h6,
   .font-display {
     font-family: var(--font-display-family);
-    letter-spacing: -0.025em;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  h4,
+  h5,
+  h6 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 
   code,
   pre,
+  kbd,
   .font-mono {
     font-family: var(--font-mono-family);
   }
 
+  time,
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  input,
+  textarea {
+    caret-color: var(--primary);
+  }
+
   ::selection {
-    background: color-mix(in oklch, var(--primary) 22%, transparent);
-    color: var(--foreground);
+    background: color-mix(in oklch, var(--accent) 70%, transparent);
+    color: var(--accent-foreground);
+  }
+
+  ::placeholder {
+    color: var(--muted-foreground);
+    opacity: 1;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--foreground) 28%, transparent) transparent;
+  }
+}
+
+@layer components {
+  /* Rice-flour dot lattice, used only where a kolam is actually drawn. */
+  .kolam-ground {
+    background-color: var(--threshold);
+    background-image: radial-gradient(circle, color-mix(in oklch, var(--rice) 26%, transparent) 1.4px, transparent 1.6px);
+    background-size: 28px 28px;
+    background-position: 14px 14px;
+    color: var(--threshold-foreground);
+  }
+
+  .kolam-sheet {
+    background-image: radial-gradient(circle, color-mix(in oklch, var(--foreground) 11%, transparent) 1px, transparent 1.2px);
+    background-size: 24px 24px;
+  }
+}
+
+@keyframes kolam-draw {
+  from {
+    stroke-dashoffset: var(--kolam-length, 1);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes kolam-dot-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

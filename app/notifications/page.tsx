@@ -1,12 +1,12 @@
 import Link from "next/link"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
-import { ArrowLeft, Bell, BellRinging, Clock, Envelope, Pulse } from "@phosphor-icons/react/dist/ssr"
+import { ArrowLeft, Bell, BellRinging, Clock, Envelope } from "@phosphor-icons/react/dist/ssr"
 
+import { PageHeader } from "@/components/layout/page-header"
 import { NotificationDeleteButton } from "@/components/notifications/notification-delete-button"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 import { db } from "@/lib/db"
 import { formatAppDateTime } from "@/lib/format-date"
@@ -28,41 +28,40 @@ export default async function NotificationsPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="flex flex-col gap-2">
-          <Badge variant="outline" className="w-fit gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em]"><Pulse data-icon="inline-start" />System dispatch feed</Badge>
-          <h1 className="text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">Notifications</h1>
-          <p className="text-muted-foreground text-sm leading-6">Realtime rescue updates, OTP handovers, and delivery audit alerts.</p>
-        </div>
-        <Button render={<Link href={getRoleHomePath(session.user.role) ?? "/home"} />} nativeButton={false} variant="outline"><ArrowLeft data-icon="inline-start" />Role workspace</Button>
-      </div>
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-10">
+      <PageHeader
+        title="Notifications"
+        description="Realtime rescue updates, OTP handovers, and delivery audit alerts."
+        actions={<Button render={<Link href={getRoleHomePath(session.user.role) ?? "/home"} />} nativeButton={false} variant="outline"><ArrowLeft data-icon="inline-start" />Role workspace</Button>}
+      />
 
       {notifications.length === 0 ? (
-        <Empty className="min-h-80 border">
+        <Empty className="kolam-sheet min-h-80 border border-dashed">
           <EmptyHeader><EmptyMedia variant="icon"><Bell weight="duotone" /></EmptyMedia><EmptyTitle>No dispatch alerts yet</EmptyTitle><EmptyDescription>Claim updates, handover confirmations, and delivery receipts will stream here.</EmptyDescription></EmptyHeader>
         </Empty>
       ) : (
-        <div className="flex flex-col gap-3">
+        <ul className="flex flex-col border-t">
           {notifications.map((item) => {
             const isEmail = item.channel === "EMAIL"
             return (
-              <Card key={item.id} className={cn(!item.readAt && "border-primary/30")}>
-                <CardHeader className="gap-3 pb-3">
-                  <div className="flex items-start gap-3">
-                    <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-md", isEmail ? "bg-warning/15 text-warning-foreground" : "bg-primary/10 text-primary")}>{isEmail ? <Envelope /> : <BellRinging />}</span>
-                    <div className="flex min-w-0 flex-1 flex-col gap-1"><div className="flex items-center gap-2"><CardTitle className="truncate text-sm">{item.title}</CardTitle>{!item.readAt ? <Badge variant="secondary" className="font-mono text-[9px] uppercase">New</Badge> : null}</div><CardDescription className="leading-6">{item.body}</CardDescription></div>
-                    <NotificationDeleteButton notificationId={item.id} notificationTitle={item.title} />
+              <li key={item.id} className="flex items-start gap-4 border-b py-5">
+                <span className={cn("mt-1 flex size-5 shrink-0 items-center justify-center", isEmail ? "text-warning-foreground" : "text-primary")}>{isEmail ? <Envelope weight="bold" /> : <BellRinging weight="bold" />}</span>
+                <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className={cn("font-sans text-base tracking-normal", item.readAt ? "font-semibold" : "font-bold")}>{item.title}</h2>
+                    {!item.readAt ? <Badge className="bg-warning text-warning-foreground">New</Badge> : null}
                   </div>
-                </CardHeader>
-                <CardContent className="flex items-center gap-3 pt-0 text-muted-foreground text-[10px]">
-                  <span className="inline-flex items-center gap-1.5"><Clock className="text-warning-foreground" />{formatAppDateTime(item.createdAt)}</span>
-                  <Badge variant="outline" className="font-mono text-[9px] uppercase">{item.channel}</Badge>
-                </CardContent>
-              </Card>
+                  <p className="text-muted-foreground text-base leading-relaxed">{item.body}</p>
+                  <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-sm">
+                    <span className="inline-flex items-center gap-1.5"><Clock />{formatAppDateTime(item.createdAt)}</span>
+                    <Badge variant="outline">{item.channel}</Badge>
+                  </div>
+                </div>
+                <NotificationDeleteButton notificationId={item.id} notificationTitle={item.title} />
+              </li>
             )
           })}
-        </div>
+        </ul>
       )}
     </div>
   )

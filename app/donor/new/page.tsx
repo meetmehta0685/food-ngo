@@ -17,10 +17,10 @@ export default async function NewDonationPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">Report available food</h1>
-        <p className="text-muted-foreground max-w-2xl text-sm leading-6">
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-3">
+        <h1 className="text-4xl sm:text-5xl">Report available food</h1>
+        <p className="text-muted-foreground max-w-2xl text-lg leading-relaxed">
           Fill in the details once. Nearby NGOs are notified automatically.
         </p>
       </div>

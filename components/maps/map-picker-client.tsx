@@ -47,6 +47,9 @@ export function MapPickerClient({ lat, lng, onChange }: MapPickerClientProps) {
 
     map.addControl(new NavigationControl({ showCompass: false }), "top-right");
 
+    const resizeObserver = new ResizeObserver(() => map.resize());
+    resizeObserver.observe(containerRef.current);
+
     const handleClick = (event: MapMouseEvent) => {
       onChangeRef.current(event.lngLat.lat, event.lngLat.lng);
     };
@@ -61,6 +64,7 @@ export function MapPickerClient({ lat, lng, onChange }: MapPickerClientProps) {
     markerRef.current = marker;
 
     return () => {
+      resizeObserver.disconnect();
       marker.off("dragend", handleDragEnd);
       map.off("click", handleClick);
       marker.remove();

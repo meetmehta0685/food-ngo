@@ -1,11 +1,11 @@
 import Link from "next/link"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
-import { ArrowRight, Package, Pulse } from "@phosphor-icons/react/dist/ssr"
+import { ArrowRight, Package } from "@phosphor-icons/react/dist/ssr"
 
 import { NgoInboxWorkspace } from "@/components/ngo/inbox-workspace"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
+import { PageHeader } from "@/components/layout/page-header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { db } from "@/lib/db"
@@ -53,37 +53,32 @@ export default async function NgoInboxPage() {
   }))
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div className="flex flex-col gap-2">
-          <Badge variant="outline" className="w-fit gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em]"><Pulse data-icon="inline-start" />NGO operations</Badge>
-          <h1 className="text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">Rescue inbox</h1>
-          <p className="text-muted-foreground max-w-2xl text-sm leading-6">Accept the closest safe match, then move it through the logistics console.</p>
-        </div>
-        <Button render={<Link href="/ngo/deliveries" />} nativeButton={false} variant="outline">
-          Open logistics
-          <ArrowRight data-icon="inline-end" />
-        </Button>
-      </div>
+    <div className="flex flex-col gap-10">
+      <PageHeader
+        title="Rescue inbox"
+        description="Accept the closest safe match, then move it through the logistics console."
+        actions={
+          <Button render={<Link href="/ngo/deliveries" />} nativeButton={false} variant="outline">
+            Open logistics
+            <ArrowRight data-icon="inline-end" />
+          </Button>
+        }
+      />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)]">
-        <Card className="min-w-0">
-          <CardHeader className="gap-1 border-b pb-5">
-            <div className="flex flex-col gap-1">
-              <CardTitle className="text-lg">Live donation alerts</CardTitle>
-              <CardDescription>Sorted by proximity and pickup urgency.</CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-5">
-            {loadError ? (
-              <Alert variant="destructive" className="mb-4"><Package /><AlertTitle>Inbox unavailable</AlertTitle><AlertDescription>{loadError}</AlertDescription></Alert>
-            ) : <NgoInboxWorkspace candidates={serializedCandidates} />}
-          </CardContent>
-        </Card>
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(18rem,0.75fr)]">
+        <section className="flex min-w-0 flex-col gap-5" aria-labelledby="alerts-title">
+          <div className="flex flex-col gap-1 border-b pb-4">
+            <h2 id="alerts-title" className="text-2xl">Live donation alerts</h2>
+            <p className="text-muted-foreground text-sm">Sorted by proximity and pickup urgency.</p>
+          </div>
+          {loadError ? (
+            <Alert variant="destructive"><Package /><AlertTitle>Inbox unavailable</AlertTitle><AlertDescription>{loadError}</AlertDescription></Alert>
+          ) : <NgoInboxWorkspace candidates={serializedCandidates} />}
+        </section>
 
-        <Card className="h-fit">
+        <Card className="bg-muted/50 h-fit lg:sticky lg:top-24">
           <CardHeader className="gap-2">
-            <CardTitle className="text-base">Next step</CardTitle>
+            <CardTitle>Next step</CardTitle>
             <CardDescription>Accept a rescue alert to open its live delivery context.</CardDescription>
           </CardHeader>
           <CardContent className="pt-0">

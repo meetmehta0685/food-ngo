@@ -40,15 +40,15 @@ export function PickupOtpVerification({ assignmentId }: { assignmentId: string }
   }
 
   return (
-    <div className="bg-primary/5 mt-5 flex flex-col gap-4 rounded-lg border border-primary/20 p-4">
+    <div className="mt-1 flex flex-col gap-4 border-t pt-5">
       <div className="flex items-start gap-3">
-        <span className="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-md"><Key weight="duotone" /></span>
-        <div className="flex flex-col gap-1"><p className="text-sm font-semibold">Confirm pickup handover</p><p className="text-muted-foreground text-xs leading-6">Ask the donor for the six-digit code to confirm the food quality and quantity at collection.</p></div>
+        <Key className="text-primary mt-0.5 size-5 shrink-0" weight="bold" />
+        <div className="flex flex-col gap-1"><p className="font-display text-xl font-semibold">Confirm pickup handover</p><p className="text-muted-foreground text-sm leading-relaxed">Ask the donor for the six-digit code to confirm the food quality and quantity at collection.</p></div>
       </div>
       <Field>
         <FieldLabel htmlFor={`pickup-otp-${assignmentId}`}>Six-digit handover code</FieldLabel>
         <InputGroup>
-          <InputGroupInput id={`pickup-otp-${assignmentId}`} value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" placeholder="000000" className="font-mono text-base tracking-[0.3em]" aria-invalid={Boolean(error)} />
+          <InputGroupInput id={`pickup-otp-${assignmentId}`} value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" placeholder="000000" className="tabular text-base" aria-invalid={Boolean(error)} />
           <InputGroupAddon align="inline-end">
             <InputGroupButton type="button" onClick={verify} disabled={pending || code.length !== 6} variant="default" size="sm">
               {pending ? <SpinnerGap data-icon="inline-start" className="animate-spin" /> : <ShieldCheck data-icon="inline-start" />}

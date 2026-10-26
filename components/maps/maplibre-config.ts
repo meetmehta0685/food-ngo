@@ -1,4 +1,8 @@
-import type { StyleSpecification } from "maplibre-gl"
+import { setWorkerUrl, type StyleSpecification } from "maplibre-gl"
+
+// Bundling breaks MapLibre's import.meta.url worker lookup; postinstall copies
+// the worker and its shared chunk into public/maplibre.
+setWorkerUrl("/maplibre/maplibre-gl-worker.mjs")
 
 export function createOpenStreetMapStyle(): StyleSpecification {
   return {
